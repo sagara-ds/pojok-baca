@@ -1,43 +1,80 @@
-# Astro Starter Kit: Minimal
+# Pojok Baca RPL
 
-```sh
-npm create astro@latest -- --template minimal
+Minimalist, mobile-first web app for reading books. Built with [Astro](https://astro.build) (SSR), Tailwind CSS v4, and TypeScript strict.
+
+Data source: [welib.org](https://id.welib.org/) (Anna's Archive lineage), accessed through a server-side API proxy.
+
+## 📐 Branch Strategy
+
+`main` stays as the default branch and holds no feature work directly. Every feature lives on its own `feat/*` branch and lands in `main` through a pull request.
+
+```bash
+# Start a new feature from an up-to-date main
+git checkout main && git pull
+git checkout -b feat/nama-fitur
+
+# Commit and push
+git add -A && git commit -m "feat(scope): deskripsi singkat"
+git push origin feat/nama-fitur
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 🚀 Getting Started
 
-## 🚀 Project Structure
+```bash
+npm install
+npm run dev        # dev server at http://localhost:4321
+npm run build      # production build (SSR, @astrojs/node)
+npm run preview    # serve the production build locally
+```
 
-Inside of your Astro project, you'll see the following folders and files:
+## 📁 Project Structure
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+├── components/
+│   ├── book/       # BookCover, BookMeta, BookDescription, ReadButton
+│   ├── layout/     # Header, Footer
+│   └── ui/         # Button, Card, Skeleton, ErrorState, LoadingSpinner
+├── layouts/        # BaseLayout.astro (SEO, CSP, structured data)
+├── pages/
+│   ├── api/proxy/  # server-side proxy ke welib.org
+│   ├── books/      # daftar buku + detail buku
+│   └── index.astro
+├── services/       # api.ts (client + sanitasi), mock-data.ts, types.ts
+└── styles/         # global.css (Tailwind v4 @theme)
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 🔌 API Proxy
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Semua permintaan ke welib.org lewat proxy server-side, supaya API key tidak bocor dan respons bisa disanitasi.
 
-Any static assets, like images, can be placed in the `public/` directory.
+| Route | Keterangan |
+|-------|------------|
+| `GET /api/proxy/books/` | Daftar buku + paginasi |
+| `GET /api/proxy/books/:slug` | Detail buku |
+| `GET /api/proxy/books/?q=...` | Pencarian |
+| `GET /api/proxy/categories/` | Daftar kategori |
 
-## 🧞 Commands
+- Rate limit: 60 request/menit per IP
+- Sanitasi HTML/teks sebelum dikirim ke client
+- Fallback ke `src/services/mock-data.ts` bila upstream tidak dapat diakses (Cloudflare 403), dengan header `X-Mock-Data: true`
 
-All commands are run from the root of the project, from a terminal:
+## 📚 Dokumentasi
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+Dokumentasi lengkap ada di vault Obsidian `Pojok baca/`:
 
-## 👀 Want to learn more?
+- Project Overview
+- Tech Stack
+- API Integration
+- Components - UI / Components - Book
+- Development Workflow
+- Deployment
+- Quick Reference
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## 🛡️ Keamanan
+
+Header keamanan diatur di `public/_headers`: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` ketat, plus CSP di `BaseLayout.astro`.
+
+---
+
+Dibangun berdua oleh tim RPL.
