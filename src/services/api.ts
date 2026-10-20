@@ -1,11 +1,19 @@
 /**
  * Welib.org API Client
  * Handles fetching, caching, sanitization, and error handling
+ * Falls back to mock data when real API is unavailable (Cloudflare protection)
  */
 
 import type { Book, BookListResponse, SearchParams, Category, ApiError } from './types';
+import { getMockBooks, getMockBook, searchMockBooks, mockCategories } from './mock-data';
+
+// Re-export mock functions for use by API proxy
+export { getMockBooks, getMockBook, searchMockBooks, mockCategories };
 
 const WELIB_API_BASE = 'https://id.welib.org/api';
+
+// Check if we're in development mode (use mock data for easier dev)
+const USE_MOCK_DATA = import.meta.env.DEV || import.meta.env.PUBLIC_USE_MOCK === 'true';
 const DEFAULT_TIMEOUT = 10000;
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
@@ -137,6 +145,12 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
  * Fetch single book by slug
  */
 export async function fetchBook(slug: string): Promise<Book | null> {
+  // Use mock data in development or when explicitly enabled
+  if (USE_MOCK_DATA) {
+    console.log('[DEV] Using mock data for fetchBook:', slug);
+    return getMockBook(slug);
+  }
+
   try {
     const response = await fetchWithRetry(`${WELIB_API_BASE}/books/${slug}`);
 
@@ -152,7 +166,9 @@ export async function fetchBook(slug: string): Promise<Book | null> {
     return sanitizeBook(data);
   } catch (error) {
     console.error(`Failed to fetch book ${slug}:`, error);
-    throw error;
+    // Fallback to mock data on error
+    console.log('[FALLBACK] Using mock data for fetchBook:', slug);
+    return getMockBook(slug);
   }
 }
 
@@ -160,6 +176,12 @@ export async function fetchBook(slug: string): Promise<Book | null> {
  * Fetch paginated book list
  */
 export async function fetchBooks(params: SearchParams = {}): Promise<BookListResponse> {
+  // Use mock data in development or when explicitly enabled
+  if (USE_MOCK_DATA) {
+    console.log('[DEV] Using mock data for fetchBooks:', params);
+    return getMockBooks(params);
+  }
+
   const searchParams = new URLSearchParams();
 
   if (params.page) searchParams.set('page', String(params.page));
@@ -188,7 +210,9 @@ export async function fetchBooks(params: SearchParams = {}): Promise<BookListRes
     };
   } catch (error) {
     console.error('Failed to fetch books:', error);
-    throw error;
+    // Fallback to mock data on error
+    console.log('[FALLBACK] Using mock data for fetchBooks:', params);
+    return getMockBooks(params);
   }
 }
 
@@ -196,6 +220,12 @@ export async function fetchBooks(params: SearchParams = {}): Promise<BookListRes
  * Search books
  */
 export async function searchBooks(query: string, params: Omit<SearchParams, 'q'> = {}): Promise<BookListResponse> {
+  // Use mock data in development or when explicitly enabled
+  if (USE_MOCK_DATA) {
+    console.log('[DEV] Using mock data for searchBooks:', query, params);
+    return searchMockBooks(query, params);
+  }
+
   const searchParams = new URLSearchParams();
   searchParams.set('q', query);
 
@@ -223,7 +253,9 @@ export async function searchBooks(query: string, params: Omit<SearchParams, 'q'>
     };
   } catch (error) {
     console.error('Failed to search books:', error);
-    throw error;
+    // Fallback to mock data on error
+    console.log('[FALLBACK] Using mock data for searchBooks:', query, params);
+    return searchMockBooks(query, params);
   }
 }
 
@@ -231,6 +263,12 @@ export async function searchBooks(query: string, params: Omit<SearchParams, 'q'>
  * Fetch categories
  */
 export async function fetchCategories(): Promise<Category[]> {
+  // Use mock data in development or when explicitly enabled
+  if (USE_MOCK_DATA) {
+    console.log('[DEV] Using mock data for fetchCategories');
+    return mockCategories;
+  }
+
   try {
     const response = await fetchWithRetry(`${WELIB_API_BASE}/categories`);
 
@@ -242,7 +280,9 @@ export async function fetchCategories(): Promise<Category[]> {
     return data;
   } catch (error) {
     console.error('Failed to fetch categories:', error);
-    return [];
+    // Fallback to mock data on error
+    console.log('[FALLBACK] Using mock data for fetchCategories');
+    return mockCategories;
   }
 }
 

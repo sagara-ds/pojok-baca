@@ -1,5 +1,7 @@
 // API Proxy for Welib.org Categories
+// Falls back to mock data when real API is unavailable (Cloudflare protection)
 import type { APIRoute } from 'astro';
+import { mockCategories } from '../../../services/mock-data';
 
 const WELIB_API_BASE = 'https://id.welib.org/api';
 
@@ -66,14 +68,9 @@ export const GET: APIRoute = async ({ request, url }) => {
     const response = await proxyToWelib('/categories', new URLSearchParams(url.searchParams));
 
     if (!response.ok) {
-      return new Response(JSON.stringify({
-        error: 'Gagal mengambil kategori',
-        code: 'UPSTREAM_ERROR',
-        status: response.status,
-      }), {
-        status: response.status,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      // Upstream error - fall back to mock categories
+      console.warn(`Upstream returned ${response.status}, falling back to mock categories`);
+      throw new Error(`UPSTREAM_ERROR_${response.status}`);
     }
 
     const data = await response.json();
@@ -88,27 +85,17 @@ export const GET: APIRoute = async ({ request, url }) => {
       },
     });
   } catch (error) {
-    console.error('Categories proxy error:', error);
+    console.error('Categories proxy error, falling back to mock data:', error);
 
-    let status = 500;
-    let code = 'INTERNAL_ERROR';
-    let message = 'Terjadi kesalahan internal';
-
-    if (error instanceof Error) {
-      if (error.name === 'TimeoutError' || error.name === 'AbortError') {
-        status = 504;
-        code = 'UPSTREAM_TIMEOUT';
-        message = 'Server buku tidak merespons';
-      } else if (error.message.includes('fetch')) {
-        status = 502;
-        code = 'UPSTREAM_UNREACHABLE';
-        message = 'Tidak dapat menghubungi server buku';
-      }
-    }
-
-    return new Response(JSON.stringify({ error: message, code }), {
-      status,
-      headers: { 'Content-Type': 'application/json' },
+    return new Response(JSON.stringify(mockCategories), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-Mock-Data': 'true',
+      },
     });
   }
 };

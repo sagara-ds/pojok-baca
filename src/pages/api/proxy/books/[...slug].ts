@@ -1,6 +1,8 @@
 // API Proxy for Welib.org - Secure server-side proxy with rate limiting and sanitization
+// Falls back to mock data when real API is unavailable (Cloudflare protection)
 import type { APIRoute } from 'astro';
-import { fetchBook, fetchBooks, searchBooks, fetchCategories, sanitizeBook } from '../../../../services/api';
+import { fetchBook, fetchBooks, searchBooks, fetchCategories, sanitizeBook, getMockBook, getMockBooks, searchMockBooks } from '../../../../services/api';
+import { mockCategories } from '../../../../services/mock-data';
 
 const WELIB_API_BASE = 'https://id.welib.org/api';
 
@@ -54,6 +56,19 @@ async function proxyToWelib(path: string, searchParams: URLSearchParams): Promis
   return response;
 }
 
+/**
+ * Extract the rest param from Astro's params object.
+ * Astro may provide it as a string ("a/b/c") or as an array (["a","b","c"]),
+ * depending on the version/mode - handle both.
+ */
+function getRestParam(params: Record<string, unknown> | undefined, name: string): string {
+  if (!params) return '';
+  const raw = params[name] ?? params[`...${name}`];
+  if (Array.isArray(raw)) return raw.join('/');
+  if (typeof raw === 'string') return raw;
+  return '';
+}
+
 export const GET: APIRoute = async ({ params, request, url }) => {
   const clientIp = getClientIp(request);
 
@@ -75,7 +90,7 @@ export const GET: APIRoute = async ({ params, request, url }) => {
     });
   }
 
-  const slug = params.slug ? params.slug.join('/') : '';
+  const slug = getRestParam(params as Record<string, unknown> | undefined, 'slug');
   const searchParams = new URLSearchParams(url.searchParams);
 
   try {
@@ -93,19 +108,9 @@ export const GET: APIRoute = async ({ params, request, url }) => {
     }
 
     if (!response.ok) {
-      // Return error with sanitized message
-      const errorText = await response.text().catch(() => '');
-      return new Response(JSON.stringify({
-        error: `Gagal mengambil data dari server buku`,
-        code: 'UPSTREAM_ERROR',
-        status: response.status,
-      }), {
-        status: response.status,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-store',
-        },
-      });
+      // Upstream error (403, 404, 500, etc.) - fall back to mock data
+      console.warn(`Upstream returned ${response.status}, falling back to mock data`);
+      throw new Error(`UPSTREAM_ERROR_${response.status}`);
     }
 
     const data = await response.json();
@@ -151,33 +156,53 @@ export const GET: APIRoute = async ({ params, request, url }) => {
       },
     });
   } catch (error) {
-    console.error('API Proxy error:', error);
+    console.error('API Proxy error, falling back to mock data:', error);
 
-    // Determine error type
-    let status = 500;
-    let code = 'INTERNAL_ERROR';
-    let message = 'Terjadi kesalahan internal';
+    // Use mock data as fallback
+    const slug = getRestParam(params as Record<string, unknown> | undefined, 'slug');
+    const searchParams = new URLSearchParams(url.searchParams);
+    const hasSearch = searchParams.has('q');
 
-    if (error instanceof Error) {
-      if (error.name === 'TimeoutError' || error.name === 'AbortError') {
-        status = 504;
-        code = 'UPSTREAM_TIMEOUT';
-        message = 'Server buku tidak merespons dalam waktu yang ditentukan';
-      } else if (error.message.includes('fetch')) {
-        status = 502;
-        code = 'UPSTREAM_UNREACHABLE';
-        message = 'Tidak dapat menghubungi server buku';
+    let mockResponse;
+    if (slug) {
+      mockResponse = getMockBook(slug);
+      if (!mockResponse) {
+        return new Response(JSON.stringify({
+          error: 'Buku tidak ditemukan',
+          code: 'NOT_FOUND',
+        }), {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' },
+        });
       }
+    } else if (hasSearch) {
+      mockResponse = searchMockBooks(searchParams.get('q') || '', {
+        page: Number(searchParams.get('page')) || 1,
+        limit: Number(searchParams.get('limit')) || 20,
+      });
+    } else {
+      mockResponse = getMockBooks({
+        page: Number(searchParams.get('page')) || 1,
+        limit: Number(searchParams.get('limit')) || 20,
+        category: searchParams.get('category') || undefined,
+        sort: searchParams.get('sort') || 'newest',
+      });
     }
 
-    return new Response(JSON.stringify({
-      error: message,
-      code,
-    }), {
-      status,
+    // Set cache headers based on endpoint type
+    const cacheControl = slug
+      ? 'public, max-age=3600, stale-while-revalidate=86400'
+      : 'public, max-age=300, stale-while-revalidate=3600';
+
+    return new Response(JSON.stringify(mockResponse), {
+      status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-store',
+        'Cache-Control': cacheControl,
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'X-Mock-Data': 'true',
       },
     });
   }
@@ -215,10 +240,17 @@ export const GET_CATEGORIES: APIRoute = async ({ request, url }) => {
       },
     });
   } catch (error) {
-    console.error('Categories proxy error:', error);
-    return new Response(JSON.stringify({ error: 'Gagal mengambil kategori', code: 'INTERNAL_ERROR' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
+    console.error('Categories proxy error, falling back to mock data:', error);
+
+    // Fallback to mock categories
+    return new Response(JSON.stringify(mockCategories), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Mock-Data': 'true',
+      },
     });
   }
 };
