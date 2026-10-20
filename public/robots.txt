@@ -1,0 +1,9 @@
+# Robots.txt for Pojok Baca RPL
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://pojokbaca.example.com/sitemap.xml
+
+# Disallow admin/api routes
+Disallow: /api/

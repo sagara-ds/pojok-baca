@@ -1,0 +1,50 @@
+---
+// Loading spinner component
+interface Props {
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+  label?: string;
+  overlay?: boolean;
+}
+
+const {
+  size = 'md',
+  class: className = '',
+  label = 'Memuat...',
+  overlay = false,
+} = Astro.props;
+
+const sizeStyles = {
+  sm: 'h-4 w-4',
+  md: 'h-8 w-8',
+  lg: 'h-12 w-12',
+  xl: 'h-16 w-16',
+};
+
+const baseStyles = 'animate-spin text-accent';
+
+const classes = `${baseStyles} ${sizeStyles[size]} ${className}`;
+
+const spinnerSvg = `
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class={classes}>
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+  </svg>
+`;
+
+const overlayStyles = 'fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm';
+---
+
+{overlay ? (
+  <div class={overlayStyles} role="status" aria-live="polite" aria-label={label}>
+    <div class="flex flex-col items-center gap-3">
+      {spinnerSvg}
+      <span class="text-text-muted text-sm">{label}</span>
+    </div>
+  </div>
+) : (
+  <div class="flex items-center justify-center" role="status" aria-live="polite" aria-label={label}>
+    {spinnerSvg}
+    <span class="sr-only">{label}</span>
+  </div>
+)}

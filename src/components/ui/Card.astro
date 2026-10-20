@@ -1,0 +1,58 @@
+---
+// Card component - flexible container with variants
+interface Props {
+  children: any;
+  variant?: 'default' | 'outlined' | 'elevated' | 'interactive';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  class?: string;
+  href?: string;
+  'aria-label'?: string;
+}
+
+const {
+  children,
+  variant = 'default',
+  padding = 'md',
+  class: className = '',
+  href,
+  'aria-label': ariaLabel,
+  ...rest
+} = Astro.props;
+
+const isLink = !!href;
+
+const baseStyles = 'rounded-xl transition-all duration-200';
+
+const variantStyles = {
+  default: 'bg-surface border border-border',
+  outlined: 'bg-transparent border-2 border-border hover:border-border-focus',
+  elevated: 'bg-surface shadow-lg hover:shadow-xl',
+  interactive: 'bg-surface border border-border hover:border-accent/50 hover:shadow-md cursor-pointer',
+};
+
+const paddingStyles = {
+  none: '',
+  sm: 'p-3',
+  md: 'p-5',
+  lg: 'p-6',
+};
+
+const linkStyles = isLink ? 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2' : '';
+
+const classes = `${baseStyles} ${variantStyles[variant]} ${paddingStyles[padding]} ${linkStyles} ${className}`;
+---
+
+{isLink ? (
+  <a
+    href={href}
+    class={classes}
+    aria-label={ariaLabel}
+    {...rest}
+  >
+    {children}
+  </a>
+) : (
+  <article class={classes} {...rest}>
+    {children}
+  </article>
+)}

@@ -1,0 +1,36 @@
+# Security Headers for Netlify/Vercel
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-XSS-Protection: 1; mode=block
+
+# Cache static assets aggressively
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache API responses
+/api/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+
+# HTML pages - short cache with revalidation
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Manifest and robots
+/manifest.json
+  Cache-Control: public, max-age=86400
+
+/robots.txt
+  Cache-Control: public, max-age=86400
+
+# Favicon
+/favicon.svg
+  Cache-Control: public, max-age=86400
+
+/book-placeholder.svg
+  Cache-Control: public, max-age=86400

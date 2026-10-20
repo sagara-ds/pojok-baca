@@ -1,0 +1,89 @@
+---
+// Book cover component with responsive image, lazy loading, and error handling
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  class?: string;
+  priority?: boolean; // For above-the-fold images
+  fallback?: string;
+}
+
+const {
+  src,
+  alt,
+  width = 256,
+  height = 384,
+  class: className = '',
+  priority = false,
+  fallback = '/book-placeholder.svg',
+} = Astro.props;
+
+const isExternal = src.startsWith('http');
+const loading = priority ? 'eager' : 'lazy';
+const fetchPriority = priority ? 'high' : 'auto';
+
+const aspectRatioStyle = `aspect-ratio: ${width} / ${height};`;
+const objectFitStyle = 'object-fit: cover;';
+
+const containerClasses = `relative overflow-hidden rounded-lg bg-secondary ${className}`;
+const imageClasses = `absolute inset-0 w-full h-full ${objectFitStyle} transition-opacity duration-300`;
+const placeholderClasses = 'absolute inset-0 bg-secondary animate-pulse';
+---
+
+<div class={containerClasses} style={aspectRatioStyle} role="img" aria-label={alt}>
+  <!-- Placeholder while loading -->
+  <div class={placeholderClasses} aria-hidden="true" />
+
+  <!-- Actual image -->
+  {isExternal ? (
+    <img
+      src={src}
+      alt={alt}
+      loading={loading}
+      fetchpriority={fetchPriority}
+      width={width}
+      height={height}
+      class={imageClasses}
+      onerror="this.onerror=null; this.src='${fallback}'; this.alt='Cover tidak tersedia';"
+      decoding="async"
+    />
+  ) : (
+    <img
+      src={src}
+      alt={alt}
+      loading={loading}
+      fetchpriority={fetchPriority}
+      width={width}
+      height={height}
+      class={imageClasses}
+      onerror="this.onerror=null; this.src='${fallback}'; this.alt='Cover tidak tersedia';"
+      decoding="async"
+    />
+  )}
+
+  <!-- Fallback overlay shown on error -->
+  <div class="absolute inset-0 flex items-center justify-center bg-secondary hidden" data-fallback aria-hidden="true">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-text-light" aria-hidden="true">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+      <circle cx="12" cy="12" r="4" />
+    </svg>
+  </div>
+</div>
+
+<script is:inline>
+  // Handle image error - show fallback icon
+  document.addEventListener('DOMContentLoaded', () => {
+    const images = document.querySelectorAll('[data-fallback] ~ img, img[onerror*="fallback"]');
+    images.forEach(img => {
+      img.addEventListener('error', () => {
+        const fallback = img.parentElement?.querySelector('[data-fallback]');
+        if (fallback) {
+          img.style.display = 'none';
+          fallback.classList.remove('hidden');
+        }
+      });
+    });
+  });
+</script>

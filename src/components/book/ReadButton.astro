@@ -1,0 +1,44 @@
+---
+// Read button component - CTA for reading book
+interface Props {
+  readingUrl?: string;
+  slug: string;
+  title: string;
+  variant?: 'primary' | 'secondary';
+  class?: string;
+  continueReading?: boolean;
+}
+
+const {
+  readingUrl,
+  slug,
+  title,
+  variant = 'primary',
+  class: className = '',
+  continueReading = false,
+} = Astro.props;
+
+const readUrl = readingUrl || `/books/${slug}/read`;
+const buttonText = continueReading ? 'Lanjutkan Baca' : 'Mulai Baca';
+const ariaLabel = continueReading
+  ? `Lanjutkan membaca ${title}`
+  : `Mulai membaca ${title}`;
+---
+
+<a
+  href={readUrl}
+  class={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${className} ${
+    variant === 'primary'
+      ? 'bg-primary text-background hover:bg-primary-light active:bg-primary-dark shadow-sm'
+      : 'bg-secondary text-primary hover:bg-secondary-dark active:bg-secondary shadow-sm border border-border'
+  }`}
+  aria-label={ariaLabel}
+>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    <path d="M8 10h10" />
+    <path d="M8 14h10" />
+  </svg>
+  <span>{buttonText}</span>
+</a>

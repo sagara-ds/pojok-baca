@@ -1,0 +1,256 @@
+---
+// Books list page with pagination
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import { fetchBooks, type SearchParams } from '../../services/api';
+import Card from '../../components/ui/Card.astro';
+import Button from '../../components/ui/Button.astro';
+import Skeleton from '../../components/ui/Skeleton.astro';
+import ErrorState from '../../components/ui/ErrorState.astro';
+
+export interface Props {
+  page?: number;
+  sort?: 'newest' | 'oldest' | 'popular' | 'title-asc' | 'title-desc';
+  category?: string;
+  q?: string;
+}
+
+const { page = 1, sort = 'newest', category, q } = Astro.props;
+
+const limit = 20;
+const params: SearchParams = { page, limit, sort, category, q };
+
+let booksData;
+let error: string | null = null;
+
+try {
+  booksData = await fetchBooks(params);
+} catch (e) {
+  error = e instanceof Error ? e.message : 'Gagal memuat daftar buku';
+}
+
+const totalPages = booksData?.pagination.totalPages ?? 1;
+const currentPage = booksData?.pagination.page ?? 1;
+const hasNextPage = currentPage < totalPages;
+const hasPrevPage = currentPage > 1;
+
+const sortOptions = [
+  { value: 'newest', label: 'Terbaru' },
+  { value: 'oldest', label: 'Terlama' },
+  { value: 'popular', label: 'Populer' },
+  { value: 'title-asc', label: 'Judul A-Z' },
+  { value: 'title-desc', label: 'Judul Z-A' },
+];
+
+const pageTitle = q
+  ? `Hasil pencarian: "${q}"`
+  : category
+  ? `Kategori: ${category}`
+  : 'Semua Buku';
+
+const pageDescription = q
+  ? `Hasil pencarian untuk "${q}" - ${booksData?.data.length ?? 0} buku ditemukan`
+  : `Jelajahi koleksi buku lengkap di Pojok Baca RPL`;
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <Header currentPath="/books" />
+
+  <main class="flex-1">
+    <div class="container py-6 sm:py-8">
+      <!-- Page Header -->
+      <header class="mb-6 sm:mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-text">{pageTitle}</h1>
+        <p class="mt-1 text-text-muted">{booksData?.pagination.total ?? 0} buku ditemukan</p>
+      </header>
+
+      {/* Sort & Filter Bar */}
+      <div class="flex flex-col sm:flex-row gap-3 mb-6 items-start sm:items-center justify-between">
+        <div class="flex flex-wrap gap-2" role="group" aria-label="Urutkan">
+          {sortOptions.map(option => (
+            <button
+              type="button"
+              class={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                sort === option.value
+                  ? 'bg-primary text-background'
+                  : 'bg-surface text-text-muted hover:bg-secondary hover:text-text'
+              }`}
+              aria-pressed={sort === option.value}
+              data-sort={option.value}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Books Grid */}
+      {error ? (
+        <ErrorState
+          title="Gagal Memuat Buku"
+          message={error}
+          actionLabel="Coba Lagi"
+          actionHref={Astro.url.pathname}
+          variant="page"
+        />
+      ) : booksData?.data.length === 0 ? (
+        <ErrorState
+          title="Tidak Ada Buku Ditemukan"
+          message="Coba ubah filter atau kata kunci pencarian."
+          variant="page"
+        />
+      ) : (
+        <>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" role="list" aria-label="Daftar buku">
+            {booksData!.data.map(book => (
+              <Card
+                variant="interactive"
+                padding="none"
+                href={`/books/${book.slug}`}
+                class="overflow-hidden flex flex-col"
+                aria-label={`Lihat detail ${book.title}`}
+              >
+                <div class="relative aspect-[2/3] overflow-hidden bg-secondary">
+                  {book.coverUrl ? (
+                    <img
+                      src={book.coverUrl}
+                      alt={`Cover buku ${book.title}`}
+                      loading="lazy"
+                      class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div class="w-full h-full flex items-center justify-center bg-secondary">
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-text-light" aria-hidden="true">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="12" r="4" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+
+                <div class="p-4 flex-1 flex flex-col">
+                  <h2 class="font-semibold text-text line-clamp-2 mb-1">{book.title}</h2>
+                  <p class="text-sm text-text-muted line-clamp-1 mb-2">{book.author}</p>
+
+                  <div class="flex flex-wrap gap-1.5 mb-3">
+                    {book.category && (
+                      <span class="px-2 py-0.5 rounded text-xs font-medium bg-accent/10 text-accent-dark dark:text-accent-light">
+                        {book.category}
+                      </span>
+                    )}
+                    {book.publishedYear && (
+                      <span class="px-2 py-0.5 rounded text-xs font-medium bg-secondary text-text-muted">
+                        {book.publishedYear}
+                      </span>
+                    )}
+                  </div>
+
+                  <div class="mt-auto pt-3 border-t border-border">
+                    <Button variant="primary" size="sm" fullWidth class="w-full">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        <path d="M8 10h10" />
+                        <path d="M8 14h10" />
+                      </svg>
+                      Baca
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Skeleton placeholders for loading state */}
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 hidden" data-skeleton-container aria-hidden="true">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Card variant="default" padding="none" class="overflow-hidden">
+                <Skeleton variant="book-card" />
+              </Card>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <nav class="mt-8 flex items-center justify-center gap-2" aria-label="Navigasi halaman">
+              <a
+                href={hasPrevPage ? `/books?page=${currentPage - 1}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${hasPrevPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'}"
+                aria-label="Halaman sebelumnya"
+                aria-disabled={!hasPrevPage}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </a>
+
+              <div class="flex items-center gap-1" role="group" aria-label="Nomor halaman">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  return (
+                    <a
+                      key={pageNum}
+                      href={`/books?page=${pageNum}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+                      class={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+                        pageNum === currentPage
+                          ? 'bg-primary text-background'
+                          : 'text-text-muted hover:bg-secondary hover:text-text'
+                      }`}
+                      aria-label={`Halaman ${pageNum}`}
+                      aria-current={pageNum === currentPage ? 'page' : undefined}
+                    >
+                      {pageNum}
+                    </a>
+                  );
+                })}
+              </div>
+
+              <a
+                href={hasNextPage ? `/books?page=${currentPage + 1}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
+                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${hasNextPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'}"
+                aria-label="Halaman selanjutnya"
+                aria-disabled={!hasNextPage}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </a>
+            </nav>
+          )}
+        </>
+      )}
+    </div>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    // Handle sort button clicks
+    document.addEventListener('DOMContentLoaded', () => {
+      const sortButtons = document.querySelectorAll('[data-sort]');
+      const urlParams = new URLSearchParams(window.location.search);
+
+      sortButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const sortValue = button.getAttribute('data-sort');
+          if (sortValue) {
+            urlParams.set('sort', sortValue);
+            urlParams.set('page', '1');
+            window.location.search = urlParams.toString();
+          }
+        });
+      });
+    });
+  </script>
+</BaseLayout>

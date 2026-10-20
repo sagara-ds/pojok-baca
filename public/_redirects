@@ -1,0 +1,12 @@
+# Redirects for Netlify
+
+# Ensure trailing slashes (Astro handles this with trailingSlash: 'always')
+# But add fallback for direct access
+/*/index.html  /:splat  301
+
+# API proxy routes - ensure they work
+/api/proxy/books/*  /api/proxy/books/:splat  200
+/api/proxy/categories  /api/proxy/categories  200
+
+# SPA fallback for client-side routing (if needed later)
+# /*  /index.html  200

@@ -1,0 +1,106 @@
+---
+// Book description component with read more/less toggle
+import { sanitizeHtml } from '../../services/api';
+
+interface Props {
+  description: string;
+  maxLines?: number;
+  class?: string;
+}
+
+const {
+  description,
+  maxLines = 5,
+  class: className = '',
+} = Astro.props;
+
+const sanitized = sanitizeHtml(description);
+const hasContent = sanitized.trim().length > 0;
+---
+
+{hasContent ? (
+  <section class={`prose text-text-muted ${className}`} aria-labelledby="description-heading">
+    <h2 id="description-heading" class="sr-only">Sinopsis</h2>
+
+    <div class="relative">
+      <div
+        class="description-content"
+        data-max-lines={maxLines}
+        set:html={sanitized}
+      />
+
+      <!-- Gradient fade overlay -->
+      <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background to-transparent pointer-events-none" aria-hidden="true" />
+    </div>
+
+    <button
+      type="button"
+      class="description-toggle mt-3 text-sm font-medium text-accent hover:text-accent-dark transition-colors"
+      aria-expanded="false"
+      aria-controls="description-content"
+      data-description-toggle
+    >
+      <span data-show-text>Baca selengkapnya</span>
+      <span data-hide-text class="hidden">Sembunyikan</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block ml-1 transition-transform duration-200" aria-hidden="true">
+        <path d="M6 9l6 6 6-6" />
+      </svg>
+    </button>
+  </section>
+) : (
+  <p class="text-text-muted text-sm italic">Belum ada deskripsi untuk buku ini.</p>
+)}
+
+<script is:inline>
+  // Read more/less toggle for description
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggles = document.querySelectorAll('[data-description-toggle]');
+
+    toggles.forEach(toggle => {
+      const content = toggle.previousElementSibling?.querySelector('.description-content');
+      if (!content) return;
+
+      const showText = toggle.querySelector('[data-show-text]');
+      const hideText = toggle.querySelector('[data-hide-text]');
+      const arrow = toggle.querySelector('svg');
+      const maxLines = parseInt(content.dataset.maxLines || '5', 10);
+
+      // Check if content actually overflows
+      const lineHeight = parseInt(getComputedStyle(content).lineHeight, 10) || 24;
+      const maxHeight = lineHeight * maxLines;
+
+      if (content.scrollHeight <= maxHeight) {
+        toggle.style.display = 'none';
+        return;
+      }
+
+      // Initially clamp
+      content.style.maxHeight = `${maxHeight}px`;
+      content.style.overflow = 'hidden';
+
+      toggle.addEventListener('click', () => {
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+
+        if (isExpanded) {
+          content.style.maxHeight = `${maxHeight}px`;
+          toggle.setAttribute('aria-expanded', 'false');
+          showText?.classList.remove('hidden');
+          hideText?.classList.add('hidden');
+          arrow?.classList.remove('rotate-180');
+        } else {
+          content.style.maxHeight = `${content.scrollHeight}px`;
+          toggle.setAttribute('aria-expanded', 'true');
+          showText?.classList.add('hidden');
+          hideText?.classList.remove('hidden');
+          arrow?.classList.add('rotate-180');
+        }
+      });
+    });
+  });
+</script>
+
+<style is:global>
+  .description-content {
+    transition: max-height 0.3s ease-out;
+  }
+</style>
