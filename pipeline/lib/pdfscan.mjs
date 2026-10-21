@@ -166,10 +166,16 @@ export function draftSynopsis(texts, maxChars = config.synopsisMaxChars) {
     .filter((t) => t.length >= 120);
 
   const prose = pages.filter((text) => {
-    const head = text.slice(0, 200).toLowerCase();
+    const head = text.slice(0, 220).toLowerCase();
     const boilerplate =
-      /copyright|hak cipta|all rights reserved|dilarang|publish|diterbitkan|isbn|scanned by|copyrighted/i;
+      /copyright|hak cipta|all rights reserved|dilarang|publish|diterbitkan|isbn|scanned by|copyrighted|dicetak oleh|percetakan|penerbit\b/i;
     if (boilerplate.test(head)) return false;
+    // Kontak penerbit: nomor telepon, SMS, WhatsApp, alamat web.
+    if (/tel[epp]|sms|wa\s|whatsapp|instagram|facebook|www\.|https?:|e-?mail|alamat/i.test(head)) return false;
+    // Halaman penuh angka (alamat, nomor HP, harga) bukan prosa.
+    const digits = (text.match(/\d/g) ?? []).length;
+    const letters = (text.match(/[A-Za-z]/g) ?? []).length;
+    if (letters && digits / letters > 0.25) return false;
     // Daftar isi: banyak baris pendek diakhiri nomor halaman.
     const tocLines = text.split('\n').filter((l) => /[^\d]\s{2,}\d{1,4}\s*$/.test(l.trim()));
     if (tocLines.length >= 5) return false;

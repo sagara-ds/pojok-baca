@@ -136,9 +136,17 @@ export async function writeManifest({ manifest, links, skipped, groups, scan, re
       })),
     }));
 
-  const lowConfidence = manifest.books
-    .filter((b) => b.metaConfidence !== 'high' && b.metaConfidence !== 'manual')
-    .map((b) => ({ slug: b.slug, title: b.title, author: b.author, file: b.sourceFile }));
+  const toMetaRow = (b) => ({
+    slug: b.slug,
+    title: b.title,
+    author: b.author,
+    file: b.sourceFile,
+  });
+
+  // "low" = benar-benar perlu diperiksa manual.
+  // "medium" = pola "X - Y" yang sudah diputuskan metadata, tapi tetap layak dicek.
+  const lowConfidence = manifest.books.filter((b) => b.metaConfidence === 'low').map(toMetaRow);
+  const mediumConfidence = manifest.books.filter((b) => b.metaConfidence === 'medium').map(toMetaRow);
 
   const noSynopsis = manifest.books
     .filter((b) => !b.synopsis)
@@ -164,6 +172,7 @@ export async function writeManifest({ manifest, links, skipped, groups, scan, re
     },
     duplicates,
     lowConfidenceMetadata: lowConfidence,
+    mediumConfidenceMetadata: mediumConfidence,
     missingSynopsis: noSynopsis,
     blankPageSuspects: blankSuspects,
     skipped,

@@ -27,19 +27,19 @@ const TRAILING_AUTHOR_RE = /\s*\(([^()]{4,80})\)\s*$/;
  * Penulis di depan judul: "Tere Liye - Hujan".
  * Hanya kalau bagian kiri benar-benar terlihat seperti nama (2-3 kata kapital).
  */
-const LEADING_AUTHOR_RE = /^([A-Z][a-zA-Z'’.]+(?:\s+[A-Z][a-zA-Z'’.]+){1,2})\s+[-–—]\s+(.+)$/;
+const LEADING_AUTHOR_RE = /^(.{1,60}?)\s+[-–—]\s+(.{2,60})$/;
 
 /** Kata yang pernah jadi bagian nama tapi bukan nama orang. */
 const NOT_A_NAME_RE = /\b(the|and|for|from|with|bisa|tapi|yang|dan|atau|ini|itu|adalah)\b/i;
 
 function looksLikeName(value) {
   if (!value) return false;
-  if (value.length > 24) return false;
+  if (value.length > 28) return false;
   if (/\d/.test(value)) return false;
   if (NOT_A_NAME_RE.test(value)) return false;
   const words = value.split(/\s+/);
-  if (words.length < 2 || words.length > 3) return false;
-  return words.every((w) => /^[A-Z][a-zA-Z'’.]+$/.test(w));
+  if (words.length < 1 || words.length > 3) return false;
+  return words.every((w) => /^[A-Z][a-zA-Z'’.]*$/.test(w));
 }
 
 export function slugify(input) {
@@ -122,10 +122,30 @@ export function parseFileName(rawName) {
     if (!author) {
       const leading = base.match(LEADING_AUTHOR_RE);
       if (leading) {
-        leadingPair = { left: leading[1].trim(), right: leading[2].trim() };
-        title = leadingPair.right;
-        author = leadingPair.left;
-        notes.push('pola "X - Y" ditemukan, akan dicocokkan dengan metadata');
+        const left = leading[1].trim();
+        const right = leading[2].trim();
+        // Minimal salah satu sisi harus terlihat seperti nama orang.
+        if (looksLikeName(left) || looksLikeName(right)) {
+          leadingPair = { left, right };
+          title = right;
+          author = left;
+          notes.push('pola "X - Y" ditemukan, akan dicocokkan dengan metadata');
+        }
+      }
+    }
+  }
+
+  // Penulis tertanam di nama file: "..._Volume_1_Herpinus_Simanjuntak".
+  // Dua token terakhir yang terlihat seperti nama -> Scalar jadi penulis.
+  if (!author && base.includes('_')) {
+    const tokens = base.split(/[_\s]+/).filter(Boolean);
+    if (tokens.length >= 3) {
+      const lastTwo = tokens.slice(-2).join(' ');
+      const head = tokens.slice(0, -2).join(' ');
+      if (looksLikeName(lastTwo) && head.length > 3) {
+        author = lastTwo;
+        title = head;
+        notes.push('penulis diambil dari dua token terakhir nama file');
       }
     }
   }
@@ -149,6 +169,9 @@ export function parseFileName(rawName) {
     notes.push('penulis tidak ditemukan di nama file');
   } else if (title.length < 3) {
     confidence = 'low';
+  } else if (leadingPair) {
+    // Pola "X - Y" masih ambigu sampai dicocokkan dengan metadata.
+    confidence = 'medium';
   }
 
   return { title, author, confidence, notes, leadingPair };
@@ -271,8 +294,10 @@ export function pickAuthor(metaAuthor, nameAuthor) {
   const named = candidates.find(
     (a) => !looksLikeJunk(a) && !CONVERTER_AUTHOR_RE.test(a),
   );
-  const chosen = named ?? candidates.find((a) => !CONVERTER_AUTHOR_RE.test(a)) ?? candidates[0];
-  return normalizeTitleCase(chosen);
+  // Kalau semua kandidat derau (mis. "convert-jpg-to-pdf.net"), jangan tampilkan
+  // sebagai penulis sama sekali.
+  if (!named) return '';
+  return normalizeTitleCase(named);
 }
 
 /**
@@ -319,7 +344,16 @@ export function resolveMeta(meta, parsed) {
         author: authorIsLeft ? pair.left : pair.right,
       };
     }
-    // Default: bagian kiri dianggap penulis (pola yang paling sering di koleksi ini).
+    // Tanpa metadata yang memihak: pilih sisi yang paling terlihat seperti
+    // nama orang (2-3 kata kapital) sebagai penulis.
+    const score = (value) => {
+      if (!looksLikeName(value)) return 0;
+      const words = value.trim().split(/\s+/).length;
+      return words >= 2 ? 3 : 1;
+    };
+    if (score(pair.right) > score(pair.left)) {
+      return { title: pair.left, author: pair.right };
+    }
     return { title: pair.right, author: pair.left };
   }
 
