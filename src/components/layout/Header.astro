@@ -4,7 +4,21 @@ interface Props {
   currentPath?: string;
 }
 
-const { currentPath = '' } = Astro.props;
+const { currentPath } = Astro.props;
+
+const fullPath = currentPath ?? `${Astro.url.pathname}${Astro.url.search}`;
+const [basePath = '', search = ''] = fullPath.split('?');
+const normalizedPath = basePath.replace(/\/+$/, '') || '/';
+const searchParams = new URLSearchParams(search);
+
+const isActive = (href: string) => {
+  const [itemPath, itemQuery] = href.split('?');
+  if (normalizedPath !== itemPath) return false;
+  const expectedSort = itemQuery ? new URLSearchParams(itemQuery).get('sort') : null;
+  const actualSort = searchParams.get('sort');
+  if (expectedSort === null) return actualSort === null;
+  return actualSort === expectedSort;
+};
 
 const navItems = [
   { href: '/books', label: 'Semua Buku' },
@@ -29,19 +43,20 @@ const navItems = [
 
       <!-- Desktop Navigation -->
       <nav class="hidden md:flex items-center gap-1" role="navigation" aria-label="Navigasi utama">
-        {navItems.map(item => (
-          <a
-            href={item.href}
-            class={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-              currentPath.startsWith(item.href.replace('?sort=', ''))
-                ? 'bg-primary/10 text-primary'
-                : 'text-text-muted hover:text-text hover:bg-secondary'
-            }`}
-            aria-current={currentPath.startsWith(item.href.replace('?sort=', '')) ? 'page' : undefined}
-          >
-            {item.label}
-          </a>
-        ))}
+        {navItems.map(item => {
+          const active = isActive(item.href);
+          return (
+            <a
+              href={item.href}
+              class={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                active ? 'bg-primary/10 text-primary' : 'text-text-muted hover:text-text hover:bg-secondary'
+              }`}
+              aria-current={active ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          );
+        })}
       </nav>
 
       <!-- Mobile menu button -->
@@ -63,19 +78,20 @@ const navItems = [
     <!-- Mobile Navigation (hidden by default) -->
     <nav id="mobile-menu" class="md:hidden hidden border-t border-border bg-background" role="navigation" aria-label="Navigasi mobile">
       <div class="py-3 px-4 space-y-1">
-        {navItems.map(item => (
-          <a
-            href={item.href}
-            class={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              currentPath.startsWith(item.href.replace('?sort=', ''))
-                ? 'bg-primary/10 text-primary'
-                : 'text-text-muted hover:text-text hover:bg-secondary'
-            }`}
-            aria-current={currentPath.startsWith(item.href.replace('?sort=', '')) ? 'page' : undefined}
-          >
-            {item.label}
-          </a>
-        ))}
+        {navItems.map(item => {
+          const active = isActive(item.href);
+          return (
+            <a
+              href={item.href}
+              class={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                active ? 'bg-primary/10 text-primary' : 'text-text-muted hover:text-text hover:bg-secondary'
+              }`}
+              aria-current={active ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          );
+        })}
       </div>
     </nav>
   </div>

@@ -1,8 +1,6 @@
 ---
 // Books list page with pagination
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/layout/Header.astro';
-import Footer from '../../components/layout/Footer.astro';
 import { fetchBooks, type SearchParams } from '../../services/api';
 import Card from '../../components/ui/Card.astro';
 import Button from '../../components/ui/Button.astro';
@@ -16,7 +14,11 @@ export interface Props {
   q?: string;
 }
 
-const { page = 1, sort = 'newest', category, q } = Astro.props;
+const { searchParams } = Astro.url;
+const page = Number(searchParams.get('page')) || 1;
+const sort = (searchParams.get('sort') as Props['sort']) ?? 'newest';
+const category = searchParams.get('category') ?? undefined;
+const q = searchParams.get('q') ?? undefined;
 
 const limit = 20;
 const params: SearchParams = { page, limit, sort, category, q };
@@ -55,9 +57,7 @@ const pageDescription = q
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  <Header currentPath="/books" />
-
-  <main class="flex-1">
+  <main id="main-content" class="flex-1">
     <div class="container py-6 sm:py-8">
       <!-- Page Header -->
       <header class="mb-6 sm:mb-8">
@@ -102,7 +102,7 @@ const pageDescription = q
         />
       ) : (
         <>
-          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" role="list" aria-label="Daftar buku">
+          <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5" role="list" aria-label="Daftar buku">
             {booksData!.data.map(book => (
               <Card
                 variant="interactive"
@@ -130,18 +130,18 @@ const pageDescription = q
                   )}
                 </div>
 
-                <div class="p-4 flex-1 flex flex-col">
+                <div class="p-3 flex-1 flex flex-col">
                   <h2 class="font-semibold text-text line-clamp-2 mb-1">{book.title}</h2>
                   <p class="text-sm text-text-muted line-clamp-1 mb-2">{book.author}</p>
 
                   <div class="flex flex-wrap gap-1.5 mb-3">
                     {book.category && (
-                      <span class="px-2 py-0.5 rounded text-xs font-medium bg-accent/10 text-accent-dark dark:text-accent-light">
+                      <span class="px-2 py-0.5 rounded text-xs font-medium truncate max-w-full bg-accent/10 text-accent-dark dark:text-accent-light">
                         {book.category}
                       </span>
                     )}
                     {book.publishedYear && (
-                      <span class="px-2 py-0.5 rounded text-xs font-medium bg-secondary text-text-muted">
+                      <span class="hidden sm:inline-block px-2 py-0.5 rounded text-xs font-medium bg-secondary text-text-muted">
                         {book.publishedYear}
                       </span>
                     )}
@@ -164,7 +164,7 @@ const pageDescription = q
           </div>
 
           {/* Skeleton placeholders for loading state */}
-          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 hidden" data-skeleton-container aria-hidden="true">
+          <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 hidden" data-skeleton-container aria-hidden="true">
             {Array.from({ length: 8 }).map((_, i) => (
               <Card variant="default" padding="none" class="overflow-hidden">
                 <Skeleton variant="book-card" />
@@ -232,8 +232,6 @@ const pageDescription = q
       )}
     </div>
   </main>
-
-  <Footer />
 
   <script is:inline>
     // Handle sort button clicks

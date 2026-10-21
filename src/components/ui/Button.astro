@@ -1,7 +1,6 @@
 ---
 // Button component - reusable button with variants
 interface Props {
-  children: any;
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   href?: string;
@@ -16,7 +15,6 @@ interface Props {
 }
 
 const {
-  children,
   variant = 'primary',
   size = 'md',
   href,
@@ -56,13 +54,6 @@ const sizeStyles = {
 };
 
 const classes = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
-
-const spinner = `
-  <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
-    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
-    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-  </svg>
-`;
 ---
 
 {isLink ? (
@@ -75,8 +66,13 @@ const spinner = `
     tabindex={disabled || loading ? -1 : undefined}
     {...rest}
   >
-    {loading && spinner}
-    <span class={loading ? 'opacity-0' : ''}>{children}</span>
+    {loading && (
+      <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+      </svg>
+    )}
+    <span class={loading ? 'opacity-0' : ''}><slot /></span>
   </a>
 ) : (
   <button
@@ -89,7 +85,12 @@ const spinner = `
     onclick={onclick}
     {...rest}
   >
-    {loading && spinner}
-    <span class={loading ? 'opacity-0' : ''}>{children}</span>
+    {loading && (
+      <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+      </svg>
+    )}
+    <span class={loading ? 'opacity-0' : ''}><slot /></span>
   </button>
 )}

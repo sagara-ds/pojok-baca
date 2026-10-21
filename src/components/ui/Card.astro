@@ -1,7 +1,6 @@
 ---
 // Card component - flexible container with variants
 interface Props {
-  children: any;
   variant?: 'default' | 'outlined' | 'elevated' | 'interactive';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   class?: string;
@@ -10,7 +9,6 @@ interface Props {
 }
 
 const {
-  children,
   variant = 'default',
   padding = 'md',
   class: className = '',
@@ -48,11 +46,11 @@ const classes = `${baseStyles} ${variantStyles[variant]} ${paddingStyles[padding
     class={classes}
     aria-label={ariaLabel}
     {...rest}
-  >
-    {children}
+    >
+    <slot />
   </a>
 ) : (
   <article class={classes} {...rest}>
-    {children}
+    <slot />
   </article>
 )}
