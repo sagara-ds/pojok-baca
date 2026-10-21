@@ -2,7 +2,7 @@
 
 Minimalist, mobile-first web app for reading books. Built with [Astro](https://astro.build) (SSR), Tailwind CSS v4, and TypeScript strict.
 
-Data source: [welib.org](https://id.welib.org/) (Anna's Archive lineage), accessed through a server-side API proxy.
+Data source: katalog lokal di `src/services/mock-data.ts` (24 buku contoh + kategori + cover SVG yang digenerate lokal). **Tanpa API eksternal, tanpa permintaan jaringan** — antarmuka `src/services/api.ts` siap ditukar ke backend/data file lokal kamu sendiri nanti.
 
 ## 📐 Branch Strategy
 
@@ -35,29 +35,29 @@ src/
 │   ├── book/       # BookCover, BookMeta, BookDescription, ReadButton
 │   ├── layout/     # Header, Footer
 │   └── ui/         # Button, Card, Skeleton, ErrorState, LoadingSpinner
-├── layouts/        # BaseLayout.astro (SEO, CSP, structured data)
+├── layouts/        # BaseLayout.astro (SEO, structured data)
 ├── pages/
-│   ├── api/proxy/  # server-side proxy ke welib.org
 │   ├── books/      # daftar buku + detail buku
 │   └── index.astro
-├── services/       # api.ts (client + sanitasi), mock-data.ts, types.ts
+├── services/       # api.ts (antarmuka data lokal), mock-data.ts, types.ts
+├── utils/          # helpers.ts
 └── styles/         # global.css (Tailwind v4 @theme)
 ```
 
-## 🔌 API Proxy
+## 📚 Data Lokal
 
-Semua permintaan ke welib.org lewat proxy server-side, supaya API key tidak bocor dan respons bisa disanitasi.
+Seluruh data buku berasal dari `src/services/mock-data.ts` dan disajikan lewat `src/services/api.ts`:
 
-| Route | Keterangan |
-|-------|------------|
-| `GET /api/proxy/books/` | Daftar buku + paginasi |
-| `GET /api/proxy/books/:slug` | Detail buku |
-| `GET /api/proxy/books/?q=...` | Pencarian |
-| `GET /api/proxy/categories/` | Daftar kategori |
+| Fungsi | Sumber |
+|--------|--------|
+| `fetchBooks(params)` | `getMockBooks()` — list + paginasi + kategori |
+| `fetchBook(slug)` | `getMockBook()` — detail per slug |
+| `searchBooks(q)` | `searchMockBooks()` — pencarian lokal |
+| `fetchCategories()` | `mockCategories` |
 
-- Rate limit: 60 request/menit per IP
-- Sanitasi HTML/teks sebelum dikirim ke client
-- Fallback ke `src/services/mock-data.ts` bila upstream tidak dapat diakses (Cloudflare 403), dengan header `X-Mock-Data: true`
+- Cover buku: SVG digenerate langsung (`data:` URL), bukan gambar dari internet
+- `ApiError`-style fallback upstream tidak ada lagi — tidak ada upstream
+- Rencana berikutnya: koleksi file buku lokal kamu sendiri (mis. `assets/books/`) + halaman reader
 
 ## 📚 Dokumentasi
 
@@ -73,7 +73,7 @@ Dokumentasi lengkap ada di vault Obsidian `Pojok baca/`:
 
 ## 🛡️ Keamanan
 
-Header keamanan diatur di `public/_headers`: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` ketat, plus CSP di `BaseLayout.astro`.
+Header keamanan diatur di `public/_headers`: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` ketat.
 
 ---
 

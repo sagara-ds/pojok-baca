@@ -1,110 +1,39 @@
-# API Integration - Welib.org / Anna's Archive
+# API Integration — Data Lokal (Mock)
 
-## 📡 API Overview
-**Base URL:** `https://id.welib.org/api`  
-**Sumber Data:** Anna's Archive (shadow library metadata aggregator)  
-**Auth:** Tidak perlu API key (public)  
-**Rate Limit:** Self-imposed 60 req/min per IP via proxy
+> **Riwayat:** pernah mencoba welib.org (Anna's Archive lineage) — Cloudflare memblokir
+> akses server-side (HTTP 403). Sempat integrasi Open Library & skeleton Google Books
+> di `feat/openlibrary-integration`, lalu **semuanya dihapus** di `feat/data-lokal`
+> karena keputusan proyek: **tanpa API dari web manapun, pembangunan koleksi lokal**.
 
-## 🔗 Endpoints (Asumsi - perlu verifikasi)
-| Endpoint | Method | Params | Response |
-|----------|--------|--------|----------|
-| `/books` | GET | `page`, `limit`, `category`, `year`, `language`, `sort` | `{ data: Book[], pagination }` |
-| `/books/:slug` | GET | - | `Book` |
-| `/books/search` | GET | `q`, `page`, `limit`, `category`, `sort` | `{ data: Book[], pagination }` |
-| `/categories` | GET | - | `Category[]` |
+## 📡 Sumber Data
+**Tunggal & lokal:** `src/services/mock-data.ts`
+- 24 buku contoh (semua `language: 'id'`)
+- 19 kategori (`mockCategories`)
+- Cover: SVG digenerate runtime lewat `generateCover()` → `data:` URL — **nol permintaan gambar ke internet**
+- `readingUrl` mengarah ke route internal `/books/{slug}/read`
 
-## 📦 TypeScript Types (`src/services/types.ts`)
-```typescript
-interface Book {
-  id: string;
-  slug: string;
-  title: string;
-  author: string;
-  coverUrl: string;
-  description: string;      // HTML dari API
-  category: string;
-  publishedYear: number;
-  pages: number;
-  language: string;         // "id", "en", dll
-  isbn?: string;
-  readingUrl?: string;      // URL ke EPUB/PDF
-}
+## 🧩 Antarmuka (`src/services/api.ts`)
+| Fungsi | Delegasi ke | Dipakai |
+|--------|-------------|---------|
+| `fetchBooks(params: SearchParams)` | `getMockBooks()` | `pages/books/index.astro` |
+| `fetchBook(slug)` | `getMockBook()` | `pages/books/[slug].astro` |
+| `searchBooks(query, params)` | `searchMockBooks()` | (belum terpakai — siap untuk fitur pencarian) |
+| `fetchCategories()` | `mockCategories` | (belum terpakai — siap untuk filter kategori) |
+| `sanitizeHtml(text)` / `sanitizeText(text)` | utility lokal | `BookDescription`, `BookMeta`, `[slug]` |
 
-interface BookListResponse {
-  data: Book[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-```
+Desain: antarmuka sengaja dipertahankan supaya kelak menunik ke sumber data baru
+(koleksi file buku milik sendiri) cukup dengan mengganti isi implementasi — pages tidak berubah.
 
-## 🛡️ Security Layer (`src/services/api.ts`)
+## 🔮 Rencana Berikutnya (koleksi buku sendiri)
+1. Simpan file buku lokal (mis. `assets/books/*.pdf`) — note: pastikan hak distribusinya benar bila app akan dipublikasi
+2. Halaman reader `/books/{slug}/read` yang serve file dari aset lokal
+3. Pencarian & filter kategori dipasang ke UI (antarmuka sudah siap)
 
-### Sanitization Functions
-```typescript
-// Strip dangerous HTML, keep safe tags
-sanitizeHtml(html: string): string
-
-// Strip ALL HTML, plain text only
-sanitizeText(text: string): string
-
-// Validate & sanitize book object dari API
-sanitizeBook(raw: unknown): Book | null
-```
-
-### Rate Limiting (Proxy Routes)
-- **File:** `src/pages/api/proxy/books/[...slug].ts`
-- **Limit:** 60 req/menit per IP (in-memory Map)
-- **Headers:** `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`
-
-### Caching Strategy
-| Endpoint | Cache-Control | Stale-While-Revalidate |
-|----------|---------------|------------------------|
-| `/books/:slug` (detail) | `max-age=3600` (1 jam) | 86400 (1 hari) |
-| `/books` (list) | `max-age=300` (5 menit) | 3600 (1 jam) |
-| `/categories` | `max-age=86400` (1 hari) | 604800 (1 minggu) |
-
-## ⚠️ Error Handling
-```typescript
-// Timeout: 10 detik (AbortSignal)
-// Retry: 3x untuk 5xx errors (exponential backoff 1s)
-// Fallback: ErrorState component di UI
-```
-
-## 🔄 Data Flow
-```
-Client (Browser)
-    ↓
-Astro Page (SSR/SSG)
-    ↓
-API Proxy Route (/api/proxy/books/...)
-    ↓ [Rate Limit + Timeout + Sanitize]
-Welib.org API
-    ↓
-Sanitized JSON Response
-    ↓
-Client Render
-```
-
-## 🧪 Testing API
-```bash
-# Test proxy langsung
-curl "http://localhost:4321/api/proxy/books?page=1&limit=5"
-curl "http://localhost:4321/api/proxy/books/slug-buku-ini"
-curl "http://localhost:4321/api/proxy/books/search?q=pemrograman"
-curl "http://localhost:4321/api/proxy/categories"
-```
-
-## 📝 Notes untuk Development
-- [ ] Verifikasi endpoint aktual welib.org (Cloudflare protected)
-- [ ] Handle pagination style (cursor vs offset)
-- [ ] Cek format `readingUrl` (EPUB/PDF direct link?)
-- [ ] Handle missing fields gracefully (optional chaining)
-- [ ] Add request/response logging untuk debugging
+## ⚠️ Yang Sudah Dihapus (riwayat)
+- `id.welib.org` proxy + fallback mock (`HTTP 403` dari Cloudflare)
+- Open Library search/works/covers client
+- Google Books dormant client + `.env.example`
+- API proxy routes (`/api/proxy/*`) + rate limiter utils
 
 ---
 *Related: [[Tech Stack]], [[Components - Book]], [[Project Overview]]*
