@@ -12,6 +12,19 @@
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
+# Halaman buku hasil render pipeline (nama file immutable per versi)
+/pages/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/covers/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# File PDF untuk tombol download: dipaksa attachment, bukan dibuka inline di browser
+/dl/*
+  Content-Disposition: attachment
+  Cache-Control: public, max-age=86400
+  X-Robots-Tag: noindex
+
 # Cache API responses
 /api/*
   Cache-Control: public, max-age=300, stale-while-revalidate=3600
