@@ -34,7 +34,7 @@ import {
 } from './lib/pdfscan.mjs';
 import { buildManifest, writeManifest } from './lib/manifest.mjs';
 import { bundleBook } from './lib/bundle.mjs';
-import { authorKey, parseFileName, slugify, titleKey, uniqueSlug } from './lib/naming.mjs';
+import { authorKey, parseFileName, slugBaseFor, slugify, titleKey, uniqueSlug } from './lib/naming.mjs';
 import { buildWatermarkSvg } from './lib/watermark.mjs';
 import { ensureDir, humanBytes, log, parseArgs, readJson, writeJson } from './lib/util.mjs';
 
@@ -281,7 +281,7 @@ async function cmdScan() {
   )) {
     const rep = group.members.find((m) => m.id === group.representative) ?? group.members[0];
     const scanData = scan[rep.id];
-    const computed = slugify(scanData?.meta?.title || scanData?.parsed?.title || rep.name);
+    const computed = slugBaseFor(scanData?.meta, scanData?.parsed);
     // Override manual boleh mengganti slug (mis. membuang prefix tag "{SB}").
     // Key override boleh berupa slug lama ATAU nama file sumber (stabil).
     const manual = overrides[computed] ?? overrides[rep.name] ?? {};
@@ -320,7 +320,18 @@ async function cmdRender() {
       return slug && scan[m.id] && !scan[m.id].error;
     });
 
-  const only = args.slug ? targets.filter((m) => groupsData.slugMap[m.id] === args.slug) : targets;
+  let only = args.slug ? targets.filter((m) => groupsData.slugMap[m.id] === args.slug) : targets;
+
+  // Daftar slug dari file (satu slug per baris).
+  if (args['slugs-file']) {
+    const list = (await fsp.readFile(args['slugs-file'], 'utf8'))
+      .split('\n')
+      .map((x) => x.trim())
+      .filter(Boolean);
+    const set = new Set(list);
+    only = only.filter((m) => set.has(groupsData.slugMap[m.id]));
+    log.info(`memproses ${only.length} slug dari ${args['slugs-file']}`);
+  }
   const limit = args.limit ? Number(args.limit) : Infinity;
   let selected = only.slice(0, limit);
 

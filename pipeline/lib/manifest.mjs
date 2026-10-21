@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 
 import { DATA_DIR } from '../config.mjs';
-import { authorKey, pickAuthor, pickTitle, slugify, titleKey, uniqueSlug } from './naming.mjs';
+import { authorKey, resolveMeta, slugBaseFor, titleKey, uniqueSlug } from './naming.mjs';
 import { readJson, writeJson } from './util.mjs';
 
 const BOOKS_FILE = path.join(DATA_DIR, 'books.json');
@@ -51,13 +51,14 @@ export async function buildManifest({ driveFiles, scan, render, groups, previous
     const parsed = scanData.parsed ?? {};
     const meta = scanData.meta ?? {};
 
-    const slugBase = slugify(parsed.title || meta.title || driveFile.name);
+    const slugBase = slugBaseFor(meta, parsed);
     // Slug harus sama persis dengan yang dipakai saat render -> ambil dari slugMap.
     const slug = slugById?.[representative.id] ?? scanData.slug ?? uniqueSlug(slugBase, takenSlugs);
 
     const manual = overrides[slug] ?? overrides[driveFile.name] ?? {};
-    const title = manual.title ?? pickTitle(meta.title, parsed.title);
-    const author = manual.author ?? pickAuthor(meta.author, parsed.author);
+    const resolved = resolveMeta(meta, parsed);
+    const title = manual.title ?? resolved.title;
+    const author = manual.author ?? resolved.author;
     const synopsis = manual.synopsis ?? scanData.synopsisDraft ?? '';
     const synopsisStatus = manual.synopsis
       ? 'manual'

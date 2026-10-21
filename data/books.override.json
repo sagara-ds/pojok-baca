@@ -8,24 +8,17 @@
       "categories": ["fiksi", "misteri"]
     }
   },
-  "_catatan": "Setelah mengubah 'slug', jalankan: pipe:scan, lalu pipe:render --slug <slug-lama>, lalu pipe:manifest.",
+  "_catatan": "Setelah mengubah 'slug', jalankan: pipe:scan, pipe:render --slug <slug>, lalu pipe:manifest.",
 
-  "Salinan Salinan Catatan Harian Menantu Sinting by Rosi L. Simamora.pdf": {
-    "slug": "catatan-harian-menantu-sinting"
-  },
-  "Salinan Salinan Confess (Pengakuan) by Colleen Hoover.pdf": {
-    "slug": "confess-pengakuan"
-  },
-  "Salinan Salinan Jatuh Cinta Tak Pernah Salah by negeriakhirat (Arum LS).pdf": {
-    "slug": "jatuh-cinta-tak-pernah-salah"
-  },
-  "Salinan Salinan Kekasih Akhir Pekan by Aya Emily.pdf": {
-    "slug": "kekasih-akhir-pekan"
-  },
   "Salinan Salinan Komet Minor_Tere Liye_tagt.pdf": {
-    "slug": "komet-minor"
+    "slug": "komet-minor",
+    "title": "Komet Minor",
+    "author": "Tere Liye",
+    "categories": ["fiksi", "fantasi"]
   },
   "Salinan Salinan Salinan Pintar Bahasa Inggris Dengan Mind Map - eBookWave.pdf": {
-    "slug": "pintar-bahasa-inggris-mind-map"
+    "slug": "pintar-bahasa-inggris-mind-map",
+    "title": "Pintar Bahasa Inggris Dengan Mind Map",
+    "categories": ["bahasa", "edukasi"]
   }
 }

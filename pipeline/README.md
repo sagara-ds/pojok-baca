@@ -111,6 +111,35 @@ data/
 - `empty` — ada text layer tapi teksnya terlalu pendek
 - `no-text-layer` — buku hasil scan, tidak ada teks sama sekali → perlu synopsis manual
 
+## Pembersihan metadata
+
+Nama file sumber rusak & tidak konsisten, jadi metadata melewati beberapa lapis:
+
+| Lapis | Contoh | Hasil |
+|---|---|---|
+| Buang prefix `Salinan` | `Salinan Salinan X by Y.pdf` | `X by Y` |
+| Buang jejak | `_Z_Library`, ` ( WeLib.org )`, ` - eBookWave`, ` tagt` | dibuang |
+| Nomor seri | `1. Tere Liye - Negeri Para Bedebah` | `Tere Liye - Negeri Para Bedebah` |
+| Penulis di belakang | `X by Y` | judul `X`, penulis `Y` |
+| Penulis di depan | `Tere Liye - Hujan` | judul `Hujan`, penulis `Tere Liye` |
+| Penulis dalam kurung | `... (Jack Canfield)` | penulis diambil dari kurung |
+| Judul junk | `test`, `untitled`, `new doc`, `CamScanner ...` | dibuang, fallback ke nama file |
+| Penulis alat | `convert-jpg-to-pdf.net`, `CamScanner` | dibuang |
+| ALL-CAPS | `(UN)PERFECT MARRIAGE` | `(Un)Perfect Marriage` |
+| Pola `X - Y` | `Tere Liye - Hujan` **atau** `Fluent English - Barbara R. Raifsnider` | diputuskan oleh metadata PDF |
+
+Metadata PDF & hasil parse nama file lalu dibandingkan:
+yang sama → pakai metadata (lebih presisi, mis. `23:59` vs `2359`);
+metadata yang junk → pakai nama file.
+
+Pola `X - Y` ambigu (bisa `Penulis - Judul` atau `Judul - Penulis`), jadi
+kandidat dikumpulkan dulu lalu dicocokkan dengan metadata PDF: metadata judul
+mengandung bagian kiri → kiri = judul; mengandung bagian kanan → kanan = judul.
+Kalau metadata tidak memihak, bagian kiri dianggap penulis.
+
+Sisa yang tidak bisa ditebak ada di `.cache/report.json` →
+`lowConfidenceMetadata` (perlu override manual di `data/books.override.json`).
+
 ## Guard otomatis
 
 1. **Halaman kosong** — 5 halaman pertama tiap buku dicek `std dev < 3`.
