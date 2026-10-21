@@ -1,6 +1,8 @@
 /**
- * Type definitions for Welib.org API response
- * Adjust based on actual API schema
+ * Tipe data katalog buku.
+ *
+ * Sumber data: `data/books.json` (hasil pipeline `npm run pipe:manifest`).
+ * `src/services/books.ts` memetakan manifest itu ke bentuk di bawah.
  */
 
 export interface Book {
