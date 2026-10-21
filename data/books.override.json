@@ -1,0 +1,31 @@
+{
+  "_comment": "Override manual untuk data/books.json. Key boleh berupa slug lama atau nama file sumber (kunci nama file lebih stabil). Field: slug, title, author, synopsis, categories.",
+  "_contoh": {
+    "23-59": {
+      "title": "23:59",
+      "author": "Brian Khrisna",
+      "synopsis": "Deskripsi manual untuk buku ini.",
+      "categories": ["fiksi", "misteri"]
+    }
+  },
+  "_catatan": "Setelah mengubah 'slug', jalankan: pipe:scan, lalu pipe:render --slug <slug-lama>, lalu pipe:manifest.",
+
+  "Salinan Salinan Catatan Harian Menantu Sinting by Rosi L. Simamora.pdf": {
+    "slug": "catatan-harian-menantu-sinting"
+  },
+  "Salinan Salinan Confess (Pengakuan) by Colleen Hoover.pdf": {
+    "slug": "confess-pengakuan"
+  },
+  "Salinan Salinan Jatuh Cinta Tak Pernah Salah by negeriakhirat (Arum LS).pdf": {
+    "slug": "jatuh-cinta-tak-pernah-salah"
+  },
+  "Salinan Salinan Kekasih Akhir Pekan by Aya Emily.pdf": {
+    "slug": "kekasih-akhir-pekan"
+  },
+  "Salinan Salinan Komet Minor_Tere Liye_tagt.pdf": {
+    "slug": "komet-minor"
+  },
+  "Salinan Salinan Salinan Pintar Bahasa Inggris Dengan Mind Map - eBookWave.pdf": {
+    "slug": "pintar-bahasa-inggris-mind-map"
+  }
+}

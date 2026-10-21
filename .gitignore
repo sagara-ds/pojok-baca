@@ -3,6 +3,14 @@ dist/
 # generated types
 .astro/
 
+# pipeline: cache kerja (PDF sumber, hasil scan, laporan)
+.cache/
+
+# pipeline: aset hasil render (bukan untuk di-commit; di-deploy via CI/artefak)
+public/pages/
+public/covers/
+public/dl/
+
 # dependencies
 node_modules/
 

@@ -9,7 +9,17 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "pipe": "node pipeline/cli.mjs",
+    "pipe:list": "node pipeline/cli.mjs list",
+    "pipe:fetch": "node pipeline/cli.mjs fetch",
+    "pipe:scan": "node pipeline/cli.mjs scan",
+    "pipe:render": "node pipeline/cli.mjs render",
+    "pipe:manifest": "node pipeline/cli.mjs manifest",
+    "pipe:pdf": "node pipeline/cli.mjs pdf",
+    "pipe:verify": "node pipeline/cli.mjs verify",
+    "pipe:bundle": "node pipeline/cli.mjs bundle",
+    "pipe:all": "node pipeline/cli.mjs all"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.9",
