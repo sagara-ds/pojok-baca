@@ -71,6 +71,34 @@ npm run pipe:all       # semua
 
 Detail teknis & jebakan: `pipeline/README.md`.
 
+## ⚠️ `astro dev` timeout kalau public/ berisi 41.000 file
+
+Gejalanya:
+
+```
+Failed to create the dev server app: transport invoke timed out after 60000ms
+(virtual:astro:server-app)
+```
+
+Penyebab: Vite memindai `public/` (41.669 halaman + 140 cover) saat dev server
+start. Event loop jadi penuh sehingga transport timeout.
+
+**Fix** (sudah dipakai di `astro.config.mjs`):
+
+```js
+vite: {
+  server: {
+    watch: {
+      ignored: ['**/public/pages/**', '**/public/covers/**', '**/public/dl/**'],
+    },
+  },
+}
+```
+
+Kalau tetap timeout: hapus cache `node_modules/.vite` + `.astro`, lalu jalankan ulang.
+Jangan memindahkan folder 41k file keluar project hanya untuk development —
+watcher ignore sudah cukup.
+
 ## Cara deploy aset besar
 
 `public/pages` (41.669 file, ±3,5 GB) **di-gitignore** — jangan di-commit.
