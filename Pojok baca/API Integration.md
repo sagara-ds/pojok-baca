@@ -1,110 +1,109 @@
-# API Integration - Welib.org / Anna's Archive
+# API Integration - Open Library
 
-## 📡 API Overview
-**Base URL:** `https://id.welib.org/api`  
-**Sumber Data:** Anna's Archive (shadow library metadata aggregator)  
-**Auth:** Tidak perlu API key (public)  
-**Rate Limit:** Self-imposed 60 req/min per IP via proxy
+> **Riwayat:** integrasi pertama memakai welib.org (Anna's Archive lineage), dihapus pada
+> `feat/openlibrary-integration` karena Cloudflare memblokir akses server-side
+> (HTTP 403 terverifikasi 21 Okt 2026). Bagian bawah dokumen disiapkan untuk Google Books.
 
-## 🔗 Endpoints (Asumsi - perlu verifikasi)
+## 📡 API Overview (Open Library — sumber aktif)
+**Base URL:** `https://openlibrary.org`
+**Auth:** Tidak perlu API key (publik, gratis)
+**Rate limit:** Self-imposed 60 req/menit per IP via proxy (`src/utils/rate-limit.ts`)
+**Etiquette:** kirim User-Agent identitas + `fields=` agar payload ringan
+
+## 🔗 Endpoint Terpakai (semua terverifikasi live)
 | Endpoint | Method | Params | Response |
 |----------|--------|--------|----------|
-| `/books` | GET | `page`, `limit`, `category`, `year`, `language`, `sort` | `{ data: Book[], pagination }` |
-| `/books/:slug` | GET | - | `Book` |
-| `/books/search` | GET | `q`, `page`, `limit`, `category`, `sort` | `{ data: Book[], pagination }` |
-| `/categories` | GET | - | `Category[]` |
+| `/search.json` | GET | `q`, `language`, `limit` (≤100), `offset`, `sort`, `fields` | `{ numFound, docs[] }` |
+| `/works/{id}.json` | GET | - | `{ title, description, subjects[] }` |
+| `covers.openlibrary.org/b/id/{cover_i}-L.jpg` | GET | - | gambar JPEG |
+
+### Query solr — aturan yang HARUS dipatuhi (dulu biar nggak kejadian observasi 0-hasil)
+| Kasus | Bentuk query | Hasil tes live |
+|-------|--------------|----------------|
+| Browse tanpa kata kunci, dua bahasa | `q=language:(ind eng)` | ✅ 1.887 karya |
+| Browse satu bahasa | `q=language:ind` | ✅ 137.041 karya |
+| Pencarian + filter bahasa | `q=laskar pelangi` + param `language=ind` (boleh diulang) | ✅ 6 hasil |
+| Pencarian + kategori | `q=<teks> AND subject:fiction` | ✅ |
+| `q` kosong / `q=*` | - | ❌ 0 hasil / error (min 3 karakter) |
+| `language=ind,eng` (koma) | - | ❌ 0 hasil (bug upstream) |
+| `q=language:ind OR language:eng` | - | ❌ 0 hasil |
+
+Kode bahasa: MARC `ind` = Indonesia, `eng` = English — dipetakan bolak-balik ke app `id`/`en` di `openlibrary.ts`.
+
+Mapping kategori (`mockCategories` slug → subject facet): `pemrograman → computer programming`, `fiksi → fiction`, `sejarah → history`, dst. — tabel `categoryToSubject` di `src/services/openlibrary.ts`.
 
 ## 📦 TypeScript Types (`src/services/types.ts`)
 ```typescript
-interface Book {
-  id: string;
-  slug: string;
+interface Book extends MockSource {
+  id: string;              // "OL15302003W" (work key)
+  slug: string;            // sama dengan id
   title: string;
-  author: string;
-  coverUrl: string;
-  description: string;      // HTML dari API
-  category: string;
-  publishedYear: number;
-  pages: number;
-  language: string;         // "id", "en", dll
-  isbn?: string;
-  readingUrl?: string;      // URL ke EPUB/PDF
+  author: string;          // join maks 3 author_name; kosong -> "Tidak diketahui"
+  coverUrl: string;        // covers.openlibrary.org; kosong -> placeholder SVG UI
+  description: string;     // string kosong di list, diisi di detail
+  category: string;        // subject[0]
+  publishedYear: number;   // first_publish_year
+  pages: number;           // number_of_pages_median
+  language: string;        // "id" | "en" | kode MARC lain (passthrough)
+  isbn?: string;           // utamakan 13 digit
+  readingUrl?: string;     // https://openlibrary.org/works/{id}
+  isMock?: boolean;        // true bila dari fallback mock
 }
 
-interface BookListResponse {
+interface BookListResponse extends MockSource {
   data: Book[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
+  pagination: { page, limit, total, totalPages };  // total = numFound
 }
-```
-
-## 🛡️ Security Layer (`src/services/api.ts`)
-
-### Sanitization Functions
-```typescript
-// Strip dangerous HTML, keep safe tags
-sanitizeHtml(html: string): string
-
-// Strip ALL HTML, plain text only
-sanitizeText(text: string): string
-
-// Validate & sanitize book object dari API
-sanitizeBook(raw: unknown): Book | null
-```
-
-### Rate Limiting (Proxy Routes)
-- **File:** `src/pages/api/proxy/books/[...slug].ts`
-- **Limit:** 60 req/menit per IP (in-memory Map)
-- **Headers:** `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`
-
-### Caching Strategy
-| Endpoint | Cache-Control | Stale-While-Revalidate |
-|----------|---------------|------------------------|
-| `/books/:slug` (detail) | `max-age=3600` (1 jam) | 86400 (1 hari) |
-| `/books` (list) | `max-age=300` (5 menit) | 3600 (1 jam) |
-| `/categories` | `max-age=86400` (1 hari) | 604800 (1 minggu) |
-
-## ⚠️ Error Handling
-```typescript
-// Timeout: 10 detik (AbortSignal)
-// Retry: 3x untuk 5xx errors (exponential backoff 1s)
-// Fallback: ErrorState component di UI
 ```
 
 ## 🔄 Data Flow
 ```
 Client (Browser)
     ↓
-Astro Page (SSR/SSG)
+Astro Page (SSR)  /  UI filter bahasa (?language=id|en)
     ↓
-API Proxy Route (/api/proxy/books/...)
-    ↓ [Rate Limit + Timeout + Sanitize]
-Welib.org API
+services/api.ts  (sanitizeBook, mock fallback, isMock flag)
     ↓
-Sanitized JSON Response
+services/openlibrary.ts  (query builder solr, mapping, timeout+retry)
     ↓
-Client Render
+Open Library  /search.json + /works/{id}.json + covers
+    ↓
+Render
 ```
 
-## 🧪 Testing API
+## 🧪 Testing API (perhatikan trailing slash — `trailingSlash: 'always'`)
 ```bash
-# Test proxy langsung
-curl "http://localhost:4321/api/proxy/books?page=1&limit=5"
-curl "http://localhost:4321/api/proxy/books/slug-buku-ini"
-curl "http://localhost:4321/api/proxy/books/search?q=pemrograman"
-curl "http://localhost:4321/api/proxy/categories"
+# Daftar default (Indonesia + Inggris)
+curl "http://localhost:4322/api/proxy/books/?limit=5"
+# Filter bahasa
+curl "http://localhost:4322/api/proxy/books/?language=id&sort=rating"
+# Pencarian Indonesia
+curl "http://localhost:4322/api/proxy/books/?q=laskar+pelangi&language=id"
+# Pencarian Inggris
+curl "http://localhost:4322/api/proxy/books/?q=harry+potter&language=en"
+# Detail (work key OL)
+curl "http://localhost:4322/api/proxy/books/OL15302003W/"
+# Kategori (mock)
+curl "http://localhost:4322/api/proxy/categories/"
+# Halaman SSR
+curl "http://localhost:4322/books/?language=id"
 ```
+Tanda data asli vs mock: header `X-Mock-Data: true` hanya muncul saat fallback.
 
-## 📝 Notes untuk Development
-- [ ] Verifikasi endpoint aktual welib.org (Cloudflare protected)
-- [ ] Handle pagination style (cursor vs offset)
-- [ ] Cek format `readingUrl` (EPUB/PDF direct link?)
-- [ ] Handle missing fields gracefully (optional chaining)
-- [ ] Add request/response logging untuk debugging
+## ⚠️ Error Handling
+- Timeout: 10 detik (AbortSignal), retry 3x utk 5xx (backoff 1s) — di `openlibrary.ts` & `api.ts`
+- Slug bukan pola `OL\d+W` (mis. slug mock lama) → dilayani mock data
+- Work description gagal → detail tetap tampil tanpa description
+- Results sort `new` mengandung noise data OL (judul kacau / tag bahasa salah) — kualitas upstream
+
+## 🚀 Google Books (opsional, dormant)
+`src/services/googlebooks.ts` siap dipakai bila `GOOGLE_BOOKS_API_KEY` diset di `.env`
+(see `.env.example`). Bonus: kuota anonymous tanpa key = 0/hari (selalu 429), wajib key.
+Pakai `volumes?q=<query>&langRestrict=id|en`; cocok untuk melengkapi katalog Indonesia
+dan enrich description di halaman detail via ISBN match.
+Referensi API resmi Indonesia yang **bukan** discovery publik: SAKEDAP Perpusnas
+(`api-penerbitsakedap.perpusnas.go.id`, khusus akun penerbit), endpoint lama
+`isbn.perpusnas.go.id/Account/GetBuku` sudah 404.
 
 ---
 *Related: [[Tech Stack]], [[Components - Book]], [[Project Overview]]*

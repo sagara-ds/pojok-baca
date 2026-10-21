@@ -3,7 +3,12 @@
  * Adjust based on actual API schema
  */
 
-export interface Book {
+/** Flag opsional yang menandai data berasal dari mock (fallback). */
+export interface MockSource {
+  isMock?: boolean;
+}
+
+export interface Book extends MockSource {
   id: string;
   slug: string;
   title: string;
@@ -18,7 +23,7 @@ export interface Book {
   readingUrl?: string;
 }
 
-export interface BookListResponse {
+export interface BookListResponse extends MockSource {
   data: Book[];
   pagination: {
     page: number;

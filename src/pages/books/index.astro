@@ -11,6 +11,7 @@ export interface Props {
   page?: number;
   sort?: 'newest' | 'oldest' | 'popular' | 'title-asc' | 'title-desc';
   category?: string;
+  language?: 'id' | 'en';
   q?: string;
 }
 
@@ -19,9 +20,12 @@ const page = Number(searchParams.get('page')) || 1;
 const sort = (searchParams.get('sort') as Props['sort']) ?? 'newest';
 const category = searchParams.get('category') ?? undefined;
 const q = searchParams.get('q') ?? undefined;
+// Filter bahasa: id = Indonesia, en = Inggris; kosong = keduanya
+const languageParam = searchParams.get('language') ?? '';
+const language = languageParam === 'id' || languageParam === 'en' ? languageParam : undefined;
 
 const limit = 20;
-const params: SearchParams = { page, limit, sort, category, q };
+const params: SearchParams = { page, limit, sort, category, language, q };
 
 let booksData;
 let error: string | null = null;
@@ -45,10 +49,31 @@ const sortOptions = [
   { value: 'title-desc', label: 'Judul Z-A' },
 ];
 
+const languageOptions = [
+  { value: '', label: 'Semua' },
+  { value: 'id', label: 'Indonesia' },
+  { value: 'en', label: 'Inggris' },
+];
+
+// URL halaman N yang mempertahankan filter aktif (sort, kategori, bahasa, pencarian)
+function buildPageHref(pageNum: number): string {
+  const sp = new URLSearchParams();
+  sp.set('page', String(pageNum));
+  sp.set('sort', sort);
+  if (category) sp.set('category', category);
+  if (language) sp.set('language', language);
+  if (q) sp.set('q', q);
+  return `/books?${sp.toString()}`;
+}
+
 const pageTitle = q
   ? `Hasil pencarian: "${q}"`
   : category
   ? `Kategori: ${category}`
+  : language === 'id'
+  ? 'Buku Indonesia'
+  : language === 'en'
+  ? 'Buku Inggris'
   : 'Semua Buku';
 
 const pageDescription = q
@@ -78,6 +103,23 @@ const pageDescription = q
               }`}
               aria-pressed={sort === option.value}
               data-sort={option.value}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        <div class="flex flex-wrap gap-2" role="group" aria-label="Filter bahasa">
+          {languageOptions.map(option => (
+            <button
+              type="button"
+              class={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                (language ?? '') === option.value
+                  ? 'bg-primary text-background'
+                  : 'bg-surface text-text-muted hover:bg-secondary hover:text-text'
+              }`}
+              aria-pressed={(language ?? '') === option.value}
+              data-language={option.value}
             >
               {option.label}
             </button>
@@ -176,7 +218,7 @@ const pageDescription = q
           {totalPages > 1 && (
             <nav class="mt-8 flex items-center justify-center gap-2" aria-label="Navigasi halaman">
               <a
-                href={hasPrevPage ? `/books?page=${currentPage - 1}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
+                href={hasPrevPage ? buildPageHref(currentPage - 1) : '#'}
                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${hasPrevPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'}"
                 aria-label="Halaman sebelumnya"
                 aria-disabled={!hasPrevPage}
@@ -201,7 +243,7 @@ const pageDescription = q
                   return (
                     <a
                       key={pageNum}
-                      href={`/books?page=${pageNum}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+                      href={buildPageHref(pageNum)}
                       class={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                         pageNum === currentPage
                           ? 'bg-primary text-background'
@@ -217,7 +259,7 @@ const pageDescription = q
               </div>
 
               <a
-                href={hasNextPage ? `/books?page=${currentPage + 1}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
+                href={hasNextPage ? buildPageHref(currentPage + 1) : '#'}
                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${hasNextPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'}"
                 aria-label="Halaman selanjutnya"
                 aria-disabled={!hasNextPage}
@@ -247,6 +289,21 @@ const pageDescription = q
             urlParams.set('page', '1');
             window.location.search = urlParams.toString();
           }
+        });
+      });
+
+      // Handle language filter buttons
+      const languageButtons = document.querySelectorAll('[data-language]');
+      languageButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const languageValue = button.getAttribute('data-language') ?? '';
+          if (languageValue) {
+            urlParams.set('language', languageValue);
+          } else {
+            urlParams.delete('language');
+          }
+          urlParams.set('page', '1');
+          window.location.search = urlParams.toString();
         });
       });
     });

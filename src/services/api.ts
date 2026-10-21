@@ -1,19 +1,24 @@
 /**
- * Welib.org API Client
+ * API service layer — Open Library (sumber utama) + Google Books (opsional)
  * Handles fetching, caching, sanitization, and error handling
- * Falls back to mock data when real API is unavailable (Cloudflare protection)
+ * Falls back to mock data when the upstream API is unavailable
+ *
+ * Riwayat: sebelumnya memakai welib.org (Anna's Archive lineage).
+ * Sumber itu dihapus karena Cloudflare memblokir akses server-side
+ * (HTTP 403 terverifikasi) — lihat feat/openlibrary-integration.
  */
 
 import type { Book, BookListResponse, SearchParams, Category, ApiError } from './types';
+import { getOpenLibraryBook, searchOpenLibrary, isOpenLibrarySlug } from './openlibrary';
 import { getMockBooks, getMockBook, searchMockBooks, mockCategories } from './mock-data';
 
 // Re-export mock functions for use by API proxy
 export { getMockBooks, getMockBook, searchMockBooks, mockCategories };
 
-const WELIB_API_BASE = 'https://id.welib.org/api';
-
-// Check if we're in development mode (use mock data for easier dev)
-const USE_MOCK_DATA = import.meta.env.DEV || import.meta.env.PUBLIC_USE_MOCK === 'true';
+// Private mode: paksa mock data via env PUBLIC_USE_MOCK=true.
+// Development tetap memakai API asli (Open Library publik & stabil),
+// mock hanya dipakai sebagai fallback saat upstream gagal.
+const USE_MOCK_DATA = import.meta.env.PUBLIC_USE_MOCK === 'true';
 const DEFAULT_TIMEOUT = 10000;
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
@@ -73,17 +78,20 @@ export function sanitizeBook(book: unknown): Book | null {
     author,
     coverUrl: sanitizeText(String(b.coverUrl ?? b.cover_image ?? b.image ?? '')),
     description: sanitizeHtml(String(b.description ?? b.summary ?? b.sinopsis ?? '')),
-    category: sanitizeText(String(b.category ?? b.genre ?? b.kategori ?? '')),
+    category: sanitizeText(String(b.category ?? b.genre ?? b.kategori ?? b.subject ?? '')),
     publishedYear: Number(b.publishedYear ?? b.year ?? b.tahun_terbit ?? 0) || new Date().getFullYear(),
     pages: Number(b.pages ?? b.page_count ?? b.jumlah_halaman ?? 0) || 0,
     language: sanitizeText(String(b.language ?? b.lang ?? b.bahasa ?? 'id')),
     isbn: b.isbn ? sanitizeText(String(b.isbn)) : undefined,
     readingUrl: b.readingUrl ? sanitizeText(String(b.readingUrl)) : undefined,
+    isMock: Boolean(b.isMock) || undefined,
   };
 }
 
 /**
- * Generic fetch with timeout and retry
+ * Generic fetch with timeout and retry.
+ * (Dipakai sumber upstream non-library seperti Google Books;
+ *  Open Library punya client sendiri di openlibrary.ts.)
  */
 async function fetchWithRetry(
   url: string,
@@ -142,33 +150,35 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
 }
 
 /**
- * Fetch single book by slug
+ * Fetch single book by slug.
+ * Slug Open Library (OL…W) dirutekan ke Open Library,
+ * slug lama dari mock data tetap dilayani mock.
  */
 export async function fetchBook(slug: string): Promise<Book | null> {
-  // Use mock data in development or when explicitly enabled
   if (USE_MOCK_DATA) {
-    console.log('[DEV] Using mock data for fetchBook:', slug);
-    return getMockBook(slug);
+    console.log('[MOCK] Using mock data for fetchBook:', slug);
+    return withMockBook(getMockBook(slug));
+  }
+
+  // Slug mock lama (bukan work key) -> langsung mock
+  if (!isOpenLibrarySlug(slug)) {
+    return withMockBook(getMockBook(slug));
   }
 
   try {
-    const response = await fetchWithRetry(`${WELIB_API_BASE}/books/${slug}`);
+    const book = await getOpenLibraryBook(slug);
 
-    if (response.status === 404) {
+    if (!book) {
       return null;
     }
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await parseJsonResponse<unknown>(response);
-    return sanitizeBook(data);
+    const sanitized = sanitizeBook(book);
+    return sanitized ?? null;
   } catch (error) {
     console.error(`Failed to fetch book ${slug}:`, error);
     // Fallback to mock data on error
     console.log('[FALLBACK] Using mock data for fetchBook:', slug);
-    return getMockBook(slug);
+    return withMockBook(getMockBook(slug));
   }
 }
 
@@ -176,43 +186,32 @@ export async function fetchBook(slug: string): Promise<Book | null> {
  * Fetch paginated book list
  */
 export async function fetchBooks(params: SearchParams = {}): Promise<BookListResponse> {
-  // Use mock data in development or when explicitly enabled
   if (USE_MOCK_DATA) {
-    console.log('[DEV] Using mock data for fetchBooks:', params);
-    return getMockBooks(params);
+    console.log('[MOCK] Using mock data for fetchBooks:', params);
+    return withMockList(getMockBooks(params));
   }
 
-  const searchParams = new URLSearchParams();
-
-  if (params.page) searchParams.set('page', String(params.page));
-  if (params.limit) searchParams.set('limit', String(params.limit));
-  if (params.category) searchParams.set('category', params.category);
-  if (params.year) searchParams.set('year', String(params.year));
-  if (params.language) searchParams.set('language', params.language);
-  if (params.sort) searchParams.set('sort', params.sort);
-
   try {
-    const response = await fetchWithRetry(`${WELIB_API_BASE}/books?${searchParams}`);
+    const result = await searchOpenLibrary({ ...params, q: params.q ?? undefined });
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status} ${response.statusText}`);
+    if (!result) {
+      throw new Error('Open Library tidak dapat diakses');
     }
 
-    const data = await parseJsonResponse<{ data: unknown[]; pagination: BookListResponse['pagination'] }>(response);
-
-    const books = data.data
+    const data = result.data
       .map(sanitizeBook)
       .filter((book): book is Book => book !== null);
 
     return {
-      data: books,
-      pagination: data.pagination,
+      data,
+      pagination: result.pagination,
+      isMock: undefined,
     };
   } catch (error) {
     console.error('Failed to fetch books:', error);
     // Fallback to mock data on error
     console.log('[FALLBACK] Using mock data for fetchBooks:', params);
-    return getMockBooks(params);
+    return withMockList(getMockBooks(params));
   }
 }
 
@@ -220,70 +219,51 @@ export async function fetchBooks(params: SearchParams = {}): Promise<BookListRes
  * Search books
  */
 export async function searchBooks(query: string, params: Omit<SearchParams, 'q'> = {}): Promise<BookListResponse> {
-  // Use mock data in development or when explicitly enabled
   if (USE_MOCK_DATA) {
-    console.log('[DEV] Using mock data for searchBooks:', query, params);
-    return searchMockBooks(query, params);
+    console.log('[MOCK] Using mock data for searchBooks:', query, params);
+    return withMockList(searchMockBooks(query, params));
   }
 
-  const searchParams = new URLSearchParams();
-  searchParams.set('q', query);
-
-  if (params.page) searchParams.set('page', String(params.page));
-  if (params.limit) searchParams.set('limit', String(params.limit));
-  if (params.category) searchParams.set('category', params.category);
-  if (params.sort) searchParams.set('sort', params.sort);
-
   try {
-    const response = await fetchWithRetry(`${WELIB_API_BASE}/books/search?${searchParams}`);
+    const result = await searchOpenLibrary({ ...params, q: query });
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status} ${response.statusText}`);
+    if (!result) {
+      throw new Error('Open Library tidak dapat diakses');
     }
 
-    const data = await parseJsonResponse<{ data: unknown[]; pagination: BookListResponse['pagination'] }>(response);
-
-    const books = data.data
+    const data = result.data
       .map(sanitizeBook)
       .filter((book): book is Book => book !== null);
 
     return {
-      data: books,
-      pagination: data.pagination,
+      data,
+      pagination: result.pagination,
+      isMock: undefined,
     };
   } catch (error) {
     console.error('Failed to search books:', error);
     // Fallback to mock data on error
     console.log('[FALLBACK] Using mock data for searchBooks:', query, params);
-    return searchMockBooks(query, params);
+    return withMockList(searchMockBooks(query, params));
   }
 }
 
 /**
- * Fetch categories
+ * Fetch categories.
+ *
+ * Open Library tidak punya katalog kategori yang cocok dengan UI
+ * berbahasa Indonesia — categories tetap diambil dari mock, dipakai
+ * client sebagai filter subject facet di openlibrary.ts.
  */
 export async function fetchCategories(): Promise<Category[]> {
-  // Use mock data in development or when explicitly enabled
   if (USE_MOCK_DATA) {
-    console.log('[DEV] Using mock data for fetchCategories');
+    console.log('[MOCK] Using mock data for fetchCategories');
     return mockCategories;
   }
 
-  try {
-    const response = await fetchWithRetry(`${WELIB_API_BASE}/categories`);
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await parseJsonResponse<Category[]>(response);
-    return data;
-  } catch (error) {
-    console.error('Failed to fetch categories:', error);
-    // Fallback to mock data on error
-    console.log('[FALLBACK] Using mock data for fetchCategories');
-    return mockCategories;
-  }
+  // Categories bisa di-extend nanti (mis. Subjects API Open Library);
+  // untuk sekarang seluruhnya dari mock.
+  return mockCategories;
 }
 
 /**
@@ -291,4 +271,14 @@ export async function fetchCategories(): Promise<Category[]> {
  */
 export function createApiError(message: string, status = 500, code?: string): ApiError {
   return { message, status, code };
+}
+
+/* ------------------------------- helpers --------------------------------- */
+
+function withMockList(value: BookListResponse): BookListResponse {
+  return { ...value, isMock: true };
+}
+
+function withMockBook(value: Book | null): Book | null {
+  return value ? { ...value, isMock: true } : null;
 }
