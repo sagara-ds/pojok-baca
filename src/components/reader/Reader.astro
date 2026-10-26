@@ -1,0 +1,337 @@
+---
+/**
+ * Reader halaman: shell SSR + kontrol client.
+ *
+ * SSR hanya mengirim data kecil (slug, jumlah halaman, ukuran halaman, URL
+ * indeks). Indeks lengkap (posisi tiap halaman di dalam strip) diambil
+ * client dari file JSON statis -> Worker bundle tetap kecil dan tidak
+ * perlu akses filesystem saat runtime.
+ */
+interface ReaderData {
+  slug: string;
+  count: number;
+  pageW: number;
+  pageH: number;
+  mode: 'sheets' | 'images';
+  indexUrl: string;
+}
+
+interface Props {
+  data: ReaderData;
+  title: string;
+  author: string;
+}
+
+const { data, title, author } = Astro.props;
+const total = data.count;
+---
+
+<div id="reader" class="reader" data-theme="light" data-slug={data.slug}>
+  {/* Progress bar */}
+  <div class="reader-progress" aria-hidden="true">
+    <div data-progress class="reader-progress__bar"></div>
+  </div>
+
+  {/* Panggung halaman */}
+  <div data-stage class="reader-stage">
+    <div data-viewport class="reader-viewport">
+      <img data-layer="a" class="reader-layer" alt="" decoding="async" />
+      <img data-layer="b" class="reader-layer" alt="" decoding="async" />
+    </div>
+
+    <div data-loader class="reader-loader" role="status" aria-live="polite">
+      <span class="reader-spinner" aria-hidden="true"></span>
+      <span class="sr-only">Memuat halaman…</span>
+    </div>
+
+    <div data-error class="reader-error is-hidden" role="alert">
+      <p>Halaman tidak dapat dimuat.</p>
+      <a href={`/books/${data.slug}/`} class="reader-btn reader-btn--text">Kembali ke detail buku</a>
+    </div>
+  </div>
+
+  {/* Bar atas */}
+  <header class="reader-bar reader-bar--top">
+    <a href={`/books/${data.slug}/`} class="reader-btn" aria-label="Kembali ke detail buku">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
+      </svg>
+    </a>
+
+    <div class="reader-bar__meta">
+      <span class="reader-bar__title">{title}</span>
+      <span class="reader-bar__author">{author}</span>
+    </div>
+
+    <button data-theme-toggle class="reader-btn" type="button" aria-pressed="false" aria-label="Mode gelap">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </svg>
+    </button>
+  </header>
+
+  {/* Bar bawah */}
+  <footer class="reader-bar reader-bar--bottom">
+    <button data-nav="-1" class="reader-btn" type="button" aria-label="Halaman sebelumnya">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+    </button>
+
+    <div class="reader-jump">
+      <input
+        data-jump
+        class="reader-jump__input"
+        type="number"
+        min="1"
+        max={total}
+        value="1"
+        inputmode="numeric"
+        aria-label="Buka halaman"
+      />
+      <span class="reader-jump__total" aria-hidden="true">/ {total}</span>
+    </div>
+
+    <span data-counter class="reader-counter sr-only" aria-live="polite">1 / {total}</span>
+
+    <button data-nav="1" class="reader-btn" type="button" aria-label="Halaman berikutnya">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 18l6-6-6-6" />
+      </svg>
+    </button>
+  </footer>
+
+  <script type="application/json" id="reader-data" set:html={JSON.stringify(data)} />
+</div>
+
+<style>
+  .reader {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: var(--color-background);
+    color: var(--color-text);
+    overflow: hidden;
+    /* chrome (bar atas/bawah) ikut ter-dark-mode lewat token global */
+  }
+
+  .reader-stage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  .reader-viewport {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-surface);
+    box-shadow: 0 10px 40px rgb(0 0 0 / 0.25);
+  }
+
+  .reader-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    max-width: none;
+    opacity: 0;
+    transition: opacity 140ms ease;
+    will-change: opacity, top;
+  }
+
+  .reader-layer.is-active {
+    opacity: 1;
+  }
+
+  /* Halaman pertama: tanpa crossfade, supaya langsung tampil. */
+  .reader-layer.no-fade {
+    transition: none;
+  }
+
+  /* Mode gelap: halaman hasil scan perlu dibalik agar tidak menyilaukan.
+     invert + hue-rotate menjaga agar warna cover tidak jadi aneh. */
+  :global(.dark) .reader-layer {
+    filter: invert(1) hue-rotate(180deg);
+  }
+
+  .reader-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .reader-progress__bar {
+    height: 100%;
+    width: 0;
+    background: var(--color-accent);
+    transition: width 180ms ease;
+  }
+
+  .reader-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+  }
+
+  .reader-loader.is-hidden {
+    opacity: 0;
+  }
+
+  .reader-spinner {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 9999px;
+    animation: reader-spin 700ms linear infinite;
+  }
+
+  @keyframes reader-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .reader-error {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-6);
+    color: var(--color-text-muted);
+  }
+
+  .reader-error.is-hidden {
+    display: none;
+  }
+
+  .reader-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: color-mix(in srgb, var(--color-background) 92%, transparent);
+    backdrop-filter: blur(8px);
+    transition: opacity 220ms ease, transform 220ms ease;
+  }
+
+  .reader-bar--top {
+    top: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .reader-bar--bottom {
+    bottom: 0;
+    border-top: 1px solid var(--color-border);
+    justify-content: center;
+  }
+
+  .reader.is-idle .reader-bar {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .reader.is-idle .reader-bar--top {
+    transform: translateY(-100%);
+  }
+
+  .reader.is-idle .reader-bar--bottom {
+    transform: translateY(100%);
+  }
+
+  .reader-bar__meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+
+  .reader-bar__title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .reader-bar__author {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .reader-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    background: transparent;
+    transition: background-color var(--transition-fast);
+  }
+
+  .reader-btn:hover {
+    background: var(--color-secondary);
+  }
+
+  .reader-btn--text {
+    width: auto;
+    padding: 0 var(--space-3);
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .reader-jump {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .reader-jump__input {
+    width: 68px;
+    text-align: center;
+    padding: var(--space-1) var(--space-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reader-layer,
+    .reader-bar,
+    .reader-progress__bar,
+    .reader-loader {
+      transition: none;
+    }
+
+    .reader-spinner {
+      animation: none;
+    }
+  }
+</style>

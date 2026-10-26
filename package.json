@@ -19,14 +19,18 @@
     "pipe:pdf": "node pipeline/cli.mjs pdf",
     "pipe:verify": "node pipeline/cli.mjs verify",
     "pipe:bundle": "node pipeline/cli.mjs bundle",
-    "pipe:all": "node pipeline/cli.mjs all"
+    "pipe:all": "node pipeline/cli.mjs all",
+    "deploy": "astro build && wrangler deploy -c dist/server/wrangler.json",
+    "deploy:check": "astro build && wrangler deploy -c dist/server/wrangler.json --dry-run"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.9",
+    "@astrojs/cloudflare": "^14.4.1",
     "astro": "^7.4.1"
   },
   "devDependencies": {
+    "@astrojs/node": "^11.1.9",
     "@tailwindcss/vite": "^4.3.3",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "wrangler": "^4.151.3"
   }
 }

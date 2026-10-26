@@ -27,6 +27,8 @@ const ariaLabel = continueReading
 
 <a
   href={readUrl}
+  data-read-button
+  data-slug={slug}
   class={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${className} ${
     variant === 'primary'
       ? 'bg-primary text-background hover:bg-primary-light active:bg-primary-dark shadow-sm'
@@ -40,5 +42,27 @@ const ariaLabel = continueReading
     <path d="M8 10h10" />
     <path d="M8 14h10" />
   </svg>
-  <span>{buttonText}</span>
+  <span data-read-label>{buttonText}</span>
 </a>
+
+<script>
+  // Kalau buku ini sudah pernah dibaca, tombol jadi "Lanjutkan Baca (hlm N)".
+  // Data posisi disimpan reader di localStorage.
+  document.querySelectorAll<HTMLAnchorElement>('[data-read-button]').forEach((button) => {
+    const slug = button.dataset.slug;
+    if (!slug) return;
+    try {
+      const raw = localStorage.getItem(`pb:pos:${slug}`);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { page?: number };
+      const page = Number(parsed.page);
+      if (!Number.isFinite(page) || page < 2) return;
+      const label = button.querySelector('[data-read-label]');
+      if (label) label.textContent = `Lanjutkan Baca (hlm ${page})`;
+      button.setAttribute('aria-label', `Lanjutkan membaca dari halaman ${page}`);
+      button.href = `/books/${slug}/read/?p=${page}`;
+    } catch {
+      /* localStorage tidak tersedia / rusak */
+    }
+  });
+</script>

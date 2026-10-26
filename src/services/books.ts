@@ -71,4 +71,27 @@ export function getManifest(): typeof manifest {
   return manifest;
 }
 
+/** Konfigurasi reader untuk satu buku (diolah di src/scripts/reader.ts). */
+export interface ReaderConfig {
+  slug: string;
+  count: number;
+  pageW: number;
+  pageH: number;
+  mode: 'sheets' | 'images';
+  indexUrl: string;
+}
+
+export function getReaderConfig(slug: string): ReaderConfig | null {
+  const entry = BOOKS.find((b) => b.slug === slug);
+  if (!entry || !entry.pages) return null;
+  return {
+    slug: entry.slug,
+    count: entry.pages,
+    pageW: entry.pageW ?? 900,
+    pageH: entry.pageH ?? 1316,
+    mode: entry.assetMode ?? 'images',
+    indexUrl: `/data/pages/${entry.slug}.json`,
+  };
+}
+
 export type { Book, BookListResponse, Category, SearchParams };

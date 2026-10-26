@@ -8,6 +8,7 @@ dist/
 
 # pipeline: aset hasil render (bukan untuk di-commit; di-deploy via CI/artefak)
 public/pages/
+public/sheets/
 public/covers/
 public/dl/
 
@@ -33,3 +34,6 @@ dev.log
 .idea/
 #obsidians
 Pojok baca/.obsidian
+
+# wrangler dev state (local KV/logs)
+.wrangler/
