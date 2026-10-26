@@ -1,7 +1,9 @@
-# Pipeline & Hosting (M1) — Pojok Baca
+# Pipeline & Hosting — Pojok Baca
 
 > Keputusan 2026-10-21: **tanpa Cloudflare R2** (butuh kartu pembayaran).
 > Semua aset/library dilayani sebagai **static asset**.
+> Keputusan 2026-10-22 (M2): **Cloudflare Workers + strip 3 halaman** — lihat
+> [Keputusan hosting](#keputusan-hosting-m2).
 
 ## Kenapa berubah
 
@@ -10,7 +12,7 @@ gratis tanpa batas), tapi aktivasi R2 **wajib** memakai payment method. Tanpa
 kartu, opsi yang tersisa adalah static asset di hosting gratis.
 
 Konsekuensi: URL aset **tidak bisa disembunyikan** → proteksi file berubah dari
-"security" jadi "obscurity". Yang benar-benarproteksi adalah **watermark yang
+"security" jadi "obscurity". Yang benar-benar proteksi adalah **watermark yang
 tertanam di piksel** (hasil render), bukan URL.
 
 ## Batas hosting (dokumentasi resmi, diverifikasi 2026-10-21)
@@ -22,39 +24,82 @@ tertanam di piksel** (hasil render), bukan URL.
 | **Netlify free** | **tanpa limit** (54.000/dir) | ~10 MB anjuran | — | 100 GB/bulan | **tidak** |
 | Vercel Hobby | 15.000 file source | — | — | 100 GB/bulan | tidak |
 
-Koleksi ini ≈ **39.000+ halaman** (147 PDF + 7 EPUB) → **melebihi 20.000 file**.
+## Keputusan hosting (M2)
 
-Pilihan:
-- **Netlify** → 1 file/halaman aman. Batas: 100 GB/bulan bandwidth.
-- **Cloudflare Workers** → perlu `bundle` (gabung N halaman per file) agar
-  < 20.000 file. Bandwidth & request static asset gratis tanpa batas.
-  → paling murah kalau trafik tinggi.
+Koleksi PDF = 41.669 halaman. Angka kunci:
+
+- **Bandwidth**: rata-rata 28,9 MB per baca 1 buku penuh (313 request). Cap
+  Netlify 100 GB/bln ≈ **3.500 baca buku/bln** (~115/hari) — habis kalau
+  situs ramai, dan biayanya melewati batas = **ditarik kredit**.
+- **Cloudflare**: request & bandwidth static asset **gratis tanpa batas** →
+  satu-satunya pilihan tanpa risiko biaya.
+
+Tapi Cloudflare membatasi 20.000 file per Worker version. Hasil `pipe:bundle`
+dengan strip 3 halaman:
+
+| Varian | Jumlah file | Status |
+|---|---|---|
+| 2 halaman/strip | 20.855 | ✗ lewat |
+| **3 halaman/strip** | **16.461** | ✓ (sisanya untuk app, cover, PDF) |
+| 4 halaman/strip | 16.441 | ✓ (tidak lebih aman — tinggi 4096 px yang membatasi) |
+
+Reader memotong strip di client (container `overflow: hidden` + offset Y) —
+posisi tiap halaman ada di `public/data/pages/<slug>.json` (~5 KB/buku).
+Trade-off: browser decode strip utuh 900×3964 px (±14 MB RAM per strip);
+reader melepas strip lama setelah pindah, jadi hanya 1–2 strip hidup.
+
+Plus: 3 halaman per request membuat baca 1 buku = **104 request** vs 313
+(request per halaman) — terasa lebih cepat di koneksi mobile.
 
 ## Arsitektur hasil render
 
 ```
-public/
-  pages/<slug>/001.webp   halaman demi halaman, 900 px, q78, BER-WATERMARK
-  covers/<slug>.webp      cover 400 px, ber-watermark
-  dl/<dlId>.pdf           PDF asli (opsional, nama acak)
+.cache/                          cache kerja (tidak di-commit, tidak di-deploy)
+  pages/<slug>/001.webp          halaman tunggal 900 px q78, BER-WATERMARK
+  pdf/<id>.pdf                   PDF sumber
+public/                          hanya aset yang benar-benar di-deploy (~16,9 ribu file)
+  sheets/<slug>/bNNN.webp        strip vertikal 3 halaman (dipakai reader)
+  data/pages/<slug>.json         indeks posisi halaman di strip (kuncinya kecil, di-commit)
+  covers/<slug>.webp             cover 400 px, ber-watermark
+  dl/<dlId>.pdf                  PDF asli (nama acak, max 25 MB)
 data/
-  books.json              manifest publik
-  books.override.json     override manual
-  links.private.json      peta dlId → file (server-side)
+  books.json                     manifest publik (pageW/pageH/assetMode dari bundle)
+  books.override.json            override manual
+  links.private.json             peta dlId → file (server-side)
 ```
 
+> Hasil render halaman tunggal sengaja **tidak** ditaruh di `public/`: build
+> Astro menyalin seluruh `public/` ke `dist/`, jadi 41.669 file + strip akan
+> melampaui batas 20.000 file per Worker. `.cache/pages` cuma jadi bahan baku
+> `pipe:bundle`.
+
 Halaman **tidak dirotasi** otomatis: di koleksi ini ada spread 2 halaman
-(landscape) yang akan rusak kalau diputar. Ditandai di `landscapePages`.
+(landscape) yang akan rusak kalau diputar. Ditandai di `landscapePages`
+(reader memusatkan halaman landscape di viewport).
+
+## Reader (M2)
+
+- `/books/<slug>/read/` — halaman penuh, **paged** (bukan scroll): 1 halaman
+  per layar, swipe/keyboard/klik, jump-to-page, progress bar.
+- Sumber gambar: `sheets` (strip). Indeks penuh diambil client dari
+  `/data/pages/<slug>.json` supaya bundle Worker tetap kecil (SSR hanya
+  mengirim slug + count + pageW/pageH + mode).
+- "Lanjutkan Baca" → `localStorage['pb:pos:<slug>'] = { page, at }`, disimpan
+  debounce 600 ms; tombol di detail tampil lanjut dari halaman terakhir.
+- Mode gelap: halaman scan di-inversi (`filter: invert(1) hue-rotate(180deg)`)
+  supaya tidak menyilaukan; tema tersimpan sendiri (`pb:theme`).
+- A11y: `aria-live` untuk counter, navigasi keyboard penuh (←/→/Space/Home/
+  End/Esc), `prefers-reduced-motion` menonaktifkan transisi.
 
 ## PDF vs EPUB
 
 Folder Drive berisi **147 PDF + 7 EPUB** (versi *unedited* Tere Liye).
 
-- **PDF** → dirender jadi WebP (gambar). Mayoritas **tanpa text layer** (hasil
-  scan) → tidak bisa dicari, synopsis harus manual.
-- **EPUB** → punya teks asli; **tidak** dirender jadi gambar. Reader
-  menyajikan XHTML-nya sebagai teks (jauh lebih kecil & bisa dicari).
-  Ukurannya besar (33–128 MB) karena berisi gambar scan.
+- **PDF** → strip WebP via `pipe:bundle`. Mayoritas **tanpa text layer**
+  (hasil scan) → tidak bisa dicari, synopsis harus manual.
+- **EPUB** → **belum punya reader** (M3). Butuh pipeline ekstrak XHTML + gambar
+  terpisah; saat ini 7 buku ini hanya tampil di daftar/detail, tombol baca
+  mengarah kembali ke detail.
 
 ## Perintah
 
@@ -62,16 +107,19 @@ Folder Drive berisi **147 PDF + 7 EPUB** (versi *unedited* Tere Liye).
 npm run pipe:list      # enumerasi Drive
 npm run pipe:fetch     # unduh PDF/EPUB (retry + backoff, resume)
 npm run pipe:scan      # halaman, sha256, dHash, text layer, dedup, slug
-npm run pipe:render    # WebP + watermark
-npm run pipe:manifest  # books.json + laporan
+npm run pipe:render    # WebP + watermark → .cache/pages + public/covers
+npm run pipe:manifest  # books.json + links.private.json + laporan
 npm run pipe:pdf       # salin PDF asli ke public/dl/<dlId>.pdf
-npm run pipe:bundle    # gabung halaman jadi strip
+npm run pipe:bundle    # gabung halaman jadi strip + indeks reader
 npm run pipe:all       # semua
+
+npm run deploy         # astro build && wrangler deploy
+npm run deploy:check   # astro build && wrangler deploy --dry-run
 ```
 
 Detail teknis & jebakan: `pipeline/README.md`.
 
-## ⚠️ `astro dev` timeout kalau public/ berisi 41.000 file
+## ⚠️ `astro dev` timeout kalau public/ berisi ribuan file
 
 Gejalanya:
 
@@ -80,8 +128,8 @@ Failed to create the dev server app: transport invoke timed out after 60000ms
 (virtual:astro:server-app)
 ```
 
-Penyebab: Vite memindai `public/` (41.669 halaman + 140 cover) saat dev server
-start. Event loop jadi penuh sehingga transport timeout.
+Penyebab: Vite memindai `public/` saat dev server start. Event loop jadi penuh
+sehingga transport timeout.
 
 **Fix** (sudah dipakai di `astro.config.mjs`):
 
@@ -89,30 +137,39 @@ start. Event loop jadi penuh sehingga transport timeout.
 vite: {
   server: {
     watch: {
-      ignored: ['**/public/pages/**', '**/public/covers/**', '**/public/dl/**'],
+      ignored: ['**/public/sheets/**', '**/public/covers/**', '**/public/dl/**'],
     },
   },
 }
 ```
 
-Kalau tetap timeout: hapus cache `node_modules/.vite` + `.astro`, lalu jalankan ulang.
-Jangan memindahkan folder 41k file keluar project hanya untuk development —
+Kalau tetap timeout: hapus cache `node_modules/.vite` + `.astro`, lalu jalankan
+ulang. Jangan memindahkan folder aset keluar project hanya untuk development —
 watcher ignore sudah cukup.
 
-## Cara deploy aset besar
+## Cara deploy
 
-`public/pages` (41.669 file, ±3,5 GB) **di-gitignore** — jangan di-commit.
-Opsi deploy:
+Sekarang target-nya Cloudflare Workers (adapter `@astrojs/cloudflare` +
+`wrangler.jsonc`):
 
-| Cara | Catatan |
-|---|---|
-| `netlify deploy` dari mesin lokal | ✅ paling praktis. Aset ter-upload langsung, tidak lewat git. Build dulu `npm run build` → `dist/` berisi aset. |
-| Git deploy | Aset harus di-commit (3,5 GB) atau pipeline dijalankan di CI. Build minutes Netlify free = 300/bln. |
-| Cloudflare Workers | Butuh `pipe:bundle` dulu supaya jumlah file < 20.000. Bandwidth & request static gratis. |
+```bash
+npm run pipe:all        # render + bundle + manifest + pdf (idempotent)
+npm run deploy          # astro build && wrangler deploy
+```
 
-Catatan: `npm run build` menyalin `public/` ke `dist/` (±3,5 GB) → butuh disk &
-waktu. Kalau itu terlalu berat, pakai Astro `output: 'static'` + deploy
-`public/` langsung.
+- `public/sheets` & `public/covers` & `public/dl` **di-gitignore** — deploy
+  dari mesin lokal lewat `wrangler` (upload langsung, tidak lewat git).
+- Angka akhir yang diunggah: strip 16.461 + indeks 133 + cover 140 + PDF 127
+  + app = **≈ 16.900 file**, di bawah batas 20.000.
+- 13 PDF > 25 MB otomatis dilewati (batas ukuran file Cloudflare & Netlify
+  nggak sama — Cloudflare punya batas 25 MiB per file static asset).
+
+## dlId harus stabil
+
+`pipe:manifest` menjaga dlId lama (file `links.private.json` dipertahankan).
+**Jangan hapus file itu** — kalau hilang, semua dlId regenerasi dan file PDF
+lama di `public/dl/` jadi yatim. Skrip pemulihan: pulihkan file → `pipe:manifest`
+→ `pipe:pdf` (menyalin ulang sesuai pelemapsan aktif).
 
 ---
 

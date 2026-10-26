@@ -9,7 +9,7 @@ menjadi aset statis siap-deploy plus manifest `data/books.json`.
 npm run pipe:list      # enumerasi isi folder Drive
 npm run pipe:fetch     # unduh PDF/EPUB ke .cache/pdf/
 npm run pipe:scan      # halaman, sha256, dHash, text layer, metadata, dedup
-npm run pipe:render    # WebP + watermark ke public/pages & public/covers
+npm run pipe:render    # WebP + watermark ke .cache/pages & public/covers
 npm run pipe:manifest  # data/books.json + data/links.private.json + laporan
 npm run pipe:pdf       # salin PDF asli ke public/dl/<dlId>.pdf (nama acak)
 npm run pipe:bundle    # gabung halaman jadi strip (host dengan limit file)
@@ -64,21 +64,59 @@ cepat**, file hanya +2%. Diverifikasi: selisih piksel antara jalur PNG dan raw
 ## Output
 
 ```
-.cache/
+.cache/                     cache kerja (tidak di-commit)
   drive.json     daftar file Drive
-  pdf/<id>.pdf   PDF sumber (cache kerja, tidak di-commit)
+  pdf/<id>.pdf   PDF sumber
+  pages/<slug>/  halaman WebP 900 px hasil render (sumber untuk bundle)
   scan.json      hasil per-file: halaman, sha256, dHash, text layer, metadata
   groups.json    kelompok duplikat + slug per buku
   render.json    hasil render per slug
   report.json    laporan diagnosa
-public/
-  pages/<slug>/001.webp   halaman demi halaman, 900 px, sudah ber-watermark
-  covers/<slug>.webp      cover 400 px
+public/                     hanya berisi aset yang benar-benar di-deploy
+  sheets/<slug>/bNNN.webp   strip vertikal 3 halaman (dipakai reader)
+  data/pages/<slug>.json    indeks posisi halaman di dalam strip (kuncinya kecil, di-commit)
+  covers/<slug>.webp        cover 400 px
+  dl/<dlId>.pdf             PDF asli (nama acak, Content-Disposition: attachment)
 data/
   books.json             manifest publik (dipakai sisi Astro)
   books.override.json    override manual (judul/penulis/sinopsis/kategori)
   links.private.json     peta dlId → file PDF (server-side)
 ```
+
+> **Kenapa `.cache/pages` bukan `public/pages`:** `astro build` menyalin seluruh
+> `public/` ke `dist/` lalu mengunggahnya. 41.669 halaman tunggal + strip akan
+> melampaui batas 20.000 file per Worker Cloudflare. Dengan meletakkan hasil
+> render di cache, `public/` hanya berisi strip (16.461 file) + cover + PDF
+> ≈ 16.900 file — di bawah batas.
+
+## Stripping (`bundle`)
+
+Satu strip vertikal berisi maksimal `--pages` halaman dengan tinggi total
+maksimal `--max-height` px:
+
+| Varian | Jumlah file | Status vs batas 20.000 |
+|---|---|---|
+| 2 halaman/strip | 20.855 | ✗ lewat |
+| **3 halaman/strip** | **16.461** | ✓ +3.500 ruang |
+| 4 halaman/strip | 16.441 | ✓ (sama saja — tinggi yang membatasi) |
+
+Reader memotong strip dengan container `overflow: hidden` + offset Y — posisi
+tiap halaman ada di `public/data/pages/<slug>.json` (~5 KB/buku):
+
+```json
+{ "slug": "135-hours", "mode": "sheets", "count": 228, "pageW": 900, "pageH": 1335,
+  "strips": [ { "file": "b001.webp", "pages": [[0,1335],[1343,1335],[2686,1334]] } ] }
+```
+
+Catatan performa bundling:
+
+- `sharp.metadata()` ~28 ms/file; parser header WebP custom ~3 ms/file — untuk
+  41 k halaman itu 19 menit vs 2 menit. Parser membaca dimensi langsung dari
+  header RIFF/VP8/VP8L/VP8X.
+- Encoding WebP `effort: 2` ~0,6 s per strip; dengan `sharp.concurrency(2)` +
+  6 worker paralel → ~320 strip/menit ( semua 16.461 strip ≈ 51 menit).
+- `--mode images` juga ada: tidak menggabung apa pun (untuk host tanpa batas
+  file, mis. saat memakai Netlify sambil eksperimen).
 
 ## Manifest
 
@@ -87,6 +125,10 @@ data/
 ```json
 {
   "slug": "23-59",
+  "type": "pdf",
+  "pageW": 900,
+  "pageH": 1335,
+  "assetMode": "sheets",
   "title": "23:59",
   "author": "Brian Khrisna",
   "pages": 240,
@@ -101,6 +143,10 @@ data/
   "metaConfidence": "high"
 }
 ```
+
+`pageW`/`pageH`/`assetMode` diambil dari indeks reader `public/data/pages/<slug>.json`
+(buku EPUB tidak punya indeks → kembali ke default `images` 900×1316; tidak
+dipakai karena halaman read-nya memang tidak tersedia).
 
 `metaConfidence`: `high` | `medium` | `low` | `manual`.
 `low` → judul/penulis perlu diperiksa manual (lihat `data/books.override.json`).
@@ -194,6 +240,14 @@ judul buku. Route `/dl/*` dipaksa `Content-Disposition: attachment` lewat
 `dlId` disimpan di `data/links.private.json` (tidak dikirim ke browser sebagai
 peta path). Tombol download mengarah ke halaman safelink, yang setelah hitung
 mundur mengarahkan ke `/dl/<dlId>.pdf`.
+
+> **dlId harus stabil antar-run.** `pipe:manifest` menjaga dlId lama untuk slug
+> yang sudah ada. File `links.private.json` disimpan berformat `dlId → {slug}`;
+> fungsinya denormalisasi menerima format ini maupun format `slug → {dlId}`.
+> Kalau file ini dihapus, semua dlId berubah **dan file lama di `public/dl/`
+> jadi yatim** — jalankan ulang `pipe:pdf` setelah itu. Skrip `pipe:pdf`
+> menyalin ulang sesuai pelemapsan yang aktif, jadi penyelamatan yang benar
+> selalu: pulihkan `links.private.json` → `pipe:manifest` → `pipe:pdf`.
 
 Keterbatasan yang harus jujur: tanpa server yang memegang berkas, ini
 **obscurity, bukan keamanan**. Yang bisa: URL tidak tertebak, ada
