@@ -1,10 +1,13 @@
 {
-  "generatedAt": "2026-10-21T20:24:11.274Z",
+  "generatedAt": "2026-10-26T11:46:21.926Z",
   "count": 140,
   "books": [
     {
       "slug": "un-perfect-marriage",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1385,
+      "assetMode": "sheets",
       "title": "(Un)Perfect Marriage",
       "author": "Octaka",
       "pages": 1035,
@@ -25,6 +28,9 @@
     {
       "slug": "135-hours",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1335,
+      "assetMode": "sheets",
       "title": "135 Hours",
       "author": "Stefiani Emasurya",
       "pages": 228,
@@ -45,6 +51,9 @@
     {
       "slug": "23-59",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "sheets",
       "title": "23:59",
       "author": "Brian Khrisna",
       "pages": 240,
@@ -65,6 +74,9 @@
     {
       "slug": "a-lady-in-disguise",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1385,
+      "assetMode": "sheets",
       "title": "A Lady in Disguise",
       "author": "Georgette Heyer",
       "pages": 394,
@@ -85,6 +97,9 @@
     {
       "slug": "a-man-called-ove",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1165,
+      "assetMode": "sheets",
       "title": "A Man Called Ove",
       "author": "Fredrik Backman",
       "pages": 351,
@@ -105,6 +120,9 @@
     {
       "slug": "a-man-called-ove-indonesian-version",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1350,
+      "assetMode": "sheets",
       "title": "A Man Called Ove (Indonesian Version)",
       "author": "Fredrik Backman",
       "pages": 448,
@@ -125,6 +143,9 @@
     {
       "slug": "ada-nama-yang-abadi-di-hati-tapi-tak-bisa-dinikahi",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1349,
+      "assetMode": "sheets",
       "title": "Ada Nama Yang Abadi di Hati Tapi Tak Bisa Dinikahi",
       "author": "Maman Suherman",
       "pages": 176,
@@ -145,6 +166,9 @@
     {
       "slug": "antara-aku-dan-dia",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Antara Aku dan Dia",
       "author": "Agnes Jessica",
       "pages": 228,
@@ -165,6 +189,9 @@
     {
       "slug": "arabella",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1385,
+      "assetMode": "sheets",
       "title": "Arabella",
       "author": "Georgette Heyer",
       "pages": 441,
@@ -185,6 +212,9 @@
     {
       "slug": "arah-musim",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1420,
+      "assetMode": "sheets",
       "title": "Arah Musim",
       "author": "Kurniawan Gunadi",
       "pages": 201,
@@ -205,6 +235,9 @@
     {
       "slug": "arwah-adik-kembar",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1228,
+      "assetMode": "sheets",
       "title": "Arwah Adik Kembar",
       "author": "Yenika Koesrini",
       "pages": 460,
@@ -225,6 +258,9 @@
     {
       "slug": "ayahku-bukan-pembohong",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1333,
+      "assetMode": "sheets",
       "title": "Ayahku Bukan Pembohong",
       "author": "Tere Liye",
       "pages": 307,
@@ -245,6 +281,9 @@
     {
       "slug": "baby-oh-baby",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1324,
+      "assetMode": "sheets",
       "title": "Baby, oh Baby!",
       "author": "Zenny Arieffka",
       "pages": 334,
@@ -265,6 +304,9 @@
     {
       "slug": "bahasa-inggris-sistem-52m-volume-1",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1394,
+      "assetMode": "sheets",
       "title": "Bahasa Inggris Sistem 52M Volume 1",
       "author": "Herpinus Simanjuntak",
       "pages": 256,
@@ -285,6 +327,9 @@
     {
       "slug": "bahasa-inggris-sistem-52m-volume-2",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1394,
+      "assetMode": "sheets",
       "title": "Bahasa Inggris Sistem 52M Volume 2",
       "author": "Herpinus Simanjuntak",
       "pages": 240,
@@ -307,6 +352,9 @@
     {
       "slug": "bahasa-inggris-sistem-52m-volume-3",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1394,
+      "assetMode": "sheets",
       "title": "Bahasa Inggris Sistem 52M Volume 3",
       "author": "Herpinus Simanjuntak",
       "pages": 240,
@@ -329,6 +377,9 @@
     {
       "slug": "bandit-bandit-berkelas",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1274,
+      "assetMode": "sheets",
       "title": "bandit bandit berkelas",
       "author": "tere-liye",
       "pages": 363,
@@ -357,6 +408,9 @@
     {
       "slug": "bandung-menjelang-pagi",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1273,
+      "assetMode": "sheets",
       "title": "Bandung Menjelang Pagi",
       "author": "Brian Khrisna",
       "pages": 308,
@@ -377,6 +431,9 @@
     {
       "slug": "beauty-sadness",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "sheets",
       "title": "Beauty Sadness",
       "author": "Yasunari Kawabata",
       "pages": 248,
@@ -397,6 +454,9 @@
     {
       "slug": "best-of-the-best-toefl",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1232,
+      "assetMode": "sheets",
       "title": "Best Of The Best TOEFL",
       "author": "DS Prasetyono, Panca Prastowo",
       "pages": 362,
@@ -417,6 +477,9 @@
     {
       "slug": "biarkan-aku-mencintaimu-two-alone",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1473,
+      "assetMode": "sheets",
       "title": "Biarkan Aku Mencintaimu (Two Alone)",
       "author": "Sandra Brown",
       "pages": 324,
@@ -437,6 +500,9 @@
     {
       "slug": "bibi-gill-buku-ke-12",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1437,
+      "assetMode": "sheets",
       "title": "BIBI GILL (buku ke-12)",
       "author": "Tere Liye",
       "pages": 686,
@@ -457,6 +523,9 @@
     {
       "slug": "bilang-begini-maksudnya-begitu",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Bilang Begini, Maksudnya Begitu",
       "author": "Sapardi Djoko Damono",
       "pages": 148,
@@ -477,6 +546,9 @@
     {
       "slug": "bilangan-fu",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Bilangan Fu",
       "author": "Ayu Utami",
       "pages": 550,
@@ -497,6 +569,9 @@
     {
       "slug": "binga-sebuah-novel",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1306,
+      "assetMode": "sheets",
       "title": "Binga Sebuah Novel",
       "author": "Arif P. Putra",
       "pages": 116,
@@ -517,6 +592,9 @@
     {
       "slug": "bingkisan-cinta-bagi-orang-tersayang",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1131,
+      "assetMode": "sheets",
       "title": "Bingkisan Cinta bagi Orang Tersayang",
       "author": "",
       "pages": 75,
@@ -537,6 +615,9 @@
     {
       "slug": "bukan-jodohnya-yang-tak-kunjung-datang-tapi-niatnya-yang-perlu-ditata-ulang",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1286,
+      "assetMode": "sheets",
       "title": "Bukan Jodohnya yang Tak Kunjung Datang Tapi Niatnya yang Perlu Ditata Ulang",
       "author": "Yanie Gisselya",
       "pages": 190,
@@ -557,6 +638,9 @@
     {
       "slug": "bukan-pengantin-terpilih",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Bukan Pengantin Terpilih",
       "author": "Agnes Jessica",
       "pages": 228,
@@ -577,6 +661,9 @@
     {
       "slug": "bulan",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Bulan",
       "author": "Tere Liye",
       "pages": 401,
@@ -597,6 +684,9 @@
     {
       "slug": "bulir-bulir-cinta",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "sheets",
       "title": "Bulir-Bulir Cinta",
       "author": "Dilli Malianawati",
       "pages": 253,
@@ -617,6 +707,9 @@
     {
       "slug": "bumi",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1165,
+      "assetMode": "sheets",
       "title": "Bumi",
       "author": "Tere Liye",
       "pages": 376,
@@ -637,6 +730,9 @@
     {
       "slug": "bumi-manusia",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1275,
+      "assetMode": "sheets",
       "title": "Bumi Manusia",
       "author": "Pramoedya Ananta Toer",
       "pages": 418,
@@ -657,6 +753,9 @@
     {
       "slug": "burung-merak",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1472,
+      "assetMode": "sheets",
       "title": "Burung Merak",
       "author": "Maria A. Sardjono",
       "pages": 500,
@@ -677,6 +776,9 @@
     {
       "slug": "candide",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1351,
+      "assetMode": "sheets",
       "title": "Candide",
       "author": "Voltaire",
       "pages": 172,
@@ -697,6 +799,9 @@
     {
       "slug": "catatan-harian-menantu-sinting",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Catatan Harian Menantu Sinting",
       "author": "Rosi L. Simamora",
       "pages": 236,
@@ -717,6 +822,9 @@
     {
       "slug": "ceroz-batozar",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1274,
+      "assetMode": "sheets",
       "title": "Ceroz Batozar",
       "author": "Tere Liye",
       "pages": 380,
@@ -737,6 +845,9 @@
     {
       "slug": "chicken-soup-for-the-soul-bahtera-rumah-tangga",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Chicken Soup For The Soul: Bahtera Rumah Tangga",
       "author": "Jack Canfield, Dkk.",
       "pages": 450,
@@ -757,6 +868,9 @@
     {
       "slug": "china-rich-girlfriend-kekasih-kaya-raya",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1380,
+      "assetMode": "sheets",
       "title": "China Rich Girlfriend (Kekasih Kaya Raya)",
       "author": "Kevin Kwan",
       "pages": 460,
@@ -777,6 +891,9 @@
     {
       "slug": "cinta-4-sisi",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1318,
+      "assetMode": "sheets",
       "title": "Cinta 4 Sisi",
       "author": "Indah Hanaco",
       "pages": 276,
@@ -797,6 +914,9 @@
     {
       "slug": "cinta-di-ujung-batas",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1472,
+      "assetMode": "sheets",
       "title": "Cinta di Ujung Batas",
       "author": "Wahyu Henneng",
       "pages": 240,
@@ -817,6 +937,9 @@
     {
       "slug": "cinta-itu-dipraktekin",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1328,
+      "assetMode": "sheets",
       "title": "Cinta Itu Dipraktekin",
       "author": "Adinto F. Susanto",
       "pages": 160,
@@ -837,6 +960,9 @@
     {
       "slug": "cinta-jangan-kau-pergi",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1277,
+      "assetMode": "sheets",
       "title": "Cinta Jangan Kau Pergi",
       "author": "Guslaini, S.Si., M.Pd",
       "pages": 102,
@@ -857,6 +983,9 @@
     {
       "slug": "cinta-keparat-original-publisher",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1286,
+      "assetMode": "sheets",
       "title": "Cinta Keparat: Original Publisher",
       "author": "Enniyy",
       "pages": 372,
@@ -877,6 +1006,9 @@
     {
       "slug": "cinta-sendiri",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1321,
+      "assetMode": "sheets",
       "title": "Cinta Sendiri",
       "author": "Penjaga Hati",
       "pages": 457,
@@ -897,6 +1029,9 @@
     {
       "slug": "cinta-tak-ada-mati",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1350,
+      "assetMode": "sheets",
       "title": "Cinta Tak Ada Mati",
       "author": "Eka Kurniawan",
       "pages": 164,
@@ -917,6 +1052,9 @@
     {
       "slug": "cinta-tak-pernah-tua",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Cinta Tak Pernah Tua",
       "author": "Benny Arnas",
       "pages": 138,
@@ -937,6 +1075,9 @@
     {
       "slug": "cinta-terakhir-baba-dunja-baba-dunjas-letzte-liebe",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1335,
+      "assetMode": "sheets",
       "title": "Cinta Terakhir Baba Dunja (Baba Dunjas Letzte Liebe)",
       "author": "Alina Bronsky",
       "pages": 164,
@@ -957,6 +1098,9 @@
     {
       "slug": "cinta-yang-marah",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Cinta Yang Marah",
       "author": "M. Aan Mansyur",
       "pages": 100,
@@ -977,6 +1121,9 @@
     {
       "slug": "city-lite-better-than-this",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1405,
+      "assetMode": "sheets",
       "title": "City lite: better than this",
       "author": "Pradnya Paramitha",
       "pages": 304,
@@ -997,6 +1144,9 @@
     {
       "slug": "confess-pengakuan",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1336,
+      "assetMode": "sheets",
       "title": "Confess - Pengakuan",
       "author": "Colleen Hoover",
       "pages": 380,
@@ -1017,6 +1167,9 @@
     {
       "slug": "d-angel",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "D’Angel",
       "author": "Luna Torashyngu",
       "pages": 255,
@@ -1037,6 +1190,9 @@
     {
       "slug": "daun-yang-jatuh-tak-pernah-membenci-angin",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1165,
+      "assetMode": "sheets",
       "title": "Daun Yang Jatuh Tak Pernah Membenci Angin",
       "author": "Tere Liye",
       "pages": 139,
@@ -1057,6 +1213,9 @@
     {
       "slug": "deception-point-titik-muslihat",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1350,
+      "assetMode": "sheets",
       "title": "Deception Point (Titik Muslihat)",
       "author": "Dan Brown",
       "pages": 470,
@@ -1077,6 +1236,9 @@
     {
       "slug": "defeated-by-love",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1292,
+      "assetMode": "sheets",
       "title": "Defeated by Love",
       "author": "Ghina Nauvalia",
       "pages": 161,
@@ -1097,6 +1259,9 @@
     {
       "slug": "delapan-puluh-enam",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Delapan puluh enam",
       "author": "",
       "pages": 260,
@@ -1117,6 +1282,9 @@
     {
       "slug": "dia-adalah-kakakku-unedited-version",
       "type": "epub",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "images",
       "title": "Dia Adalah Kakakku (unedited version)",
       "author": "Tere Liye",
       "pages": 0,
@@ -1137,6 +1305,9 @@
     {
       "slug": "dikatakan-atau-tidak-dikatakan-itu-tetap-cinta",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1369,
+      "assetMode": "sheets",
       "title": "Dikatakan atau Tidak Dikatakan, Itu Tetap Cinta",
       "author": "Tere Liye",
       "pages": 107,
@@ -1157,6 +1328,9 @@
     {
       "slug": "dry-kering",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1335,
+      "assetMode": "sheets",
       "title": "Dry (Kering)",
       "author": "Neal Shusterman",
       "pages": 458,
@@ -1177,6 +1351,9 @@
     {
       "slug": "e-book-rahasia-pede-bangun-relasi",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1407,
+      "assetMode": "sheets",
       "title": "E-Book Rahasia PEDE Bangun Relasi",
       "author": "Apry Joel Oematan",
       "pages": 44,
@@ -1197,6 +1374,9 @@
     {
       "slug": "ebook-belajar-bahasa-inggris-dengan-muda",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1165,
+      "assetMode": "sheets",
       "title": "Ebook belajar bahasa inggris dengan muda",
       "author": "",
       "pages": 71,
@@ -1217,6 +1397,9 @@
     {
       "slug": "evolusi-rindu-ruang-sepi-dan-dirimu",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "sheets",
       "title": "Evolusi Rindu Ruang Sepi dan Dirimu",
       "author": "Gentakiswara",
       "pages": 290,
@@ -1237,6 +1420,9 @@
     {
       "slug": "fluent-english",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1274,
+      "assetMode": "sheets",
       "title": "Fluent English",
       "author": "Barbara R. Raifsnider",
       "pages": 232,
@@ -1257,6 +1443,9 @@
     {
       "slug": "gigi-koko",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1405,
+      "assetMode": "sheets",
       "title": "Gigi Koko",
       "author": "Mhia",
       "pages": 340,
@@ -1277,6 +1466,9 @@
     {
       "slug": "hades-alexandra-adornetto",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1629,
+      "assetMode": "sheets",
       "title": "Hades (Alexandra Adornetto",
       "author": "Alexandra Adornetto",
       "pages": 602,
@@ -1297,6 +1489,9 @@
     {
       "slug": "hafalan-shalat-delisa",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1277,
+      "assetMode": "sheets",
       "title": "Hafalan Shalat Delisa",
       "author": "Tere Liye",
       "pages": 253,
@@ -1317,6 +1512,9 @@
     {
       "slug": "halo",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1634,
+      "assetMode": "sheets",
       "title": "Halo",
       "author": "Alexandra Adornetto",
       "pages": 606,
@@ -1337,6 +1535,9 @@
     {
       "slug": "heaven",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1629,
+      "assetMode": "sheets",
       "title": "Heaven",
       "author": "Alexandra Adornetto",
       "pages": 582,
@@ -1357,6 +1558,9 @@
     {
       "slug": "hening",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1335,
+      "assetMode": "sheets",
       "title": "Hening",
       "author": "Shusaku Endo",
       "pages": 308,
@@ -1377,6 +1581,9 @@
     {
       "slug": "hijrah-itu-cinta",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1420,
+      "assetMode": "sheets",
       "title": "Hijrah Itu Cinta",
       "author": "Abay Adhitya",
       "pages": 285,
@@ -1397,6 +1604,9 @@
     {
       "slug": "hilmy-milan",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1249,
+      "assetMode": "sheets",
       "title": "Hilmy Milan",
       "author": "Nadia Ristivani",
       "pages": 311,
@@ -1417,6 +1627,9 @@
     {
       "slug": "hujan",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1165,
+      "assetMode": "sheets",
       "title": "Hujan",
       "author": "Tere Liye",
       "pages": 264,
@@ -1437,6 +1650,9 @@
     {
       "slug": "hujan-2",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Hujan",
       "author": "Tere Liye",
       "pages": 315,
@@ -1457,6 +1673,9 @@
     {
       "slug": "istana-emas",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1475,
+      "assetMode": "sheets",
       "title": "Istana Emas",
       "author": "Maria A. Sardjono",
       "pages": 412,
@@ -1477,6 +1696,9 @@
     {
       "slug": "istri-kedua",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "sheets",
       "title": "Istri Kedua",
       "author": "Asma Nadia, Isa Alamsyah",
       "pages": 279,
@@ -1497,6 +1719,9 @@
     {
       "slug": "jadikan-aku-halal-bagimu-nikmati-pacaran-setelah-menikah",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1188,
+      "assetMode": "sheets",
       "title": "Jadikan Aku Halal Bagimu Nikmati Pacaran Setelah Menikah",
       "author": "Ahmad Rifa'i Rif'an",
       "pages": 160,
@@ -1517,6 +1742,9 @@
     {
       "slug": "jakarta-sebelum-pagi-indonesian-edition",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "sheets",
       "title": "Jakarta Sebelum Pagi (Indonesian Edition)",
       "author": "Ziggy Zeszyazeoviennazabrizkie",
       "pages": 280,
@@ -1537,6 +1765,9 @@
     {
       "slug": "janji",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1425,
+      "assetMode": "sheets",
       "title": "Janji",
       "author": "Tere Liye",
       "pages": 927,
@@ -1557,6 +1788,9 @@
     {
       "slug": "jatuh-cinta-tak-pernah-salah",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "sheets",
       "title": "Jatuh Cinta Tak Pernah Salah",
       "author": "negeriakhirat, Arum LS",
       "pages": 161,
@@ -1577,6 +1811,9 @@
     {
       "slug": "jodoh-selalu-datang-tepat-waktu",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1350,
+      "assetMode": "sheets",
       "title": "Jodoh Selalu Datang Tepat Waktu",
       "author": "Nurul Taufiqoh",
       "pages": 290,
@@ -1597,6 +1834,9 @@
     {
       "slug": "jodoh-tak-mau-menunggu",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1350,
+      "assetMode": "sheets",
       "title": "Jodoh Tak Mau Menunggu",
       "author": "Tim Penulis instagram (at) diary.islami",
       "pages": 272,
@@ -1617,6 +1857,9 @@
     {
       "slug": "kau-penggenap-imanku",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1350,
+      "assetMode": "sheets",
       "title": "Kau Penggenap Imanku",
       "author": "suami.istri.bahagia",
       "pages": 179,
@@ -1775,6 +2018,9 @@
     {
       "slug": "kawin-paksa-novel-snowdrop-creative-partner",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1277,
+      "assetMode": "sheets",
       "title": "Kawin Paksa: Novel Snowdrop Creative Partner",
       "author": "Rustina Zahra",
       "pages": 313,
@@ -1795,6 +2041,9 @@
     {
       "slug": "kekasih-akhir-pekan",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1325,
+      "assetMode": "sheets",
       "title": "Kekasih Akhir Pekan",
       "author": "Aya Emily",
       "pages": 319,
@@ -1815,6 +2064,9 @@
     {
       "slug": "kerumunan-terakhir",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1336,
+      "assetMode": "sheets",
       "title": "Kerumunan Terakhir",
       "author": "Okky Madasari",
       "pages": 364,
@@ -1835,6 +2087,9 @@
     {
       "slug": "ketika-si-miskin-bertutur",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 637,
+      "assetMode": "sheets",
       "title": "Ketika Si Miskin Bertutur",
       "author": "putumerta",
       "pages": 102,
@@ -1857,6 +2112,9 @@
     {
       "slug": "komet-minor",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1277,
+      "assetMode": "sheets",
       "title": "Komet Minor",
       "author": "Tere Liye",
       "pages": 384,
@@ -1880,6 +2138,9 @@
     {
       "slug": "komik-dari-twit-nya-raditya-dika",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "sheets",
       "title": "Komik dari Twit-nya Raditya Dika",
       "author": "Raditya Dika, Milfa Saadah",
       "pages": 139,
@@ -1900,6 +2161,9 @@
     {
       "slug": "lalita",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Lalita",
       "author": "Ayu Utami",
       "pages": 262,
@@ -1920,6 +2184,9 @@
     {
       "slug": "lavina",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1292,
+      "assetMode": "sheets",
       "title": "Lavina",
       "author": "Ainun Nufus",
       "pages": 373,
@@ -1940,6 +2207,9 @@
     {
       "slug": "layla-seribu-malam-tanpamu",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1165,
+      "assetMode": "sheets",
       "title": "Layla: Seribu Malam Tanpamu",
       "author": "Candra Malik",
       "pages": 178,
@@ -1960,6 +2230,9 @@
     {
       "slug": "lelaki-harimau",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1350,
+      "assetMode": "sheets",
       "title": "Lelaki Harimau",
       "author": "Eka Kurniawan",
       "pages": 204,
@@ -1980,6 +2253,9 @@
     {
       "slug": "lelaki-jahanam",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1318,
+      "assetMode": "sheets",
       "title": "Lelaki Jahanam",
       "author": "Novie Purwanti",
       "pages": 143,
@@ -2000,6 +2276,9 @@
     {
       "slug": "live-love-laugh-living-fully-loving-unconditionaly-laughing-freely-hidup-cinta-d",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1345,
+      "assetMode": "sheets",
       "title": "Live, Love, Laugh Living Fully, Loving Unconditionaly, Laughing Freely (Hidup Cinta dan Tawa Hidup Sepenuhnya, Mencintai...",
       "author": "Anand Krishna",
       "pages": 202,
@@ -2020,6 +2299,9 @@
     {
       "slug": "love-life-kisah-mengharukan-tentang-hidup-cinta-dan-kesetiaan",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1383,
+      "assetMode": "sheets",
       "title": "Love Life Kisah Mengharukan tentang Hidup, Cinta, dan Kesetiaan",
       "author": "",
       "pages": 414,
@@ -2040,6 +2322,9 @@
     {
       "slug": "lumpu",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1123,
+      "assetMode": "sheets",
       "title": "Lumpu",
       "author": "Tere Liye",
       "pages": 684,
@@ -2060,6 +2345,9 @@
     {
       "slug": "matahari",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Matahari",
       "author": "Tere Liye",
       "pages": 403,
@@ -2080,6 +2368,9 @@
     {
       "slug": "menggapai-cinta-nya-amalan-amalan-yang-dicintai-allah-menurut-al-quran-dan-hadis",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1260,
+      "assetMode": "sheets",
       "title": "Menggapai Cinta-Nya Amalan-Amalan yang Dicintai Allah (Menurut Al-Quran dan Hadist yang Shahih)",
       "author": "Dedi",
       "pages": 164,
@@ -2100,6 +2391,9 @@
     {
       "slug": "nebula-unedited-version",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1273,
+      "assetMode": "sheets",
       "title": "Nebula (unedited version)",
       "author": "Tere Liye",
       "pages": 420,
@@ -2120,6 +2414,9 @@
     {
       "slug": "nebula-unedited-version-2",
       "type": "epub",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "images",
       "title": "NEBULA (unedited version)",
       "author": "Tere Liye",
       "pages": 0,
@@ -2140,6 +2437,9 @@
     {
       "slug": "negeri-para-bedebah",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Negeri Para Bedebah",
       "author": "Tere Liye",
       "pages": 444,
@@ -2160,6 +2460,9 @@
     {
       "slug": "otodidak-jago-kuasai-bahasa-inggris-dari-nol",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1274,
+      "assetMode": "sheets",
       "title": "Otodidak Jago Kuasai Bahasa Inggris Dari Nol",
       "author": "",
       "pages": 208,
@@ -2180,6 +2483,9 @@
     {
       "slug": "oxford-guide-to-english-grammar",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1437,
+      "assetMode": "sheets",
       "title": "Oxford Guide to English Grammar",
       "author": "",
       "pages": 453,
@@ -2200,6 +2506,9 @@
     {
       "slug": "perempuan-patah-hati-yang-kembali-menemukan-cinta-melalui-mimpi",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1420,
+      "assetMode": "sheets",
       "title": "Perempuan Patah Hati yang Kembali Menemukan Cinta Melalui Mimpi",
       "author": "Eka Kurniawan",
       "pages": 178,
@@ -2220,6 +2529,9 @@
     {
       "slug": "pergi",
       "type": "epub",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "images",
       "title": "Pergi",
       "author": "Tere Liye",
       "pages": 0,
@@ -2240,6 +2552,9 @@
     {
       "slug": "pernikahan-tanpa-cinta-ruthlessly-bedded-forcibly-wedded",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1454,
+      "assetMode": "sheets",
       "title": "Pernikahan Tanpa Cinta (Ruthlessly Bedded, Forcibly Wedded)",
       "author": "UseR",
       "pages": 271,
@@ -2260,6 +2575,9 @@
     {
       "slug": "pernikahan-yang-agung",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1469,
+      "assetMode": "sheets",
       "title": "Pernikahan Yang Agung",
       "author": "V. Lestari",
       "pages": 428,
@@ -2280,6 +2598,9 @@
     {
       "slug": "pinang-aku-di-saat-yang-tepat",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1376,
+      "assetMode": "sheets",
       "title": "Pinang Aku di Saat yang Tepat",
       "author": "Dr. Wirdyaningsih, S.H., M.H., Farida Prihatini, S.H., M.H., C.N., Iffah Karimah, S.H., M.Sc., Erizka Permatasari, S.H.",
       "pages": 112,
@@ -2300,6 +2621,9 @@
     {
       "slug": "pintar-bahasa-inggris-mind-map",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1380,
+      "assetMode": "sheets",
       "title": "Pintar Bahasa Inggris Dengan Mind Map",
       "author": "Yusup Priyasudiarja, Y. Sri Purwaningsih",
       "pages": 384,
@@ -2323,6 +2647,9 @@
     {
       "slug": "rembulan-tenggelam-di-wajah-mu",
       "type": "epub",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "images",
       "title": "Rembulan Tenggelam di Wajah-Mu",
       "author": "Tere Liye",
       "pages": 0,
@@ -2343,6 +2670,9 @@
     {
       "slug": "rindu",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1273,
+      "assetMode": "sheets",
       "title": "Rindu",
       "author": "Tere Liye",
       "pages": 669,
@@ -2363,6 +2693,9 @@
     {
       "slug": "sang-penandai",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1165,
+      "assetMode": "sheets",
       "title": "Sang Penandai",
       "author": "Tere Liye",
       "pages": 214,
@@ -2383,6 +2716,9 @@
     {
       "slug": "sebelas",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1274,
+      "assetMode": "sheets",
       "title": "Sebelas",
       "author": "Tere Liye",
       "pages": 760,
@@ -2403,6 +2739,9 @@
     {
       "slug": "selamat-tinggal-unedited-version",
       "type": "epub",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "images",
       "title": "Selamat Tinggal (Unedited Version)",
       "author": "Tere Liye",
       "pages": 0,
@@ -2423,6 +2762,9 @@
     {
       "slug": "semoga-bunda-disayang-allah",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1165,
+      "assetMode": "sheets",
       "title": "Semoga Bunda Disayang Allah",
       "author": "Tere Liye",
       "pages": 373,
@@ -2443,6 +2785,9 @@
     {
       "slug": "semua-ingin-jatuh-cinta-love-quotes-kahlil-gibran",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1488,
+      "assetMode": "sheets",
       "title": "Semua Ingin Jatuh Cinta Love Quotes Kahlil Gibran",
       "author": "Gieb Harri",
       "pages": 106,
@@ -2463,6 +2808,9 @@
     {
       "slug": "semua-tentang-cinta",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1259,
+      "assetMode": "sheets",
       "title": "Semua tentang Cinta",
       "author": "Ronald Frank",
       "pages": 164,
@@ -2483,6 +2831,9 @@
     {
       "slug": "seni-mencintai",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1286,
+      "assetMode": "sheets",
       "title": "Seni Mencintai",
       "author": "Erich Fromm",
       "pages": 192,
@@ -2503,6 +2854,9 @@
     {
       "slug": "seporsi-mie-ayam-sebelum-mati-brian-khrisna",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1165,
+      "assetMode": "sheets",
       "title": "Seporsi Mie Ayam Sebelum Mati - Brian Khrisna",
       "author": "Brian Khrisna",
       "pages": 217,
@@ -2523,6 +2877,9 @@
     {
       "slug": "sepotong-hati-yang-baru",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1273,
+      "assetMode": "sheets",
       "title": "Sepotong Hati Yang Baru",
       "author": "Tere Liye",
       "pages": 165,
@@ -2543,6 +2900,9 @@
     {
       "slug": "serpihan-cinta-bipolar-runaway-husband",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1472,
+      "assetMode": "sheets",
       "title": "Serpihan Cinta Bipolar (Runaway Husband)",
       "author": "Mira W",
       "pages": 316,
@@ -2563,6 +2923,9 @@
     {
       "slug": "setiap-rasa-ada-batasnya-setiap-kita-ada-jodohnya",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1286,
+      "assetMode": "sheets",
       "title": "Setiap Rasa Ada Batasnya, Setiap Kita Ada Jodohnya",
       "author": "Muhammad Sa’id , Armyta Dwi Pratiwi",
       "pages": 202,
@@ -2583,6 +2946,9 @@
     {
       "slug": "sex-menemukan-cinta-sejati-dalam-dunia-yang-penuh-kepalsuan",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 715,
+      "assetMode": "sheets",
       "title": "Sex Menemukan Cinta Sejati dalam Dunia yang Penuh Kepalsuan",
       "author": "Dave Bordon",
       "pages": 105,
@@ -2709,6 +3075,9 @@
     {
       "slug": "si-anak-badai-unedited-version",
       "type": "epub",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "images",
       "title": "SI ANAK BADAI (unedited version)",
       "author": "Tere Liye",
       "pages": 0,
@@ -2729,6 +3098,9 @@
     {
       "slug": "si-anak-cahaya",
       "type": "epub",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "images",
       "title": "Si Anak Cahaya",
       "author": "Tere Liye",
       "pages": 0,
@@ -2749,6 +3121,9 @@
     {
       "slug": "si-anak-pintar",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1273,
+      "assetMode": "sheets",
       "title": "Si Anak Pintar",
       "author": "Tere Liye",
       "pages": 375,
@@ -2769,6 +3144,9 @@
     {
       "slug": "si-anak-spesial",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1368,
+      "assetMode": "sheets",
       "title": "Si Anak Spesial",
       "author": "Tere Liye",
       "pages": 407,
@@ -2789,6 +3167,9 @@
     {
       "slug": "si-putih",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1425,
+      "assetMode": "sheets",
       "title": "Si Putih",
       "author": "Tere Liye",
       "pages": 747,
@@ -2809,6 +3190,9 @@
     {
       "slug": "sisi-tergelap-surga",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Sisi Tergelap Surga",
       "author": "Brian Khrisna",
       "pages": 308,
@@ -2829,6 +3213,9 @@
     {
       "slug": "sungguh-kau-boleh-pergi",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1274,
+      "assetMode": "sheets",
       "title": "Sungguh, Kau Boleh Pergi",
       "author": "Tere Liye",
       "pages": 82,
@@ -2849,6 +3236,9 @@
     {
       "slug": "surat-cinta-tanpa-nama-2",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1165,
+      "assetMode": "sheets",
       "title": "Surat Cinta Tanpa Nama",
       "author": "Pit Sansi",
       "pages": 286,
@@ -2869,6 +3259,9 @@
     {
       "slug": "surat-cinta-tanpa-nama",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1900,
+      "assetMode": "sheets",
       "title": "Surat Cinta Tanpa Nama",
       "author": "Nuniek Kharisma Rosalina",
       "pages": 184,
@@ -2889,6 +3282,9 @@
     {
       "slug": "surat-untuk-yang-pernah-patah-hati",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1316,
+      "assetMode": "sheets",
       "title": "Surat Untuk yang Pernah Patah Hati",
       "author": "@Peyemp",
       "pages": 246,
@@ -2909,6 +3305,9 @@
     {
       "slug": "tentang-kamu",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1273,
+      "assetMode": "sheets",
       "title": "Tentang Kamu",
       "author": "Tere Liye",
       "pages": 648,
@@ -2929,6 +3328,9 @@
     {
       "slug": "teruslah-bodoh-jangan-pintar",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1274,
+      "assetMode": "sheets",
       "title": "Teruslah Bodoh Jangan Pintar",
       "author": "Tere Liye",
       "pages": 374,
@@ -2961,6 +3363,9 @@
     {
       "slug": "the-art-of-loving-memaknai-hakikat-cinta",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1322,
+      "assetMode": "sheets",
       "title": "The Art of Loving (Memaknai Hakikat Cinta)",
       "author": "Erich Fromm",
       "pages": 189,
@@ -2981,6 +3386,9 @@
     {
       "slug": "the-devotion-of-suspect-x-yogisha-x-no-kenshin-kesetiaan-mr",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1336,
+      "assetMode": "sheets",
       "title": "The Devotion of Suspect X - Yôgisha X No Kenshin - Kesetiaan Mr.",
       "author": "Keigo Higashino",
       "pages": 324,
@@ -3001,6 +3409,9 @@
     {
       "slug": "ya-allah-aku-jatuh-cinta",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Ya Allah, Aku Jatuh Cinta",
       "author": "Qowi Alta Az Zahra",
       "pages": 132,
@@ -3021,6 +3432,9 @@
     {
       "slug": "yang-telah-lama-pergi",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1385,
+      "assetMode": "sheets",
       "title": "Yang Telah Lama Pergi",
       "author": "Tere Liye",
       "pages": 827,
@@ -3041,6 +3455,9 @@
     {
       "slug": "young-adult-dua-aksara-go",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1335,
+      "assetMode": "sheets",
       "title": "Young Adult: Dua Aksara (Go)",
       "author": "Kazuki Kaneshiro",
       "pages": 250,
@@ -3061,6 +3478,9 @@
     {
       "slug": "young-adult-kiss-me-in-new-york",
       "type": "pdf",
+      "pageW": 900,
+      "pageH": 1334,
+      "assetMode": "sheets",
       "title": "Young Adult: Kiss Me in New York",
       "author": "Catherine Rider",
       "pages": 268,

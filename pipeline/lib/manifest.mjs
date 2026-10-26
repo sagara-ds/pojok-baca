@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
 
-import { DATA_DIR } from '../config.mjs';
+import { DATA_DIR, ROOT } from '../config.mjs';
 import { authorKey, resolveMeta, slugBaseFor, titleKey, uniqueSlug } from './naming.mjs';
 import { readJson, writeJson } from './util.mjs';
 
@@ -14,6 +14,32 @@ export const LINKS_PATH = LINKS_FILE;
 
 function newDlId() {
   return `dl_${crypto.randomBytes(8).toString('base64url').replace(/[^a-zA-Z0-9]/g, '').slice(0, 12)}`;
+}
+
+/**
+ * Normalisasi links tersimpan -> { slug: { dlId } }.
+ *
+ * File links.private.json disimpan berformat dlId -> { slug, ... } (format
+ * keluaran), sedangkan stabilisator di dalam buildManifest mencari
+ * berformat slug -> { dlId }. Tanpa konversi ini, tiap run manifest
+ * menganggap semua slug belum punya dlId dan meng-generate ulang semuanya —
+ * memutus konsistensi dengan file PDF yang sudah disalin ke public/dl/.
+ *
+ * Kedua format diterima supaya fungsi ini tahan terhadap file lama.
+ */
+function denormalizeLinks(saved = {}) {
+  const links = {};
+  for (const [key, entry] of Object.entries(saved)) {
+    if (!entry || typeof entry !== 'object') continue;
+    if (key.startsWith('dl_')) {
+      // Format dlId -> { slug, ... }
+      if (typeof entry.slug === 'string' && entry.slug) links[entry.slug] = { dlId: key };
+    } else if (typeof entry.dlId === 'string' && entry.dlId) {
+      // Format slug -> { dlId, ... }
+      links[key] = { dlId: entry.dlId };
+    }
+  }
+  return links;
 }
 
 /**
@@ -32,7 +58,10 @@ export async function buildManifest({ driveFiles, scan, render, groups, previous
   const overrides = Object.fromEntries(
     Object.entries(override).filter(([key]) => !key.startsWith('_')),
   );
-  const links = { ...(previousLinks ?? {}) };
+  const links = denormalizeLinks(previousLinks);
+
+  // Indeks reader (dihasilkan pipe:bundle) berisi ukuran halaman & mode delivery.
+  const INDEX_DIR = path.join(ROOT, 'public', 'data', 'pages');
 
   const takenSlugs = new Set();
   const books = [];
@@ -75,9 +104,14 @@ export async function buildManifest({ driveFiles, scan, render, groups, previous
     const dlId = links[slug].dlId;
     driveIdBySlug[slug] = representative.id;
 
+    const readerIndex = await readJson(path.join(INDEX_DIR, `${slug}.json`), null);
+
     books.push({
       slug,
       type: scanData.type ?? 'pdf',
+      pageW: readerIndex?.pageW ?? 900,
+      pageH: readerIndex?.pageH ?? 1316,
+      assetMode: readerIndex?.mode ?? 'images',
       title,
       author,
       pages,

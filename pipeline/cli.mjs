@@ -33,7 +33,7 @@ import {
   renderPageRaw,
 } from './lib/pdfscan.mjs';
 import { buildManifest, writeManifest } from './lib/manifest.mjs';
-import { bundleBook } from './lib/bundle.mjs';
+import { bundleAll } from './lib/bundle.mjs';
 import { authorKey, parseFileName, slugBaseFor, slugify, titleKey, uniqueSlug } from './lib/naming.mjs';
 import { buildWatermarkSvg } from './lib/watermark.mjs';
 import { ensureDir, humanBytes, log, parseArgs, readJson, writeJson } from './lib/util.mjs';
@@ -43,8 +43,15 @@ const SCAN_FILE = path.join(CACHE_DIR, 'scan.json');
 const GROUPS_FILE = path.join(CACHE_DIR, 'groups.json');
 const RENDER_FILE = path.join(CACHE_DIR, 'render.json');
 const PDF_DIR = path.join(CACHE_DIR, 'pdf');
-const PAGES_DIR = path.join(ROOT, 'public', 'pages');
+// Hasil render disimpan di cache, BUKAN di public/.
+// public/ hanya boleh berisi aset yang benar-benar di-deploy: kalau public/
+// berisi 41.000 file halaman, batas 20.000 file per Worker Cloudflare akan
+// terlampaui dan build gagal.
+const PAGES_DIR = path.join(CACHE_DIR, 'pages');
 const COVERS_DIR = path.join(ROOT, 'public', 'covers');
+const SHEETS_DIR = path.join(ROOT, 'public', 'sheets');
+// Indeks reader harus bisa diakses CDN (bukan hanya server), jadi ditaruh di public/.
+const PAGES_INDEX_DIR = path.join(ROOT, 'public', 'data', 'pages');
 
 const args = parseArgs(process.argv.slice(2));
 const command = args._[0] ?? 'help';
@@ -653,40 +660,33 @@ async function cmdVerify() {
 async function cmdBundle() {
   const maxPages = Number(args.pages ?? 3);
   const maxHeight = Number(args['max-height'] ?? 4096);
-  const only = args.slug ? [args.slug] : null;
+  const mode = args.mode === 'images' ? 'images' : 'sheets';
 
-  log.step(`Menggabung halaman jadi strip (maks ${maxPages} hal/strip, tinggi maks ${maxHeight}px)…`);
+  log.step(`Bundling halaman -> ${mode} (maks ${maxPages} hal/strip, tinggi maks ${maxHeight}px)…`);
+  await ensureDir(SHEETS_DIR);
+  await ensureDir(PAGES_INDEX_DIR);
 
-  const sheetsRoot = path.join(ROOT, 'public', 'sheets');
-  const geometryDir = path.join(DATA_DIR, 'geometry');
-  const slugs = only ?? (await fsp.readdir(PAGES_DIR, { withFileTypes: true }))
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name);
+  const results = await bundleAll({
+    pagesRoot: PAGES_DIR,
+    sheetsRoot: SHEETS_DIR,
+    indexRoot: PAGES_INDEX_DIR,
+    mode,
+    maxPages,
+    maxHeight,
+    quality: config.render.quality,
+    onProgress: (r) => {
+      log.dim(`${r.slug.padEnd(34)} ${String(r.count).padStart(4)} hal -> ${String(r.strips).padStart(4)} ${mode}  ${humanBytes(r.bytes)}`);
+    },
+  });
 
-  let totalPages = 0;
-  let totalStrips = 0;
-  let totalBytes = 0;
-
-  for (const slug of slugs) {
-    const result = await bundleBook(path.join(PAGES_DIR, slug), path.join(sheetsRoot, slug), {
-      maxPages,
-      maxHeight,
-    });
-    if (!result) continue;
-    await ensureDir(geometryDir);
-    await fsp.writeFile(
-      path.join(geometryDir, `${slug}.json`),
-      JSON.stringify({ slug, strips: result.strips, pages: result.pages, geometry: result.geometry }),
-      'utf8',
-    );
-    totalPages += result.pages;
-    totalStrips += result.strips;
-    totalBytes += result.bytes;
-    log.dim(`${slug.padEnd(34)} ${String(result.pages).padStart(4)} hal -> ${String(result.strips).padStart(3)} strip  ${humanBytes(result.bytes)}`);
+  const totalPages = results.reduce((s, r) => s + r.count, 0);
+  const totalFiles = results.reduce((s, r) => s + r.strips, 0);
+  const totalBytes = results.reduce((s, r) => s + r.bytes, 0);
+  log.ok(`${totalPages} halaman -> ${totalFiles} file (${humanBytes(totalBytes)})`);
+  log.dim(`  indeks reader: ${path.relative(ROOT, PAGES_INDEX_DIR)}/<slug>.json`);
+  if (mode === 'sheets' && totalFiles > 20000) {
+    log.warn(`${totalFiles} file MELEBIHI batas 20.000 file Cloudflare. Turunkan --pages atau pakai --max-height lebih kecil.`);
   }
-
-  log.ok(`${totalPages} halaman -> ${totalStrips} strip (${humanBytes(totalBytes)})`);
-  log.dim(`  geo: ${path.relative(ROOT, geometryDir)}/<slug>.json`);
 }
 
 // ---------------------------------------------------------------------------
