@@ -1,32 +1,23 @@
-﻿# Cache static assets aggressively (hashed by the bundle step)
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Strip halaman hasil pipe:bundle. Nama strip TIDAK content-hash, jadi jangan
-# immutable setahun — kalau buku di-render ulang mustahil mem-bust cache.
-# 7 hari cukup untuk pembaca setia tanpa berisiko stale permanen.
 /sheets/*
   Cache-Control: public, max-age=604800
 
-# Tidak ada aset di path ini lagi (pindah ke .cache/pages saat M2),
-# tapi tetap di-cache kalau ada rollback.
 /pages/*
   Cache-Control: public, max-age=86400
 
 /covers/*
   Cache-Control: public, max-age=31536000, immutable
 
-# File PDF untuk tombol download: dipaksa attachment, bukan dibuka inline di browser
 /dl/*
   Content-Disposition: attachment
   Cache-Control: public, max-age=86400
   X-Robots-Tag: noindex
 
-# Indeks posisi halaman di dalam strip (dipakai reader)
 /data/*
   Cache-Control: public, max-age=86400
 
-# Security headers global
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
@@ -34,15 +25,17 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   X-XSS-Protection: 1; mode=block
 
-# Cache HTML - short
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
 /manifest.json
   Cache-Control: public, max-age=86400
+
 /robots.txt
   Cache-Control: public, max-age=86400
+
 /favicon.svg
   Cache-Control: public, max-age=86400
+
 /book-placeholder.svg
   Cache-Control: public, max-age=86400
