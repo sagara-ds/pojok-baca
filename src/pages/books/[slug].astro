@@ -1,0 +1,185 @@
+---
+// Book detail page - dynamic route
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fetchBook, sanitizeHtml } from '../../services/api';
+import { type Book } from '../../services/types';
+import BookCover from '../../components/book/BookCover.astro';
+import BookMeta from '../../components/book/BookMeta.astro';
+import BookDescription from '../../components/book/BookDescription.astro';
+import ReadButton from '../../components/book/ReadButton.astro';
+import Card from '../../components/ui/Card.astro';
+import Skeleton from '../../components/ui/Skeleton.astro';
+import ErrorState from '../../components/ui/ErrorState.astro';
+
+export async function getStaticPaths() {
+  // For static generation, we'd need a list of all book slugs
+  // For now, return empty to use SSR mode
+  return [];
+}
+
+export const prerender = false; // Use SSR for dynamic book pages
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/books');
+}
+
+let book: Book | null = null;
+let error: string | null = null;
+
+try {
+  book = await fetchBook(slug as string);
+} catch (e) {
+  error = e instanceof Error ? e.message : 'Gagal memuat detail buku';
+}
+
+if (!book && !error) {
+  error = 'Buku tidak ditemukan';
+}
+
+const pageTitle = book ? book.title : 'Buku Tidak Ditemukan';
+const pageDescription = book
+  ? `${book.title} oleh ${book.author} - ${book.description.slice(0, 160)}...`
+  : 'Buku yang Anda cari tidak ditemukan';
+const ogImage = book?.coverUrl;
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalURL={`/books/${slug}`}
+  ogImage={ogImage}
+  noIndex={!book}
+>
+  <main id="main-content" class="flex-1">
+    <div class="container py-6 sm:py-8">
+      {error ? (
+        <ErrorState
+          title={book ? 'Gagal Memuat Detail' : 'Buku Tidak Ditemukan'}
+          message={error}
+          actionLabel="Kembali ke Daftar Buku"
+          actionHref="/books"
+          variant="page"
+        />
+      ) : book ? (
+        <>
+          {/* Breadcrumb */}
+          <nav class="mb-6" aria-label="Breadcrumb">
+            <ol class="flex items-center gap-2 text-sm text-text-muted" role="list">
+              <li>
+                <a href="/" class="hover:text-text transition-colors">Beranda</a>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li>
+                <a href="/books" class="hover:text-text transition-colors">Buku</a>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li aria-current="page" class="text-text truncate max-w-xs">{book.title}</li>
+            </ol>
+          </nav>
+
+          {/* Book Detail Layout */}
+          <div class="grid gap-6 sm:grid-cols-[256px_1fr] items-start">
+            {/* Cover - Sticky on desktop */}
+            <div class="sticky top-24 self-start sm:max-w-xs mx-auto sm:mx-0">
+              <Card variant="elevated" padding="none" class="overflow-hidden">
+                <BookCover
+                  src={book.coverUrl || '/book-placeholder.svg'}
+                  alt={`Cover buku ${book.title}`}
+                  width={256}
+                  height={384}
+                  priority
+                />
+              </Card>
+
+              {/* Quick actions */}
+              <div class="mt-4 space-y-3">
+                <ReadButton
+                  slug={book.slug}
+                  title={book.title}
+                  readingUrl={book.readingUrl}
+                  fullWidth
+                />
+
+                {book.isbn && (
+                  <div class="p-3 rounded-lg bg-secondary text-sm">
+                    <span class="font-medium text-text-muted">ISBN:</span>
+                    <span class="ml-2 text-text font-mono">{book.isbn}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Book Info */}
+            <div class="space-y-6">
+              <header>
+                <h1 class="text-2xl sm:text-3xl font-bold text-text leading-tight">{book.title}</h1>
+                <p class="mt-2 text-lg text-text-muted">{book.author}</p>
+              </header>
+
+              <BookMeta
+                title={book.title}
+                author={book.author}
+                category={book.category}
+                publishedYear={book.publishedYear}
+                pages={book.pages}
+                language={book.language}
+                isbn={book.isbn}
+              />
+
+              {book.description && (
+                <BookDescription description={book.description} maxLines={6} />
+              )}
+
+              {/* Additional info card */}
+              <Card variant="outlined" padding="md" class="mt-4">
+                <h2 class="font-semibold text-text mb-3">Informasi Tambahan</h2>
+                <dl class="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <dt class="text-sm text-text-muted">Jumlah Halaman</dt>
+                    <dd class="text-text">{book.pages || '-'} halaman</dd>
+                  </div>
+                  <div>
+                    <dt class="text-sm text-text-muted">Bahasa</dt>
+                    <dd class="text-text capitalize">{book.language || '-'}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-sm text-text-muted">Tahun Terbit</dt>
+                    <dd class="text-text">{book.publishedYear || '-'}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-sm text-text-muted">Kategori</dt>
+                    <dd class="text-text">{book.category || '-'}</dd>
+                  </div>
+                  {book.isbn && (
+                    <div class="sm:col-span-2">
+                      <dt class="text-sm text-text-muted">ISBN</dt>
+                      <dd class="text-text font-mono">{book.isbn}</dd>
+                    </div>
+                  )}
+                </dl>
+              </Card>
+            </div>
+          </div>
+
+          {/* JSON-LD Book structured data */}
+          <script type="application/ld+json" set:html={JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Book',
+            name: book.title,
+            author: { '@type': 'Person', name: book.author },
+            description: book.description,
+            image: book.coverUrl,
+            datePublished: book.publishedYear ? String(book.publishedYear) : undefined,
+            numberOfPages: book.pages || undefined,
+            inLanguage: book.language || 'id',
+            isbn: book.isbn,
+            genre: book.category,
+            url: new URL(`/books/${book.slug}`, Astro.site).href,
+          })} />
+        </>
+      ) : null}
+    </div>
+  </main>
+</BaseLayout>

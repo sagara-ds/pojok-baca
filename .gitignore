@@ -1,0 +1,39 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# pipeline: cache kerja (PDF sumber, hasil scan, laporan)
+.cache/
+
+# pipeline: aset hasil render (bukan untuk di-commit; di-deploy via CI/artefak)
+public/pages/
+public/sheets/
+public/covers/
+public/dl/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dev.log
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+#obsidians
+Pojok baca/.obsidian
+
+# wrangler dev state (local KV/logs)
+.wrangler/

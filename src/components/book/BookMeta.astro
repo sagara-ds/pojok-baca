@@ -1,0 +1,60 @@
+---
+// Book metadata component - displays book info in semantic definition list
+import { sanitizeText } from '../../services/api';
+
+interface Props {
+  title: string;
+  author: string;
+  category?: string;
+  publishedYear?: number;
+  pages?: number;
+  language?: string;
+  isbn?: string;
+  class?: string;
+}
+
+const {
+  title,
+  author,
+  category,
+  publishedYear,
+  pages,
+  language,
+  isbn,
+  class: className = '',
+} = Astro.props;
+
+const metaItems = [
+  { label: 'Penulis', value: author },
+  ...(category ? [{ label: 'Kategori', value: category }] : []),
+  ...(publishedYear ? [{ label: 'Tahun Terbit', value: String(publishedYear) }] : []),
+  ...(pages ? [{ label: 'Jumlah Halaman', value: `${pages} halaman` }] : []),
+  ...(language ? [{ label: 'Bahasa', value: language.toUpperCase() }] : []),
+  ...(isbn ? [{ label: 'ISBN', value: isbn }] : []),
+];
+---
+
+<div class={className} aria-labelledby="book-meta-heading">
+  <h2 id="book-meta-heading" class="sr-only">Informasi Buku</h2>
+
+  <dl class="grid gap-3 sm:gap-4" role="list">
+    {metaItems.map((item, index) => (
+      <div class="flex flex-col sm:flex-row sm:items-baseline gap-1" role="listitem">
+        <dt class="text-sm font-medium text-text-muted shrink-0" style="min-width: 100px;">
+          {item.label}
+        </dt>
+        <dd class="text-sm text-text flex-1 break-words">
+          {sanitizeText(item.value)}
+        </dd>
+      </div>
+    ))}
+  </dl>
+
+  {category && (
+    <div class="mt-4 flex flex-wrap gap-2" role="list" aria-label="Kategori">
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-accent/10 text-accent-dark dark:text-accent-light" role="listitem">
+        {sanitizeText(category)}
+      </span>
+    </div>
+  )}
+</div>

@@ -1,0 +1,79 @@
+---
+/**
+ * Halaman reader: /books/<slug>/read/
+ *
+ * Halaman ini berdiri sendiri (bukan memakai BaseLayout) karena reader
+ * tampil penuh tanpa header/footer situs.
+ */
+import '../../../styles/global.css';
+import Reader from '../../../components/reader/Reader.astro';
+import { getBook, getReaderConfig } from '../../../services/books';
+import { sanitizeText } from '../../../services/api';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/books/');
+}
+
+const book = getBook(slug);
+const config = getReaderConfig(slug);
+
+if (!book || !config || config.count < 1) {
+  return Astro.redirect(`/books/${slug}/`);
+}
+
+const title = sanitizeText(book.title);
+const description = `Baca "${title}" oleh ${book.author} secara online di Pojok Baca.`;
+---
+
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} — Baca Online | Pojok Baca</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0f0f1a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+    <link rel="canonical" href={new URL(`/books/${slug}/read/`, Astro.site ?? 'https://pojokbaca.example.com').href} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    {/* Terapkan tema sebelum render supaya tidak ada kedipan putih. */}
+    <script is:inline>
+      try {
+        const stored = localStorage.getItem('pb:theme');
+        const dark =
+          stored === 'dark' ||
+          (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', dark);
+      } catch (e) {
+        /* localStorage tidak tersedia */
+      }
+    </script>
+  </head>
+  <body class="reader-body">
+    <Reader data={config} title={title} author={book.author} />
+
+    <script>
+      import { initReader } from '../../../scripts/reader';
+      initReader();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  /* Reader berdiri sendiri: tidak ada scroll halaman, seluruh layar dipakai
+     oleh panggung gambar. */
+  html:has(.reader) {
+    overflow: hidden;
+  }
+
+  body:has(.reader) {
+    margin: 0;
+    overscroll-behavior: none;
+  }
+</style>

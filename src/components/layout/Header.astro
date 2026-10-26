@@ -1,0 +1,109 @@
+---
+// Header component - minimal navigation
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath } = Astro.props;
+
+const fullPath = currentPath ?? `${Astro.url.pathname}${Astro.url.search}`;
+const [basePath = '', search = ''] = fullPath.split('?');
+const normalizedPath = basePath.replace(/\/+$/, '') || '/';
+const searchParams = new URLSearchParams(search);
+
+const isActive = (href: string) => {
+  const [itemPath, itemQuery] = href.split('?');
+  if (normalizedPath !== itemPath) return false;
+  const expectedSort = itemQuery ? new URLSearchParams(itemQuery).get('sort') : null;
+  const actualSort = searchParams.get('sort');
+  if (expectedSort === null) return actualSort === null;
+  return actualSort === expectedSort;
+};
+
+const navItems = [
+  { href: '/books', label: 'Semua Buku' },
+  { href: '/books?sort=newest', label: 'Terbaru' },
+  { href: '/books?sort=popular', label: 'Populer' },
+];
+---
+
+<header class="border-b border-border sticky top-0 z-40 bg-background/95 backdrop-blur-sm" role="banner">
+  <div class="container">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo/Title -->
+      <a href="/" class="flex items-center gap-2 text-primary font-semibold text-lg" aria-label="Pojok Baca RPL - Beranda">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="text-accent">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          <path d="M8 10h10" />
+          <path d="M8 14h10" />
+        </svg>
+        <span class="hidden sm:inline">Pojok Baca RPL</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-1" role="navigation" aria-label="Navigasi utama">
+        {navItems.map(item => {
+          const active = isActive(item.href);
+          return (
+            <a
+              href={item.href}
+              class={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                active ? 'bg-primary/10 text-primary' : 'text-text-muted hover:text-text hover:bg-secondary'
+              }`}
+              aria-current={active ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          );
+        })}
+      </nav>
+
+      <!-- Mobile menu button -->
+      <button
+        class="md:hidden p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
+        aria-label="Buka menu navigasi"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-mobile-menu-toggle
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Navigation (hidden by default) -->
+    <nav id="mobile-menu" class="md:hidden hidden border-t border-border bg-background" role="navigation" aria-label="Navigasi mobile">
+      <div class="py-3 px-4 space-y-1">
+        {navItems.map(item => {
+          const active = isActive(item.href);
+          return (
+            <a
+              href={item.href}
+              class={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                active ? 'bg-primary/10 text-primary' : 'text-text-muted hover:text-text hover:bg-secondary'
+              }`}
+              aria-current={active ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          );
+        })}
+      </div>
+    </nav>
+  </div>
+
+  <script is:inline>
+    const toggle = document.querySelector('[data-mobile-menu-toggle]');
+    const menu = document.getElementById('mobile-menu');
+    if (toggle && menu) {
+      toggle.addEventListener('click', () => {
+        const isOpen = menu.classList.toggle('hidden');
+        toggle.setAttribute('aria-expanded', String(!isOpen));
+      });
+    }
+  </script>
+</header>
