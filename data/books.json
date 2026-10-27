@@ -1,30 +1,7 @@
 {
   "generatedAt": "2026-10-26T11:46:21.926Z",
-  "count": 140,
+  "count": 139,
   "books": [
-    {
-      "slug": "un-perfect-marriage",
-      "type": "pdf",
-      "pageW": 900,
-      "pageH": 1385,
-      "assetMode": "sheets",
-      "title": "(Un)Perfect Marriage",
-      "author": "Octaka",
-      "pages": 1035,
-      "chapters": 0,
-      "cover": "/covers/un-perfect-marriage.webp",
-      "hasCover": true,
-      "pagePath": "/pages/un-perfect-marriage/{n}.webp",
-      "dlId": "dl_XiIjblTSaL8",
-      "synopsis": "",
-      "synopsisStatus": "no-text-layer",
-      "categories": [],
-      "hasTextLayer": false,
-      "landscapePages": [],
-      "metaConfidence": "high",
-      "sourceFile": "Salinan Salinan (Un)Perfect Marriage by Octaka.pdf",
-      "pdfSize": 4297481
-    },
     {
       "slug": "135-hours",
       "type": "pdf",
