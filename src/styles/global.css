@@ -126,33 +126,87 @@
   --color-success-light: #10331f;
 }
 
-/* Base styles */
-* {
-  box-sizing: border-box;
-}
+/* ------------------------------------------------------------------
+   Base styles — WAJIB berada di dalam @layer base.
 
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-}
+   Catatan penting: rules yang berada DI LUAR layer (unlayered) selalu
+   menang atas utility Tailwind (yang ada di @layer utilities), apa pun
+   spesifisitasnya. Akibatnya reset seperti `button { background: none }`
+   atau `a { color: inherit }` membuat utility seperti bg-primary,
+   text-background, bg-transparent, dan h-full TIDAK BERLAKU — tombol
+   jadi transparan dan teksnya mewarisi warna body (invisible).
+   ------------------------------------------------------------------ */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: var(--text-base);
-  line-height: 1.6;
-  color: var(--color-text);
-  background-color: var(--color-background);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
-}
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
 
-/* Focus visible for accessibility */
-:focus-visible {
-  outline: 2px solid var(--color-border-focus);
-  outline-offset: 2px;
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-text);
+    background-color: var(--color-background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+  }
+
+  /* Focus visible untuk aksesibilitas */
+  :focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* Image defaults — height:auto hanya berlaku bila tidak ada utility
+     (mis. h-full) pada elemen yang sama. */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Link styles */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Button reset */
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Input reset */
+  input, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-3);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px var(--color-accent)33;
+  }
 }
 
 /* Skip link */
@@ -259,51 +313,7 @@ mark {
   }
 }
 
-/* Image defaults */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Link styles */
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* Button reset */
-button {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* Input reset */
-input, textarea, select {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  color: inherit;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-input:focus, textarea:focus, select:focus {
-  outline: none;
-  border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px var(--color-accent)33;
-}
+/* Reset img/a/button/input sudah dipindah ke @layer base di atas. */
 
 /* Container utility */
 .container {

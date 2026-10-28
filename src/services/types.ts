@@ -13,7 +13,7 @@ export interface Book {
   coverUrl: string;
   description: string;
   category: string;
-  publishedYear: number;
+  publishedYear?: number;
   pages: number;
   language: string;
   isbn?: string;

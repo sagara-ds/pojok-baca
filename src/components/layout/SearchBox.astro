@@ -171,7 +171,8 @@ const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
         Midnight Blue) di belakang <img>; 404 → img dihapus, desain tampil. */
     function createMiniCover(book: SearchResult): HTMLElement {
       const wrap = document.createElement('div');
-      wrap.className = 'relative w-12 h-16 rounded overflow-hidden flex-shrink-0 bg-[#0f3c65]';
+      wrap.className =
+        'relative w-12 h-16 rounded overflow-hidden flex-shrink-0 bg-[linear-gradient(to_bottom,#0f3c65,#0a2947)] ring-1 ring-inset ring-[#fff2ba]/25';
       wrap.setAttribute('aria-hidden', 'true');
 
       const spine = document.createElement('div');

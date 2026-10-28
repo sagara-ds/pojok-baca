@@ -67,8 +67,8 @@ export async function fetchBooks(params: SearchParams = {}): Promise<BookListRes
   const sorters: Record<string, (a: Book, b: Book) => number> = {
     'title-asc': (a, b) => a.title.localeCompare(b.title, 'id'),
     'title-desc': (a, b) => b.title.localeCompare(a.title, 'id'),
-    newest: (a, b) => b.publishedYear - a.publishedYear,
-    oldest: (a, b) => a.publishedYear - b.publishedYear,
+    newest: (a, b) => (b.publishedYear ?? 0) - (a.publishedYear ?? 0),
+    oldest: (a, b) => (a.publishedYear ?? 0) - (b.publishedYear ?? 0),
     popular: (a, b) => b.pages - a.pages,
   };
   const sorter = params.sort ? sorters[params.sort] : undefined;

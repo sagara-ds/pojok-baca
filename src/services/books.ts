@@ -25,8 +25,12 @@ function toBook(entry: ManifestBook): Book {
     // memakai placeholder desain, tidak ada <img>/404 sama sekali.
     coverUrl: entry.hasCover ? entry.cover : '',
     description: entry.synopsis,
-    category: entry.categories[0] ?? (entry.type === 'epub' ? 'epub' : 'buku'),
-    publishedYear: 0,
+    // Kategori generik ('buku'/'epub') tidak informatif -> kosongkan agar
+    // UI tidak menampilkan chip meaningless seperti "buku".
+    category: entry.categories[0] ?? '',
+    // Manifest tidak menyimpan tahun terbit. undefined (bukan 0) supaya
+    // chip tahun tidak dirender sebagai angka "0".
+    publishedYear: undefined,
     pages: entry.pages,
     language: 'id',
     readingUrl: `/books/${entry.slug}/read/`,
@@ -56,7 +60,9 @@ export function searchBooksLocal(query: string): Book[] {
 export function getCategories(): Category[] {
   const counts = new Map<string, number>();
   for (const book of BOOKS) {
-    const key = book.categories[0] ?? (book.type === 'epub' ? 'epub' : 'buku');
+    // Hanya kategori nyata (tanpa fallback generik 'buku'/'epub')
+    const key = book.categories[0];
+    if (!key) continue;
     counts.set(key, (counts.get(key) ?? 0) + 1);
   }
   return [...counts.entries()]

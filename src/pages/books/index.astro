@@ -134,16 +134,16 @@ const pageDescription = q
                   <p class="text-sm text-text-muted line-clamp-1 mb-2">{book.author}</p>
 
                   <div class="flex flex-wrap gap-1.5 mb-3">
-                    {book.category && (
+                    {book.category ? (
                       <span class="px-2 py-0.5 rounded text-xs font-medium truncate max-w-full bg-accent/10 text-accent-dark dark:text-accent-light">
                         {book.category}
                       </span>
-                    )}
-                    {book.publishedYear && (
+                    ) : null}
+                    {book.publishedYear ? (
                       <span class="hidden sm:inline-block px-2 py-0.5 rounded text-xs font-medium bg-secondary text-text-muted">
                         {book.publishedYear}
                       </span>
-                    )}
+                    ) : null}
                   </div>
 
                   <div class="mt-auto pt-3 border-t border-border">
