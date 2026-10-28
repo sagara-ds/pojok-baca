@@ -1,0 +1,61 @@
+---
+// Cover placeholder bergaya desain (bukan gambar): blok Midnight Blue
+// + tipografi Buttermilk dengan motif punggung buku di sisi kiri.
+//
+// Dipakai di belakang <img> cover asli. Jika asset cover 404 / belum
+// dirender pipeline, img disembunyikan (onerror) dan placeholder ini
+// yang tampil. Warna hardcode #0F3C65/#FFF2BA sengaja: ini objek
+// "sampul buku" yang harus identik di kedua mode (kontras 9.9:1).
+interface Props {
+  title: string;
+  author?: string;
+  /** Versi mini untuk thumbnail (mis. saran typeahead) */
+  compact?: boolean;
+  class?: string;
+}
+
+const { title, author, compact = false, class: className = '' } = Astro.props;
+---
+
+<div
+  class={`relative h-full w-full overflow-hidden bg-[#0f3c65] ${className}`}
+  aria-hidden="true"
+>
+  {/* Punggung buku di sisi kiri */}
+  <div class={`absolute inset-y-0 left-0 bg-[#fff2ba]/20 ${compact ? 'w-1.5' : 'w-2 sm:w-3'}`} />
+  <div class={`absolute inset-y-0 bg-[#fff2ba]/10 ${compact ? 'left-1.5' : 'left-2 sm:left-3'} w-px`} />
+
+  {/* Konten tengah: ikon buku + judul + penulis */}
+  <div
+    class={`absolute inset-0 flex flex-col items-center justify-center gap-1 text-center ${
+      compact ? 'px-1.5 pl-2.5' : 'px-3 pl-4 sm:pl-6'
+    }`}
+  >
+    <svg
+      width={compact ? 14 : 28}
+      height={compact ? 14 : 28}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="text-[#fff2ba]/70 flex-shrink-0"
+    >
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      {!compact && <path d="M8 10h10" />}
+      {!compact && <path d="M8 14h10" />}
+    </svg>
+    <p
+      class={`font-serif font-semibold leading-tight text-[#fff2ba] ${
+        compact ? 'text-[8px] line-clamp-2' : 'text-xs sm:text-sm line-clamp-3'
+      }`}
+    >
+      {title}
+    </p>
+    {author && !compact && (
+      <p class="text-[10px] leading-snug text-[#fff2ba]/70 line-clamp-1 px-1">{author}</p>
+    )}
+  </div>
+</div>

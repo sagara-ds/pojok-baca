@@ -18,7 +18,7 @@ const {
   continueReading = false,
 } = Astro.props;
 
-const readUrl = readingUrl || `/books/${slug}/read`;
+const readUrl = readingUrl || `/books/${slug}/read/`;
 const buttonText = continueReading ? 'Lanjutkan Baca' : 'Mulai Baca';
 const ariaLabel = continueReading
   ? `Lanjutkan membaca ${title}`

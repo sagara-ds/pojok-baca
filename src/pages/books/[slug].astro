@@ -22,7 +22,7 @@ export const prerender = false; // Use SSR for dynamic book pages
 const { slug } = Astro.params;
 
 if (!slug) {
-  return Astro.redirect('/books');
+  return Astro.redirect('/books/');
 }
 
 let book: Book | null = null;
@@ -48,7 +48,7 @@ const ogImage = book?.coverUrl;
 <BaseLayout
   title={pageTitle}
   description={pageDescription}
-  canonicalURL={`/books/${slug}`}
+  canonicalURL={`/books/${slug}/`}
   ogImage={ogImage}
   noIndex={!book}
 >
@@ -59,7 +59,7 @@ const ogImage = book?.coverUrl;
           title={book ? 'Gagal Memuat Detail' : 'Buku Tidak Ditemukan'}
           message={error}
           actionLabel="Kembali ke Daftar Buku"
-          actionHref="/books"
+          actionHref="/books/"
           variant="page"
         />
       ) : book ? (
@@ -72,7 +72,7 @@ const ogImage = book?.coverUrl;
               </li>
               <li aria-hidden="true">/</li>
               <li>
-                <a href="/books" class="hover:text-text transition-colors">Buku</a>
+                <a href="/books/" class="hover:text-text transition-colors">Buku</a>
               </li>
               <li aria-hidden="true">/</li>
               <li aria-current="page" class="text-text truncate max-w-xs">{book.title}</li>
@@ -85,7 +85,9 @@ const ogImage = book?.coverUrl;
             <div class="sticky top-24 self-start sm:max-w-xs mx-auto sm:mx-0">
               <Card variant="elevated" padding="none" class="overflow-hidden">
                 <BookCover
-                  src={book.coverUrl || '/book-placeholder.svg'}
+                  src={book.coverUrl}
+                  title={book.title}
+                  author={book.author}
                   alt={`Cover buku ${book.title}`}
                   width={256}
                   height={384}
@@ -176,7 +178,7 @@ const ogImage = book?.coverUrl;
             inLanguage: book.language || 'id',
             isbn: book.isbn,
             genre: book.category,
-            url: new URL(`/books/${book.slug}`, Astro.site).href,
+            url: new URL(`/books/${book.slug}/`, Astro.site).href,
           })} />
         </>
       ) : null}

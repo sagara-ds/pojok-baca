@@ -14,7 +14,9 @@ const normalizedPath = basePath.replace(/\/+$/, '') || '/';
 const searchParams = new URLSearchParams(search);
 
 const isActive = (href: string) => {
-  const [itemPath, itemQuery] = href.split('?');
+  const [itemPathRaw = '', itemQuery = ''] = href.split('?');
+  // Normalisasi trailing slash di kedua sisi ('/books/' vs '/books' harus match)
+  const itemPath = itemPathRaw.replace(/\/+$/, '') || '/';
   if (normalizedPath !== itemPath) return false;
   const expectedSort = itemQuery ? new URLSearchParams(itemQuery).get('sort') : null;
   const actualSort = searchParams.get('sort');
@@ -22,10 +24,11 @@ const isActive = (href: string) => {
   return actualSort === expectedSort;
 };
 
+// trailingSlash: 'always' — semua internal link wajib berakhir '/' agar tidak 404
 const navItems = [
-  { href: '/books', label: 'Semua Buku' },
-  { href: '/books?sort=newest', label: 'Terbaru' },
-  { href: '/books?sort=popular', label: 'Populer' },
+  { href: '/books/', label: 'Semua Buku' },
+  { href: '/books/?sort=newest', label: 'Terbaru' },
+  { href: '/books/?sort=popular', label: 'Populer' },
 ];
 ---
 

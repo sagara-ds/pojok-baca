@@ -39,8 +39,8 @@ const ogImageURL = ogImage ? new URL(ogImage, siteURL).href : new URL('/og-defau
     <title>{fullTitle}</title>
     <meta name="title" content={fullTitle} />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f0f1a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#0f3c65" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a2947" media="(prefers-color-scheme: dark)" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -77,7 +77,7 @@ const ogImageURL = ogImage ? new URL(ogImage, siteURL).href : new URL('/og-defau
         '@type': 'SearchAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: `${siteURL.href}books?q={search_term_string}`
+          urlTemplate: `${siteURL.href}books/?q={search_term_string}`
         },
         'query-input': 'required name=search_term_string'
       }

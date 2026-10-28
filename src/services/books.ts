@@ -21,13 +21,15 @@ function toBook(entry: ManifestBook): Book {
     slug: entry.slug,
     title: entry.title,
     author: entry.author || 'Tidak diketahui',
-    coverUrl: entry.hasCover ? entry.cover : '/book-placeholder.svg',
+    // Tanpa cover → string kosong: seluruh UI (kartu, detail, typeahead)
+    // memakai placeholder desain, tidak ada <img>/404 sama sekali.
+    coverUrl: entry.hasCover ? entry.cover : '',
     description: entry.synopsis,
     category: entry.categories[0] ?? (entry.type === 'epub' ? 'epub' : 'buku'),
     publishedYear: 0,
     pages: entry.pages,
     language: 'id',
-    readingUrl: `/books/${entry.slug}/read`,
+    readingUrl: `/books/${entry.slug}/read/`,
   };
 }
 

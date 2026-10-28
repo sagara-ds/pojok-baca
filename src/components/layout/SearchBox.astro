@@ -54,7 +54,7 @@ const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
         Memuat…
       </div>
 
-      <div class="p-3 text-sm text-red-500 text-center" data-error-state hidden>
+      <div class="p-3 text-sm text-error text-center" data-error-state hidden>
         Gagal memuat hasil. Coba lagi.
       </div>
 
@@ -167,6 +167,57 @@ const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
       return span;
     }
 
+    /** Mini cover: placeholder desain (ikon+judul Buttermilk di blok
+        Midnight Blue) di belakang <img>; 404 → img dihapus, desain tampil. */
+    function createMiniCover(book: SearchResult): HTMLElement {
+      const wrap = document.createElement('div');
+      wrap.className = 'relative w-12 h-16 rounded overflow-hidden flex-shrink-0 bg-[#0f3c65]';
+      wrap.setAttribute('aria-hidden', 'true');
+
+      const spine = document.createElement('div');
+      spine.className = 'absolute inset-y-0 left-0 w-1.5 bg-[#fff2ba]/20';
+
+      const content = document.createElement('div');
+      content.className =
+        'absolute inset-0 flex flex-col items-center justify-center gap-0.5 px-1 pl-2 text-center';
+
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      icon.setAttribute('width', '14');
+      icon.setAttribute('height', '14');
+      icon.setAttribute('viewBox', '0 0 24 24');
+      icon.setAttribute('fill', 'none');
+      icon.setAttribute('stroke', 'currentColor');
+      icon.setAttribute('stroke-width', '1.5');
+      icon.setAttribute('stroke-linecap', 'round');
+      icon.setAttribute('stroke-linejoin', 'round');
+      icon.setAttribute('aria-hidden', 'true');
+      icon.setAttribute('class', 'text-[#fff2ba]/70');
+      const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path1.setAttribute('d', 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20');
+      const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path2.setAttribute('d', 'M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z');
+      icon.append(path1, path2);
+
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'font-serif font-semibold text-[8px] leading-tight text-[#fff2ba] line-clamp-2';
+      titleSpan.textContent = book.title;
+
+      content.append(icon, titleSpan);
+      wrap.append(spine, content);
+
+      if (book.coverUrl) {
+        const coverImg = document.createElement('img');
+        coverImg.src = book.coverUrl;
+        coverImg.alt = '';
+        coverImg.loading = 'lazy';
+        coverImg.className = 'absolute inset-0 w-full h-full object-cover';
+        coverImg.addEventListener('error', () => coverImg.remove());
+        wrap.append(coverImg);
+      }
+
+      return wrap;
+    }
+
     function renderResults(results: SearchResult[], query: string) {
       resultsList!.innerHTML = '';
       results.forEach(book => {
@@ -175,12 +226,6 @@ const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
         link.role = 'option';
         link.className =
           'flex gap-3 p-2 hover:bg-secondary/50 transition-colors group cursor-pointer';
-
-        const coverImg = document.createElement('img');
-        coverImg.src = book.coverUrl;
-        coverImg.alt = `Cover ${book.title}`;
-        coverImg.className = 'w-12 h-16 object-cover rounded flex-shrink-0 bg-secondary';
-        coverImg.loading = 'lazy';
 
         const infoDiv = document.createElement('div');
         infoDiv.className = 'flex-1 min-w-0';
@@ -194,7 +239,7 @@ const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
         authorP.textContent = book.author;
 
         infoDiv.append(titleP, authorP);
-        link.append(coverImg, infoDiv);
+        link.append(createMiniCover(book), infoDiv);
         resultsList!.append(link);
       });
 
