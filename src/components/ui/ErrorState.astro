@@ -31,18 +31,27 @@ const variantStyles = {
 };
 
 const classes = `${baseStyles} ${variantStyles[variant]} ${className}`;
-
-const errorIcon = `
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-error/50" aria-hidden="true">
-    <circle cx="12" cy="12" r="10" />
-    <line x1="12" y1="8" x2="12" y2="12" />
-    <line x1="12" y1="16" x2="12.01" y2="16" />
-  </svg>
-`;
 ---
 
 <div class={classes} role="alert">
-  {icon && <div aria-hidden="true">{errorIcon}</div>}
+  {icon && (
+    <svg 
+      width="48" 
+      height="48" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      stroke-width="1.5" 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+      class="mx-auto mb-4 text-error/50" 
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+  )}
   <h2 class="text-lg font-semibold text-text mb-2">{title}</h2>
   <p class="text-text-muted mb-4">{message}</p>
   {actionHref ? (
