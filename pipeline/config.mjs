@@ -46,7 +46,7 @@ export const config = {
   },
 
   watermark: {
-    enabled: true,
+    enabled: false,
     brand: 'POJOK BACA',
     /** Opasitas teks pola. */
     opacity: 0.09,

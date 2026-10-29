@@ -133,7 +133,7 @@ const pageDescription = q
                   <h2 class="font-semibold text-text line-clamp-2 mb-1">{book.title}</h2>
                   <p class="text-sm text-text-muted line-clamp-1 mb-2">{book.author}</p>
 
-                  <div class="flex flex-wrap gap-1.5 mb-3">
+                  <div class="flex flex-wrap gap-1.5 mt-auto">
                     {book.category ? (
                       <span class="px-2 py-0.5 rounded text-xs font-medium truncate max-w-full bg-accent/10 text-accent-dark dark:text-accent-light">
                         {book.category}
@@ -144,18 +144,6 @@ const pageDescription = q
                         {book.publishedYear}
                       </span>
                     ) : null}
-                  </div>
-
-                  <div class="mt-auto pt-3 border-t border-border">
-                    <Button variant="primary" size="sm" fullWidth class="w-full">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                        <path d="M8 10h10" />
-                        <path d="M8 14h10" />
-                      </svg>
-                      Baca
-                    </Button>
                   </div>
                 </div>
               </Card>

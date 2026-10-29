@@ -51,6 +51,7 @@ const ogImage = book?.coverUrl;
   canonicalURL={`/books/${slug}/`}
   ogImage={ogImage}
   noIndex={!book}
+  hideSearch={true}
 >
   <main id="main-content" class="flex-1">
     <div class="container py-6 sm:py-8">
@@ -80,9 +81,9 @@ const ogImage = book?.coverUrl;
           </nav>
 
           {/* Book Detail Layout */}
-          <div class="grid gap-6 sm:grid-cols-[256px_1fr] items-start">
-            {/* Cover - Sticky on desktop */}
-            <div class="sticky top-24 self-start sm:max-w-xs mx-auto sm:mx-0">
+          <div class="flex flex-col items-center gap-6 max-w-3xl mx-auto">
+            {/* Cover - Centered */}
+            <div class="w-full max-w-xs">
               <Card variant="elevated" padding="none" class="overflow-hidden">
                 <BookCover
                   src={book.coverUrl}
@@ -94,41 +95,35 @@ const ogImage = book?.coverUrl;
                   priority
                 />
               </Card>
-
-              {/* Quick actions */}
-              <div class="mt-4 space-y-3">
-                <ReadButton
-                  slug={book.slug}
-                  title={book.title}
-                  readingUrl={book.readingUrl}
-                  fullWidth
-                />
-
-                {book.isbn && (
-                  <div class="p-3 rounded-lg bg-secondary text-sm">
-                    <span class="font-medium text-text-muted">ISBN:</span>
-                    <span class="ml-2 text-text font-mono">{book.isbn}</span>
-                  </div>
-                )}
-              </div>
             </div>
 
-            {/* Book Info */}
-            <div class="space-y-6">
-              <header>
+            {/* Book Info - Centered */}
+            <div class="w-full space-y-6">
+              <header class="text-center">
                 <h1 class="text-2xl sm:text-3xl font-bold text-text leading-tight">{book.title}</h1>
                 <p class="mt-2 text-lg text-text-muted">{book.author}</p>
               </header>
 
-              <BookMeta
-                title={book.title}
-                author={book.author}
-                category={book.category}
-                publishedYear={book.publishedYear}
-                pages={book.pages}
-                language={book.language}
-                isbn={book.isbn}
-              />
+              {/* Quick actions - Centered */}
+              <div class="flex justify-center">
+                <ReadButton
+                  slug={book.slug}
+                  title={book.title}
+                  readingUrl={book.readingUrl}
+                />
+              </div>
+
+              <div class="flex justify-center">
+                <BookMeta
+                  title={book.title}
+                  author={book.author}
+                  category={book.category}
+                  publishedYear={book.publishedYear}
+                  pages={book.pages}
+                  language={book.language}
+                  isbn={book.isbn}
+                />
+              </div>
 
               {book.description && (
                 <BookDescription description={book.description} maxLines={6} />

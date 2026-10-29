@@ -4,9 +4,10 @@ import SearchBox from './SearchBox.astro';
 
 interface Props {
   currentPath?: string;
+  hideSearch?: boolean;
 }
 
-const { currentPath } = Astro.props;
+const { currentPath, hideSearch = false } = Astro.props;
 
 const fullPath = currentPath ?? `${Astro.url.pathname}${Astro.url.search}`;
 const [basePath = '', search = ''] = fullPath.split('?');
@@ -46,10 +47,25 @@ const navItems = [
         <span class="hidden sm:inline">Pojok Baca RPL</span>
       </a>
 
-      <!-- Desktop Search -->
-      <div class="hidden md:block flex-1 max-w-lg mx-4">
-        <SearchBox />
-      </div>
+      <!-- Desktop Search Icon & Expanded Box -->
+      {!hideSearch && (
+        <div class="hidden md:flex items-center gap-2 flex-1 max-w-lg mx-4">
+          <button
+            type="button"
+            class="p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
+            aria-label="Buka pencarian"
+            data-search-toggle
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </button>
+          <div class="hidden flex-1" data-search-container>
+            <SearchBox />
+          </div>
+        </div>
+      )}
 
       <!-- Desktop Navigation -->
       <nav class="hidden md:flex items-center gap-1 flex-shrink-0" role="navigation" aria-label="Navigasi utama">
@@ -89,7 +105,24 @@ const navItems = [
     <nav id="mobile-menu" class="md:hidden hidden border-t border-border bg-background" role="navigation" aria-label="Navigasi mobile">
       <div class="py-3 px-4 space-y-3">
         <!-- Mobile Search -->
-        <SearchBox />
+        {!hideSearch && (
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              class="p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
+              aria-label="Buka pencarian"
+              data-search-toggle-mobile
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+            </button>
+            <div class="hidden flex-1" data-search-container-mobile>
+              <SearchBox />
+            </div>
+          </div>
+        )}
         
         <div class="space-y-1">
           {navItems.map(item => {
@@ -118,6 +151,42 @@ const navItems = [
       toggle.addEventListener('click', () => {
         const isOpen = menu.classList.toggle('hidden');
         toggle.setAttribute('aria-expanded', String(!isOpen));
+      });
+    }
+
+    const searchToggle = document.querySelector('[data-search-toggle]');
+    const searchContainer = document.querySelector('[data-search-container]');
+    if (searchToggle && searchContainer) {
+      searchToggle.addEventListener('click', () => {
+        searchToggle.classList.add('hidden');
+        searchContainer.classList.remove('hidden');
+        const input = searchContainer.querySelector('input');
+        if (input) input.focus();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!searchContainer.contains(e.target) && !searchToggle.contains(e.target)) {
+          searchToggle.classList.remove('hidden');
+          searchContainer.classList.add('hidden');
+        }
+      });
+    }
+
+    const searchToggleMobile = document.querySelector('[data-search-toggle-mobile]');
+    const searchContainerMobile = document.querySelector('[data-search-container-mobile]');
+    if (searchToggleMobile && searchContainerMobile) {
+      searchToggleMobile.addEventListener('click', () => {
+        searchToggleMobile.classList.add('hidden');
+        searchContainerMobile.classList.remove('hidden');
+        const input = searchContainerMobile.querySelector('input');
+        if (input) input.focus();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!searchContainerMobile.contains(e.target) && !searchToggleMobile.contains(e.target)) {
+          searchToggleMobile.classList.remove('hidden');
+          searchContainerMobile.classList.add('hidden');
+        }
       });
     }
   </script>
