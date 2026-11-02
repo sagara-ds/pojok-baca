@@ -10,6 +10,7 @@ interface Props {
   canonicalURL?: string;
   ogImage?: string;
   noIndex?: boolean;
+  hideSearch?: boolean;
 }
 
 const {
@@ -18,6 +19,7 @@ const {
   canonicalURL,
   ogImage,
   noIndex = false,
+  hideSearch = false,
 } = Astro.props;
 
 const siteTitle = 'Pojok Baca RPL';
@@ -87,7 +89,7 @@ const ogImageURL = ogImage ? new URL(ogImage, siteURL).href : new URL('/og-defau
     <!-- Skip to main content for accessibility -->
     <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
 
-    <Header currentPath={`${Astro.url.pathname}${Astro.url.search}`} />
+    <Header currentPath={`${Astro.url.pathname}${Astro.url.search}`} hideSearch={hideSearch} />
 
     <slot />
 
