@@ -47,9 +47,9 @@ const navItems = [
         <span class="hidden sm:inline">Pojok Baca RPL</span>
       </a>
 
-      <!-- Desktop Search Icon & Expanded Box -->
+      <!-- Desktop Search Icon & Expanded Box (didorong ke kanan via ml-auto) -->
       {!hideSearch && (
-        <div class="hidden md:flex items-center gap-2 flex-1 max-w-lg mx-4">
+        <div class="hidden md:flex items-center gap-2 ml-auto mr-3">
           <button
             type="button"
             class="p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
@@ -61,7 +61,7 @@ const navItems = [
               <path d="m21 21-4.35-4.35"></path>
             </svg>
           </button>
-          <div class="hidden flex-1" data-search-container>
+          <div class="hidden w-72 xl:w-96" data-search-container>
             <SearchBox />
           </div>
         </div>
@@ -85,45 +85,50 @@ const navItems = [
         })}
       </nav>
 
-      <!-- Mobile menu button -->
-      <button
-        class="md:hidden p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
-        aria-label="Buka menu navigasi"
-        aria-expanded="false"
-        aria-controls="mobile-menu"
-        data-mobile-menu-toggle
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
-      </button>
+      <!-- Mobile controls: search icon + hamburger -->
+      <div class="md:hidden flex items-center gap-1 ml-auto flex-shrink-0">
+        {!hideSearch && (
+          <button
+            type="button"
+            class="p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
+            aria-label="Buka pencarian"
+            aria-expanded="false"
+            aria-controls="mobile-search-panel"
+            data-mobile-search-toggle
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </button>
+        )}
+
+        <button
+          class="p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
+          aria-label="Buka menu navigasi"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-mobile-menu-toggle
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      </div>
     </div>
+
+    <!-- Mobile Search Panel (di luar menu hamburger) -->
+    {!hideSearch && (
+      <div id="mobile-search-panel" class="md:hidden hidden py-3 px-4 border-t border-border bg-background">
+        <SearchBox />
+      </div>
+    )}
 
     <!-- Mobile Navigation (hidden by default) -->
     <nav id="mobile-menu" class="md:hidden hidden border-t border-border bg-background" role="navigation" aria-label="Navigasi mobile">
-      <div class="py-3 px-4 space-y-3">
-        <!-- Mobile Search -->
-        {!hideSearch && (
-          <div class="flex items-center gap-2">
-            <button
-              type="button"
-              class="p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
-              aria-label="Buka pencarian"
-              data-search-toggle-mobile
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-              </svg>
-            </button>
-            <div class="hidden flex-1" data-search-container-mobile>
-              <SearchBox />
-            </div>
-          </div>
-        )}
-        
+      <div class="py-3 px-4">
         <div class="space-y-1">
           {navItems.map(item => {
             const active = isActive(item.href);
@@ -145,19 +150,65 @@ const navItems = [
   </div>
 
   <script is:inline>
-    const toggle = document.querySelector('[data-mobile-menu-toggle]');
+    // Menu & search mobile saling menutup
+    const menuToggle = document.querySelector('[data-mobile-menu-toggle]');
     const menu = document.getElementById('mobile-menu');
-    if (toggle && menu) {
-      toggle.addEventListener('click', () => {
-        const isOpen = menu.classList.toggle('hidden');
-        toggle.setAttribute('aria-expanded', String(!isOpen));
+    const mobileSearchToggle = document.querySelector('[data-mobile-search-toggle]');
+    const mobileSearchPanel = document.getElementById('mobile-search-panel');
+
+    function setMobileMenuOpen(open) {
+      if (!menu) return;
+      menu.classList.toggle('hidden', !open);
+      if (menuToggle) menuToggle.setAttribute('aria-expanded', String(open));
+    }
+
+    function setMobileSearchOpen(open) {
+      if (!mobileSearchPanel) return;
+      mobileSearchPanel.classList.toggle('hidden', !open);
+      if (mobileSearchToggle) mobileSearchToggle.setAttribute('aria-expanded', String(open));
+      if (open) {
+        const input = mobileSearchPanel.querySelector('input');
+        if (input) input.focus();
+      }
+    }
+
+    if (menuToggle) {
+      menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setMobileSearchOpen(false);
+        setMobileMenuOpen(menu.classList.contains('hidden'));
       });
     }
 
+    if (mobileSearchToggle) {
+      mobileSearchToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setMobileMenuOpen(false);
+        setMobileSearchOpen(mobileSearchPanel.classList.contains('hidden'));
+      });
+    }
+
+    // Klik di luar menutup keduanya
+    document.addEventListener('click', (e) => {
+      if (menu && menuToggle && !menu.contains(e.target) && !menuToggle.contains(e.target)) {
+        setMobileMenuOpen(false);
+      }
+      if (
+        mobileSearchPanel &&
+        mobileSearchToggle &&
+        !mobileSearchPanel.contains(e.target) &&
+        !mobileSearchToggle.contains(e.target)
+      ) {
+        setMobileSearchOpen(false);
+      }
+    });
+
+    // Desktop: ikon search -> expand box, klik luar -> collapse
     const searchToggle = document.querySelector('[data-search-toggle]');
     const searchContainer = document.querySelector('[data-search-container]');
     if (searchToggle && searchContainer) {
-      searchToggle.addEventListener('click', () => {
+      searchToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
         searchToggle.classList.add('hidden');
         searchContainer.classList.remove('hidden');
         const input = searchContainer.querySelector('input');
@@ -168,24 +219,6 @@ const navItems = [
         if (!searchContainer.contains(e.target) && !searchToggle.contains(e.target)) {
           searchToggle.classList.remove('hidden');
           searchContainer.classList.add('hidden');
-        }
-      });
-    }
-
-    const searchToggleMobile = document.querySelector('[data-search-toggle-mobile]');
-    const searchContainerMobile = document.querySelector('[data-search-container-mobile]');
-    if (searchToggleMobile && searchContainerMobile) {
-      searchToggleMobile.addEventListener('click', () => {
-        searchToggleMobile.classList.add('hidden');
-        searchContainerMobile.classList.remove('hidden');
-        const input = searchContainerMobile.querySelector('input');
-        if (input) input.focus();
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!searchContainerMobile.contains(e.target) && !searchToggleMobile.contains(e.target)) {
-          searchToggleMobile.classList.remove('hidden');
-          searchContainerMobile.classList.add('hidden');
         }
       });
     }

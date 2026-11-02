@@ -161,7 +161,7 @@ const pageDescription = q
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <nav class="mt-8 flex items-center justify-center gap-2" aria-label="Navigasi halaman">
+            <nav class="mt-8 mb-12 flex items-center justify-center gap-2" aria-label="Navigasi halaman">
               <a
                 href={hasPrevPage ? `/books/?page=${currentPage - 1}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${hasPrevPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'}"
