@@ -8,21 +8,15 @@ import Skeleton from '../../components/ui/Skeleton.astro';
 import ErrorState from '../../components/ui/ErrorState.astro';
 import CoverPlaceholder from '../../components/book/CoverPlaceholder.astro';
 
-export interface Props {
-  page?: number;
-  sort?: 'newest' | 'oldest' | 'popular' | 'title-asc' | 'title-desc';
-  category?: string;
-  q?: string;
-}
-
 const { searchParams } = Astro.url;
 const page = Number(searchParams.get('page')) || 1;
-const sort = (searchParams.get('sort') as Props['sort']) ?? 'newest';
 const category = searchParams.get('category') ?? undefined;
 const q = searchParams.get('q') ?? undefined;
 
 const limit = 20;
-const params: SearchParams = { page, limit, sort, category, q };
+// Sort UI dihapus — tetap "Terbaru" secara default agar urutan konsisten
+// dengan perilaku sebelumnya.
+const params: SearchParams = { page, limit, sort: 'newest', category, q };
 
 let booksData;
 let error: string | null = null;
@@ -37,14 +31,6 @@ const totalPages = booksData?.pagination.totalPages ?? 1;
 const currentPage = booksData?.pagination.page ?? 1;
 const hasNextPage = currentPage < totalPages;
 const hasPrevPage = currentPage > 1;
-
-const sortOptions = [
-  { value: 'newest', label: 'Terbaru' },
-  { value: 'oldest', label: 'Terlama' },
-  { value: 'popular', label: 'Populer' },
-  { value: 'title-asc', label: 'Judul A-Z' },
-  { value: 'title-desc', label: 'Judul Z-A' },
-];
 
 const pageTitle = q
   ? `Hasil pencarian: "${q}"`
@@ -65,26 +51,6 @@ const pageDescription = q
         <h1 class="text-2xl sm:text-3xl font-bold text-text">{pageTitle}</h1>
         <p class="mt-1 text-text-muted">{booksData?.pagination.total ?? 0} buku ditemukan</p>
       </header>
-
-      {/* Sort & Filter Bar */}
-      <div class="flex flex-col sm:flex-row gap-3 mb-6 items-start sm:items-center justify-between">
-        <div class="flex flex-wrap gap-2" role="group" aria-label="Urutkan">
-          {sortOptions.map(option => (
-            <button
-              type="button"
-              class={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                sort === option.value
-                  ? 'bg-primary text-background'
-                  : 'bg-surface text-text-muted hover:bg-secondary hover:text-text'
-              }`}
-              aria-pressed={sort === option.value}
-              data-sort={option.value}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Books Grid */}
       {error ? (
@@ -163,8 +129,13 @@ const pageDescription = q
           {totalPages > 1 && (
             <nav class="mt-8 flex items-center justify-center gap-2" aria-label="Navigasi halaman">
               <a
-                href={hasPrevPage ? `/books/?page=${currentPage - 1}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
-                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${hasPrevPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'}"
+                href={hasPrevPage ? `/books/?page=${currentPage - 1}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
+                class:list={[
+                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                  hasPrevPage
+                    ? 'bg-surface text-text hover:bg-secondary'
+                    : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none',
+                ]}
                 aria-label="Halaman sebelumnya"
                 aria-disabled={!hasPrevPage}
               >
@@ -188,7 +159,7 @@ const pageDescription = q
                   return (
                     <a
                       key={pageNum}
-                      href={`/books/?page=${pageNum}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+                      href={`/books/?page=${pageNum}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
                       class={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                         pageNum === currentPage
                           ? 'bg-primary text-background'
@@ -204,8 +175,13 @@ const pageDescription = q
               </div>
 
               <a
-                href={hasNextPage ? `/books/?page=${currentPage + 1}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
-                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${hasNextPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'}"
+                href={hasNextPage ? `/books/?page=${currentPage + 1}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
+                class:list={[
+                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                  hasNextPage
+                    ? 'bg-surface text-text hover:bg-secondary'
+                    : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none',
+                ]}
                 aria-label="Halaman selanjutnya"
                 aria-disabled={!hasNextPage}
               >
@@ -219,23 +195,4 @@ const pageDescription = q
       )}
     </div>
   </main>
-
-  <script is:inline>
-    // Handle sort button clicks
-    document.addEventListener('DOMContentLoaded', () => {
-      const sortButtons = document.querySelectorAll('[data-sort]');
-      const urlParams = new URLSearchParams(window.location.search);
-
-      sortButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          const sortValue = button.getAttribute('data-sort');
-          if (sortValue) {
-            urlParams.set('sort', sortValue);
-            urlParams.set('page', '1');
-            window.location.search = urlParams.toString();
-          }
-        });
-      });
-    });
-  </script>
 </BaseLayout>
