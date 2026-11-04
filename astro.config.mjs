@@ -12,7 +12,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://pojokbaca.example.com',
+  site: 'https://pojok-baca.pages.dev',
   output: 'server', // SSR untuk halaman detail + reader
   trailingSlash: 'always',
   // Proyek ini tidak memakai Astro sessions. Pada adapter Cloudflare, sessions
