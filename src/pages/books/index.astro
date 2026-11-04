@@ -127,7 +127,7 @@ const pageDescription = q
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <nav class="mt-8 flex items-center justify-center gap-2" aria-label="Navigasi halaman">
+            <nav class="mt-8 mb-12 flex items-center justify-center gap-2" aria-label="Navigasi halaman">
               <a
                 href={hasPrevPage ? `/books/?page=${currentPage - 1}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
                 class:list={[
