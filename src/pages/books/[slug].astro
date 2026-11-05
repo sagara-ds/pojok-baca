@@ -5,7 +5,6 @@ import { fetchBook, sanitizeHtml } from '../../services/api';
 import { type Book } from '../../services/types';
 import BookCover from '../../components/book/BookCover.astro';
 import BookMeta from '../../components/book/BookMeta.astro';
-import BookDescription from '../../components/book/BookDescription.astro';
 import ReadButton from '../../components/book/ReadButton.astro';
 import Card from '../../components/ui/Card.astro';
 import Skeleton from '../../components/ui/Skeleton.astro';
@@ -43,6 +42,7 @@ const pageDescription = book
   ? `${book.title} oleh ${book.author} - ${book.description.slice(0, 160)}...`
   : 'Buku yang Anda cari tidak ditemukan';
 const ogImage = book?.coverUrl;
+const bookSynopsis = book ? sanitizeHtml(book.description).trim() : '';
 ---
 
 <BaseLayout
@@ -51,6 +51,7 @@ const ogImage = book?.coverUrl;
   canonicalURL={`/books/${slug}/`}
   ogImage={ogImage}
   noIndex={!book}
+  hideSearch={true}
 >
   <main id="main-content" class="flex-1">
     <div class="container py-6 sm:py-8">
@@ -79,10 +80,10 @@ const ogImage = book?.coverUrl;
             </ol>
           </nav>
 
-          {/* Book Detail Layout */}
+          {/* Book Detail Layout — 2 kolom di desktop, stack di mobile */}
           <div class="grid gap-6 sm:grid-cols-[256px_1fr] items-start">
-            {/* Cover - Sticky on desktop */}
-            <div class="sticky top-24 self-start sm:max-w-xs mx-auto sm:mx-0">
+            {/* Cover — centered di mobile, sticky kiri di desktop */}
+            <div class="self-start w-full max-w-xs mx-auto sm:mx-0 sm:sticky sm:top-24">
               <Card variant="elevated" padding="none" class="overflow-hidden">
                 <BookCover
                   src={book.coverUrl}
@@ -95,28 +96,32 @@ const ogImage = book?.coverUrl;
                 />
               </Card>
 
-              {book.isbn && (
-                <div class="mt-4 p-3 rounded-lg bg-secondary text-sm">
-                  <span class="font-medium text-text-muted">ISBN:</span>
-                  <span class="ml-2 text-text font-mono">{book.isbn}</span>
-                </div>
-              )}
+              {/* Tombol Baca di bawah cover — desktop saja */}
+              <div class="mt-4 hidden md:block">
+                <ReadButton
+                  slug={book.slug}
+                  title={book.title}
+                  readingUrl={book.readingUrl}
+                  class="w-full justify-center"
+                />
+              </div>
             </div>
 
-            {/* Book Info */}
+            {/* Book Info — centered di mobile, align kiri di desktop */}
             <div class="space-y-6">
-              <header>
+              <header class="text-center sm:text-left">
                 <h1 class="text-2xl sm:text-3xl font-bold text-text leading-tight">{book.title}</h1>
                 <p class="mt-2 text-lg text-text-muted">{book.author}</p>
               </header>
 
-              {/* CTA Read Button - di sini, BUKAN sticky */}
-              <ReadButton
-                slug={book.slug}
-                title={book.title}
-                readingUrl={book.readingUrl}
-                fullWidth
-              />
+              {/* Tombol Baca — mobile saja (tetap centered) */}
+              <div class="flex justify-center md:hidden">
+                <ReadButton
+                  slug={book.slug}
+                  title={book.title}
+                  readingUrl={book.readingUrl}
+                />
+              </div>
 
               <BookMeta
                 title={book.title}
@@ -128,38 +133,15 @@ const ogImage = book?.coverUrl;
                 isbn={book.isbn}
               />
 
-              {book.description && (
-                <BookDescription description={book.description} maxLines={6} />
-              )}
-
-              {/* Additional info card */}
-              <Card variant="outlined" padding="md" class="mt-4">
-                <h2 class="font-semibold text-text mb-3">Informasi Tambahan</h2>
-                <dl class="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <dt class="text-sm text-text-muted">Jumlah Halaman</dt>
-                    <dd class="text-text">{book.pages || '-'} halaman</dd>
-                  </div>
-                  <div>
-                    <dt class="text-sm text-text-muted">Bahasa</dt>
-                    <dd class="text-text capitalize">{book.language || '-'}</dd>
-                  </div>
-                  <div>
-                    <dt class="text-sm text-text-muted">Tahun Terbit</dt>
-                    <dd class="text-text">{book.publishedYear || '-'}</dd>
-                  </div>
-                  <div>
-                    <dt class="text-sm text-text-muted">Kategori</dt>
-                    <dd class="text-text">{book.category || '-'}</dd>
-                  </div>
-                  {book.isbn && (
-                    <div class="sm:col-span-2">
-                      <dt class="text-sm text-text-muted">ISBN</dt>
-                      <dd class="text-text font-mono">{book.isbn}</dd>
-                    </div>
-                  )}
-                </dl>
-              </Card>
+              {/* Sinopsis — tampil penuh tanpa clamp */}
+              <section aria-labelledby="synopsis-heading" class="text-left">
+                <h2 id="synopsis-heading" class="text-lg font-semibold text-text mb-2">Sinopsis</h2>
+                {bookSynopsis ? (
+                  <p class="text-text-muted leading-relaxed" set:html={bookSynopsis} />
+                ) : (
+                  <p class="text-text-muted text-sm italic">Belum ada sinopsis untuk buku ini.</p>
+                )}
+              </section>
             </div>
           </div>
 
