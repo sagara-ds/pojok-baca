@@ -1,0 +1,66 @@
+---
+// Kartu buku untuk grid katalog & beranda.
+// Tinggi judul dikunci 2 baris supaya baseline antar kartu sejajar.
+import CoverPlaceholder from './CoverPlaceholder.astro';
+import type { Book } from '../../services/types';
+
+interface Props {
+  book: Book;
+  /** Tampilkan jumlah pembaca (dari statistik). */
+  showReadCount?: boolean;
+}
+
+const { book, showReadCount = false } = Astro.props;
+const href = `/books/${book.slug}/`;
+---
+
+<article class="group relative flex flex-col overflow-hidden rounded-xl bg-surface border border-border transition-all duration-200 hover:border-accent/50 hover:shadow-md focus-within:ring-2 focus-within:ring-accent">
+  <a href={href} class="flex flex-col h-full focus-visible:outline-none" aria-label={`Lihat detail ${book.title}`}>
+    <div class="relative aspect-[2/3] overflow-hidden">
+      <CoverPlaceholder title={book.title} author={book.author} />
+      {book.coverUrl && (
+        <img
+          src={book.coverUrl}
+          alt={`Cover buku ${book.title}`}
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          onerror="this.style.display='none'"
+        />
+      )}
+
+      {showReadCount && (book.readCount ?? 0) > 0 && (
+        <span class="absolute left-2 top-2 rounded-full bg-background/90 px-2 py-0.5 text-[11px] font-medium text-text">
+          Dibaca {book.readCount}×
+        </span>
+      )}
+    </div>
+
+    <div class="flex flex-1 flex-col gap-1 p-4">
+      <h3 class="line-clamp-2 min-h-[2.75rem] font-semibold leading-snug text-text">{book.title}</h3>
+      <p class="line-clamp-1 text-sm text-text-muted">{book.author}</p>
+
+      {book.category && (
+        <span class="mt-1 w-fit rounded bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent-dark dark:text-accent-light">
+          {book.category}
+        </span>
+      )}
+    </div>
+  </a>
+
+  <button
+    type="button"
+    class="absolute right-2 top-2 rounded-full bg-background/85 p-2 text-text shadow-sm backdrop-blur transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+    aria-label={`Simpan ${book.title} ke bookmark`}
+    aria-pressed="false"
+    data-bookmark-toggle
+    data-slug={book.slug}
+    data-title={book.title}
+    data-author={book.author}
+    data-cover={book.coverUrl}
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-bookmark-icon>
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  </button>
+</article>

@@ -45,18 +45,22 @@ export async function fetchBook(slug: string): Promise<Book | null> {
   return getBook(slug);
 }
 
-/**
- * Daftar buku + paginasi + filter kategori/sort (dari manifest pipeline)
- */
-export async function fetchBooks(params: SearchParams = {}): Promise<BookListResponse> {
-  let books = getAllBooks();
+export interface FetchBooksOptions {
+  /** Peta slug -> jumlah pembaca (dari statistik). Dipakai sort=popular. */
+  readCounts?: Record<string, number>;
+}
 
-  if (params.q) {
-    const q = params.q.trim().toLowerCase();
-    books = books.filter(
-      (b) => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q),
-    );
-  }
+/**
+ * Daftar buku + paginasi + filter kategori/sort (dari manifest pipeline).
+ *
+ * Pencarian mencakup judul, penulis, sinopsis, dan kategori (Opsi A).
+ */
+export async function fetchBooks(
+  params: SearchParams = {},
+  options: FetchBooksOptions = {},
+): Promise<BookListResponse> {
+  let books = params.q ? searchBooksLocal(params.q) : getAllBooks();
+
   if (params.category) {
     books = books.filter((b) => b.category === params.category);
   }
@@ -64,15 +68,26 @@ export async function fetchBooks(params: SearchParams = {}): Promise<BookListRes
     books = books.filter((b) => b.publishedYear === params.year);
   }
 
+  const readCounts = options.readCounts ?? {};
+
   const sorters: Record<string, (a: Book, b: Book) => number> = {
     'title-asc': (a, b) => a.title.localeCompare(b.title, 'id'),
     'title-desc': (a, b) => b.title.localeCompare(a.title, 'id'),
     newest: (a, b) => (b.publishedYear ?? 0) - (a.publishedYear ?? 0),
     oldest: (a, b) => (a.publishedYear ?? 0) - (b.publishedYear ?? 0),
-    popular: (a, b) => b.pages - a.pages,
+    // "Populer" HARUS berarti jumlah pembaca, bukan jumlah halaman.
+    // Tanpa data statistik, urutan jatuh ke judul supaya deterministik.
+    popular: (a, b) =>
+      (readCounts[b.slug] ?? 0) - (readCounts[a.slug] ?? 0) ||
+      a.title.localeCompare(b.title, 'id'),
   };
   const sorter = params.sort ? sorters[params.sort] : undefined;
   if (sorter) books = [...books].sort(sorter);
+
+  // Lampirkan jumlah pembaca kalau tersedia.
+  if (Object.keys(readCounts).length > 0) {
+    books = books.map((b) => ({ ...b, readCount: readCounts[b.slug] ?? 0 }));
+  }
 
   const total = books.length;
   const limit = params.limit ?? 12;
@@ -87,7 +102,7 @@ export async function fetchBooks(params: SearchParams = {}): Promise<BookListRes
 }
 
 /**
- * Pencarian buku berdasarkan judul/penulis (dari manifest pipeline)
+ * Pencarian buku berdasarkan judul/penulis/sinopsis/kategori.
  */
 export async function searchBooks(query: string, params: Omit<SearchParams, 'q'> = {}): Promise<BookListResponse> {
   const limit = params.limit ?? 12;

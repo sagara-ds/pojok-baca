@@ -320,11 +320,16 @@ async function cmdRender() {
   if (!groupsData || !scan) throw new Error('Jalankan `scan` lebih dulu.');
 
   const renderState = (await readJson(RENDER_FILE, {})) ?? {};
+  const overrides = (await readJson(path.join(DATA_DIR, 'books.override.json'), {})) ?? {};
+  const resumeAfter = args['resume-after'] ? Date.parse(String(args['resume-after'])) : null;
+  if (resumeAfter !== null && !Number.isFinite(resumeAfter)) throw new Error('--resume-after harus tanggal ISO valid');
+  let checkpoint = Promise.resolve();
   const targets = groupsData.groups
     .map((g) => g.members.find((m) => m.id === g.representative) ?? g.members[0])
     .filter((m) => {
       const slug = groupsData.slugMap[m.id];
-      return slug && scan[m.id] && !scan[m.id].error;
+      const manual = { ...overrides[m.name], ...overrides[slug] };
+      return slug && scan[m.id] && !scan[m.id].error && manual.exclude !== true;
     });
 
   let only = args.slug ? targets.filter((m) => groupsData.slugMap[m.id] === args.slug) : targets;
@@ -412,9 +417,9 @@ async function cmdRender() {
           const outFile = path.join(outDir, pageFileName(i));
 
           // --resume: lewati halaman yang sudah ada (render ulang jadi jauh lebih cepat).
-          if (args.resume) {
+          if (args.resume || resumeAfter !== null) {
             const existing = await fsp.stat(outFile).catch(() => null);
-            if (existing && existing.size > 0) {
+            if (existing && existing.size > 0 && (resumeAfter === null || existing.mtimeMs >= resumeAfter)) {
               bytes += existing.size;
               continue;
             }
@@ -486,6 +491,10 @@ async function cmdRender() {
       renderState[slug] = { slug, driveId: member.id, error: err.message };
       done++;
       log.warn(`${slug} — ${err.message}`);
+      process.exitCode = 1;
+    } finally {
+      checkpoint = checkpoint.then(() => writeJson(RENDER_FILE, renderState));
+      await checkpoint;
     }
   });
 
@@ -658,6 +667,12 @@ async function cmdVerify() {
 // bundle
 // ---------------------------------------------------------------------------
 async function cmdBundle() {
+  const manifest = await readJson(path.join(DATA_DIR, 'books.json'));
+  if (!manifest) throw new Error('Jalankan `manifest` sebelum `bundle`.');
+  const selected = manifest.books.filter((book) =>
+    book.type !== 'epub' && (!args.slug || book.slug === args.slug),
+  );
+  if (args.slug && !selected.length) throw new Error(`Buku gambar tidak ditemukan: ${args.slug}`);
   const maxPages = Number(args.pages ?? 3);
   const maxHeight = Number(args['max-height'] ?? 4096);
   const mode = args.mode === 'images' ? 'images' : 'sheets';
@@ -667,6 +682,7 @@ async function cmdBundle() {
   await ensureDir(PAGES_INDEX_DIR);
 
   const results = await bundleAll({
+    slugs: selected.map((book) => book.slug),
     pagesRoot: PAGES_DIR,
     sheetsRoot: SHEETS_DIR,
     indexRoot: PAGES_INDEX_DIR,
@@ -685,8 +701,162 @@ async function cmdBundle() {
   log.ok(`${totalPages} halaman -> ${totalFiles} file (${humanBytes(totalBytes)})`);
   log.dim(`  indeks reader: ${path.relative(ROOT, PAGES_INDEX_DIR)}/<slug>.json`);
   if (mode === 'sheets' && totalFiles > 20000) {
-    log.warn(`${totalFiles} file MELEBIHI batas 20.000 file Cloudflare. Turunkan --pages atau pakai --max-height lebih kecil.`);
+    log.warn(`${totalFiles} file MELEBIHI batas 20.000 file Cloudflare. Naikkan --pages jika tinggi strip masih memungkinkan.`);
   }
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * Ekstrak teks tiap halaman ke `public/data/text/<slug>.json`.
+ *
+ * Dipakai reader mode teks (`?mode=text`). Buku hasil scan tanpa lapisan
+ * teks dilewati. Untuk EPUB, chapter sudah tersedia dari hasil scan.
+ */
+async function cmdText() {
+  const manifestPath = path.join(DATA_DIR, 'books.json');
+  const manifest = await readJson(manifestPath);
+  if (!manifest) throw new Error('data/books.json belum ada. Jalankan `manifest` dulu.');
+
+  const scan = (await readJson(SCAN_FILE, {})) ?? {};
+  const byName = new Map(
+    Object.values(scan)
+      .filter((s) => s && s.name)
+      .map((s) => [s.name, s]),
+  );
+
+  const outDir = path.join(ROOT, 'public', 'data', 'text');
+  await ensureDir(outDir);
+
+  const targets = manifest.books.filter(
+    (book) => book.hasTextLayer && (!args.slug || book.slug === args.slug),
+  );
+
+  log.step(`Ekstrak teks ${targets.length} buku -> public/data/text/…`);
+
+  let done = 0;
+  for (const book of targets) {
+    const scanned = byName.get(book.sourceFile);
+    if (!scanned) {
+      log.warn(`${book.slug}: sumber tidak ditemukan di scan.json, dilewati`);
+      continue;
+    }
+
+    try {
+      let payload;
+
+      if (scanned.type === 'epub' && Array.isArray(scanned.chapters)) {
+        const epubPath = await sourcePath({ id: scanned.driveId, name: scanned.name });
+        const epub = parseEpub(await fsp.readFile(epubPath));
+        if (!epub.chapters.some((chapter) => chapter.text?.trim())) {
+          throw new Error('EPUB tidak menghasilkan teks bab');
+        }
+        payload = {
+          slug: book.slug,
+          title: book.title,
+          source: 'epub',
+          chapters: epub.chapters.map((chapter) => ({
+            title: chapter.title ?? '',
+            text: chapter.text ?? '',
+          })),
+        };
+      } else {
+        const pdfPath = await sourcePath({ id: scanned.driveId, name: scanned.name });
+        const buffer = await fsp.readFile(pdfPath);
+        const { doc } = await openDocument(buffer);
+        const pageCount = doc.countPages();
+
+        const pages = [];
+        for (let i = 0; i < pageCount; i++) {
+          pages.push({ n: i + 1, text: extractPageText(doc, i) });
+        }
+        doc.destroy?.();
+
+        payload = {
+          slug: book.slug,
+          title: book.title,
+          source: 'pdf',
+          pages,
+        };
+      }
+
+      await writeJson(path.join(outDir, `${book.slug}.json`), payload);
+      done++;
+      log.dim(`[${done}/${targets.length}] ${book.slug}`);
+    } catch (err) {
+      log.warn(`${book.slug}: ${err.message}`);
+    }
+  }
+
+  log.ok(`${done} file teks ditulis ke public/data/text/`);
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * Render ulang cover saja (tanpa watermark).
+ *
+ * Dipakai saat watermark dimatikan di config: halaman buku bisa memakai
+ * hasil lama, tetapi cover yang sudah ter-render masih membawa watermark.
+ * Perintah ini hanya membaca halaman pertama tiap PDF -> cepat.
+ */
+async function cmdCovers() {
+  const manifest = await readJson(path.join(DATA_DIR, 'books.json'));
+  if (!manifest) throw new Error('data/books.json belum ada. Jalankan `manifest` dulu.');
+
+  const render = (await readJson(RENDER_FILE, {})) ?? {};
+  const scan = (await readJson(SCAN_FILE, {})) ?? {};
+  const byDriveId = new Map(
+    Object.values(scan)
+      .filter((s) => s && s.driveId)
+      .map((s) => [s.driveId, s]),
+  );
+
+  await ensureDir(COVERS_DIR);
+
+  const targets = manifest.books.filter((book) => book.hasCover && (!args.slug || book.slug === args.slug));
+  log.step(`Render ulang ${targets.length} cover tanpa watermark…`);
+
+  let done = 0;
+  for (const book of targets) {
+    const renderData = render[book.slug];
+    const scanned = byDriveId.get(renderData?.driveId);
+    if (!scanned) {
+      log.warn(`${book.slug}: driveId tidak ditemukan, dilewati`);
+      continue;
+    }
+
+    // EPUB cover sudah diekstrak dari file, tidak pernah diberi watermark.
+    if (scanned.type === 'epub') {
+      done++;
+      continue;
+    }
+
+    try {
+      const pdfPath = await sourcePath({ id: scanned.driveId, name: scanned.name });
+      const buffer = await fsp.readFile(pdfPath);
+      const { doc } = await openDocument(buffer);
+      const cover = renderPageRaw(mupdf, doc, 0, 400);
+      const coverWidth = Math.min(400, cover.width);
+
+      const coverWebp = await sharp(cover.data, {
+        raw: { width: cover.width, height: cover.height, channels: cover.components },
+      })
+        .resize({ width: coverWidth, withoutEnlargement: true })
+        .webp({ quality: config.render.quality, effort: config.render.webpEffort })
+        .toBuffer();
+
+      await fsp.writeFile(path.join(COVERS_DIR, `${book.slug}.webp`), coverWebp);
+      doc.destroy?.();
+
+      done++;
+      log.dim(`[${done}/${targets.length}] ${book.slug}`);
+    } catch (err) {
+      log.warn(`${book.slug}: ${err.message}`);
+    }
+  }
+
+  log.ok(`${done} cover ditulis ulang tanpa watermark.`);
 }
 
 // ---------------------------------------------------------------------------
@@ -696,7 +866,9 @@ const commands = {
   fetch: cmdFetch,
   scan: cmdScan,
   render: cmdRender,
+  covers: cmdCovers,
   manifest: cmdManifest,
+  text: cmdText,
   pdf: cmdPdf,
   verify: cmdVerify,
   bundle: cmdBundle,
@@ -714,7 +886,9 @@ Perintah:
   fetch      Unduh semua PDF ke .cache/pdf/
   scan       Periksa PDF: halaman, sha256, dHash, text layer, metadata
   render     Render WebP + watermark ke public/pages & public/covers
+  covers     Render ulang cover saja (tanpa watermark)
   manifest   Tulis data/books.json + data/links.private.json + laporan
+  text       Ekstrak teks buku ke public/data/text/ (mode baca teks)
   pdf        Salin PDF asli ke public/dl/<dlId>.pdf (nama acak)
   bundle     Gabungkan halaman jadi strip (untuk host dengan limit jumlah file)
   all        Jalankan semua berurutan
@@ -726,6 +900,7 @@ Opsi:
   --pages N            Halaman per strip (untuk bundle)
   --max-mb N           Batas ukuran PDF saat menyalin (default 25)
   --retry-failed       Render ulang hanya buku yang gagal
+  --resume-after ISO   Lewati hanya halaman yang ditulis setelah waktu ISO terverifikasi
   --only <regex>       Batasi scan ke nama file yang cocok
   --folder-id <id>     Ganti folder Drive
 `);

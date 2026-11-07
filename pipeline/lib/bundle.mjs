@@ -220,9 +220,13 @@ export async function bundleAll({
   quality = 78,
   concurrency = 6,
   onProgress,
+  slugs: selectedSlugs,
 }) {
   const dirs = await fsp.readdir(pagesRoot, { withFileTypes: true });
-  const slugs = dirs.filter((d) => d.isDirectory()).map((d) => d.name);
+  const allowed = selectedSlugs ? new Set(selectedSlugs) : null;
+  const slugs = dirs
+    .filter((d) => d.isDirectory() && (!allowed || allowed.has(d.name)))
+    .map((d) => d.name);
 
   const results = [];
   for (const slug of slugs) {

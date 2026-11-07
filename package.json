@@ -6,6 +6,7 @@
     "node": ">=22.22.0"
   },
   "scripts": {
+    "test": "node --test tests/*.test.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -15,7 +16,9 @@
     "pipe:fetch": "node pipeline/cli.mjs fetch",
     "pipe:scan": "node pipeline/cli.mjs scan",
     "pipe:render": "node pipeline/cli.mjs render",
+    "pipe:covers": "node pipeline/cli.mjs covers",
     "pipe:manifest": "node pipeline/cli.mjs manifest",
+    "pipe:text": "node pipeline/cli.mjs text",
     "pipe:pdf": "node pipeline/cli.mjs pdf",
     "pipe:verify": "node pipeline/cli.mjs verify",
     "pipe:bundle": "node pipeline/cli.mjs bundle",
@@ -31,6 +34,7 @@
     "@astrojs/check": "^0.9.12",
     "@astrojs/node": "^11.1.9",
     "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.19.2",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "wrangler": "^4.151.3"

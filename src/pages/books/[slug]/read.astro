@@ -7,6 +7,7 @@
  */
 import '../../../styles/global.css';
 import Reader from '../../../components/reader/Reader.astro';
+import TextReader from '../../../components/reader/TextReader.astro';
 import { getBook, getReaderConfig } from '../../../services/books';
 import { sanitizeText } from '../../../services/api';
 
@@ -21,12 +22,16 @@ if (!slug) {
 const book = getBook(slug);
 const config = getReaderConfig(slug);
 
-if (!book || !config || config.count < 1) {
+if (!book || !config || (config.count < 1 && !config.hasTextLayer)) {
   return Astro.redirect(`/books/${slug}/`);
 }
 
 const title = sanitizeText(book.title);
 const description = `Baca "${title}" oleh ${book.author} secara online di Pojok Baca.`;
+
+// Mode teks hanya untuk buku yang punya lapisan teks asli.
+const requestedMode = Astro.url.searchParams.get('mode');
+const useTextMode = config.hasTextLayer && (requestedMode === 'text' || config.count < 1);
 ---
 
 <!doctype html>
@@ -56,12 +61,52 @@ const description = `Baca "${title}" oleh ${book.author} secara online di Pojok 
     </script>
   </head>
   <body class="reader-body">
-    <Reader data={config} title={title} author={book.author} />
+    {useTextMode ? (
+      <TextReader slug={config.slug} title={title} author={book.author} textUrl={config.textUrl} />
+    ) : (
+      <Reader data={config} title={title} author={book.author} />
+    )}
 
-    <script>
-      import { initReader } from '../../../scripts/reader';
-      initReader();
-    </script>
+    {useTextMode && (
+      <script>
+        import { recordHistory, trackEvent } from '../../../scripts/library';
+
+        const root = document.getElementById('text-reader');
+        const slug = root?.dataset.slug;
+        if (slug) {
+          trackEvent('read', slug);
+          recordHistory({
+            slug,
+            title: root?.dataset.title ?? slug,
+            author: root?.dataset.author ?? '',
+            cover: root?.dataset.cover ?? '',
+          });
+        }
+      </script>
+    )}
+
+    {!useTextMode && (
+      <script>
+        import { initReader } from '../../../scripts/reader';
+        initReader();
+      </script>
+    )}
+
+    {/* Kalau setting default = teks dan buku punya lapisan teks, arahkan otomatis. */}
+    {!useTextMode && config.hasTextLayer && (
+      <script is:inline>
+        try {
+          const mode = localStorage.getItem('pb:mode');
+          const params = new URLSearchParams(window.location.search);
+          if (mode === 'text' && !params.has('mode')) {
+            params.set('mode', 'text');
+            window.location.replace(`/books/${window.location.pathname.split('/')[2]}/read/?${params.toString()}`);
+          }
+        } catch (e) {
+          /* localStorage tidak tersedia */
+        }
+      </script>
+    )}
   </body>
 </html>
 

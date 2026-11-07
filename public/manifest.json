@@ -1,11 +1,11 @@
 {
   "name": "Pojok Baca RPL",
   "short_name": "Pojok Baca",
-  "description": "Temukan buku favoritmu di perpustakaan digital Pojok Baca RPL",
-  "start_url": "/books",
+  "description": "Perpustakaan digital Pojok Baca RPL — baca buku secara online",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#fafafa",
-  "theme_color": "#1a1a2e",
+  "background_color": "#0a2947",
+  "theme_color": "#0f3c65",
   "orientation": "portrait-primary",
   "icons": [
     {

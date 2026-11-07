@@ -1,12 +1,12 @@
 ---
 // Books list page with pagination
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { fetchBooks, type SearchParams } from '../../services/api';
-import Card from '../../components/ui/Card.astro';
+import { fetchBooks } from '../../services/api';
+import type { SearchParams } from '../../services/types';
 import Button from '../../components/ui/Button.astro';
-import Skeleton from '../../components/ui/Skeleton.astro';
 import ErrorState from '../../components/ui/ErrorState.astro';
-import CoverPlaceholder from '../../components/book/CoverPlaceholder.astro';
+import BookCard from '../../components/book/BookCard.astro';
+import { getReadCounts, getStatsEnv } from '../../server/stats';
 
 export interface Props {
   page?: number;
@@ -24,11 +24,14 @@ const q = searchParams.get('q') ?? undefined;
 const limit = 20;
 const params: SearchParams = { page, limit, sort, category, q };
 
+// "Populer" memakai jumlah pembaca nyata, bukan jumlah halaman.
+const readCounts = await getReadCounts(getStatsEnv(Astro.locals));
+
 let booksData;
 let error: string | null = null;
 
 try {
-  booksData = await fetchBooks(params);
+  booksData = await fetchBooks(params, { readCounts });
 } catch (e) {
   error = e instanceof Error ? e.message : 'Gagal memuat daftar buku';
 }
@@ -55,19 +58,31 @@ const pageTitle = q
 const pageDescription = q
   ? `Hasil pencarian untuk "${q}" - ${booksData?.data.length ?? 0} buku ditemukan`
   : `Jelajahi koleksi buku lengkap di Pojok Baca RPL`;
+
+const buildUrl = (nextPage: number) => {
+  const sp = new URLSearchParams();
+  sp.set('page', String(nextPage));
+  sp.set('sort', sort);
+  if (category) sp.set('category', category);
+  if (q) sp.set('q', q);
+  return `/books/?${sp.toString()}`;
+};
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
   <main id="main-content" class="flex-1">
-    <div class="container py-6 sm:py-8">
+    <div class="container py-8 sm:py-10">
       <!-- Page Header -->
-      <header class="mb-6 sm:mb-8">
+      <header class="mb-8">
         <h1 class="text-2xl sm:text-3xl font-bold text-text">{pageTitle}</h1>
-        <p class="mt-1 text-text-muted">{booksData?.pagination.total ?? 0} buku ditemukan</p>
+        <p class="mt-2 text-text-muted">
+          {booksData?.pagination.total ?? 0} buku ditemukan
+          {q && <span class="text-text-light"> — pencarian mencocokkan judul, penulis, dan sinopsis</span>}
+        </p>
       </header>
 
-      {/* Sort & Filter Bar */}
-      <div class="flex flex-col sm:flex-row gap-3 mb-6 items-start sm:items-center justify-between">
+      {/* Sort — satu-satunya tempat pengurutan (header hanya navigasi) */}
+      <div class="mb-8">
         <div class="flex flex-wrap gap-2" role="group" aria-label="Urutkan">
           {sortOptions.map(option => (
             <button
@@ -98,73 +113,27 @@ const pageDescription = q
       ) : booksData?.data.length === 0 ? (
         <ErrorState
           title="Tidak Ada Buku Ditemukan"
-          message="Coba ubah filter atau kata kunci pencarian."
+          message="Coba kata kunci lain — misalnya potongan alur cerita yang kamu ingat."
+          actionLabel="Lihat semua buku"
+          actionHref="/books/"
           variant="page"
         />
       ) : (
         <>
-          <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5" role="list" aria-label="Daftar buku">
+          <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5" role="list" aria-label="Daftar buku">
             {booksData!.data.map(book => (
-              <Card
-                variant="interactive"
-                padding="none"
-                href={`/books/${book.slug}/`}
-                class="overflow-hidden flex flex-col"
-                aria-label={`Lihat detail ${book.title}`}
-              >
-                <div class="relative aspect-[2/3] overflow-hidden">
-                  {/* Placeholder desain selalu di belakang img — terlihat
-                      saat asset cover 404 / belum dirender pipeline */}
-                  <CoverPlaceholder title={book.title} author={book.author} />
-
-                  {book.coverUrl && (
-                    <img
-                      src={book.coverUrl}
-                      alt={`Cover buku ${book.title}`}
-                      loading="lazy"
-                      class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                      onerror="this.style.display='none'"
-                      decoding="async"
-                    />
-                  )}
-                </div>
-
-                <div class="p-3 flex-1 flex flex-col">
-                  <h2 class="font-semibold text-text line-clamp-2 mb-1">{book.title}</h2>
-                  <p class="text-sm text-text-muted line-clamp-1 mb-2">{book.author}</p>
-
-                  <div class="flex flex-wrap gap-1.5 mt-auto">
-                    {book.category ? (
-                      <span class="px-2 py-0.5 rounded text-xs font-medium truncate max-w-full bg-accent/10 text-accent-dark dark:text-accent-light">
-                        {book.category}
-                      </span>
-                    ) : null}
-                    {book.publishedYear ? (
-                      <span class="hidden sm:inline-block px-2 py-0.5 rounded text-xs font-medium bg-secondary text-text-muted">
-                        {book.publishedYear}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {/* Skeleton placeholders for loading state */}
-          <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 hidden" data-skeleton-container aria-hidden="true">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Card variant="default" padding="none" class="overflow-hidden">
-                <Skeleton variant="book-card" />
-              </Card>
+              <BookCard book={book} showReadCount={sort === 'popular'} />
             ))}
           </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <nav class="mt-8 mb-12 flex items-center justify-center gap-2" aria-label="Navigasi halaman">
+            <nav class="mt-10 mb-12 flex items-center justify-center gap-2" aria-label="Navigasi halaman">
               <a
-                href={hasPrevPage ? `/books/?page=${currentPage - 1}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
-                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${hasPrevPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'}"
+                href={hasPrevPage ? buildUrl(currentPage - 1) : '#'}
+                class={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  hasPrevPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'
+                }`}
                 aria-label="Halaman sebelumnya"
                 aria-disabled={!hasPrevPage}
               >
@@ -187,8 +156,7 @@ const pageDescription = q
                   }
                   return (
                     <a
-                      key={pageNum}
-                      href={`/books/?page=${pageNum}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+                      href={buildUrl(pageNum)}
                       class={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                         pageNum === currentPage
                           ? 'bg-primary text-background'
@@ -204,8 +172,10 @@ const pageDescription = q
               </div>
 
               <a
-                href={hasNextPage ? `/books/?page=${currentPage + 1}&sort=${sort}${category ? `&category=${category}` : ''}${q ? `&q=${encodeURIComponent(q)}` : ''}` : '#'}
-                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${hasNextPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'}"
+                href={hasNextPage ? buildUrl(currentPage + 1) : '#'}
+                class={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  hasNextPage ? 'bg-surface text-text hover:bg-secondary' : 'bg-secondary text-text-light cursor-not-allowed pointer-events-none'
+                }`}
                 aria-label="Halaman selanjutnya"
                 aria-disabled={!hasNextPage}
               >
@@ -221,7 +191,7 @@ const pageDescription = q
   </main>
 
   <script is:inline>
-    // Handle sort button clicks
+    // Sort mengubah URL agar hasil bisa dibagikan & tombol back bekerja.
     document.addEventListener('DOMContentLoaded', () => {
       const sortButtons = document.querySelectorAll('[data-sort]');
       const urlParams = new URLSearchParams(window.location.search);
@@ -229,11 +199,10 @@ const pageDescription = q
       sortButtons.forEach(button => {
         button.addEventListener('click', () => {
           const sortValue = button.getAttribute('data-sort');
-          if (sortValue) {
-            urlParams.set('sort', sortValue);
-            urlParams.set('page', '1');
-            window.location.search = urlParams.toString();
-          }
+          if (!sortValue) return;
+          urlParams.set('sort', sortValue);
+          urlParams.set('page', '1');
+          window.location.search = urlParams.toString();
         });
       });
     });

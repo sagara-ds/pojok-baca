@@ -84,7 +84,11 @@ export async function buildManifest({ driveFiles, scan, render, groups, previous
     // Slug harus sama persis dengan yang dipakai saat render -> ambil dari slugMap.
     const slug = slugById?.[representative.id] ?? scanData.slug ?? uniqueSlug(slugBase, takenSlugs);
 
-    const manual = overrides[slug] ?? overrides[driveFile.name] ?? {};
+    const manual = { ...overrides[driveFile.name], ...overrides[slug] };
+    if (manual.exclude === true) {
+      skipped.push({ id: representative.id, reason: 'dikecualikan oleh override katalog' });
+      continue;
+    }
     const resolved = resolveMeta(meta, parsed);
     const title = manual.title ?? resolved.title;
     const author = manual.author ?? resolved.author;
@@ -105,6 +109,10 @@ export async function buildManifest({ driveFiles, scan, render, groups, previous
     driveIdBySlug[slug] = representative.id;
 
     const readerIndex = await readJson(path.join(INDEX_DIR, `${slug}.json`), null);
+    const textContent = await readJson(path.join(ROOT, 'public', 'data', 'text', `${slug}.json`), null);
+    const hasTextLayer = textContent
+      ? [...(textContent.pages ?? []), ...(textContent.chapters ?? [])].some((part) => part.text?.trim())
+      : Boolean(scanData.hasTextLayer);
 
     books.push({
       slug,
@@ -122,8 +130,9 @@ export async function buildManifest({ driveFiles, scan, render, groups, previous
       dlId,
       synopsis,
       synopsisStatus,
+      prolog: manual.prolog ?? '',
       categories: manual.categories ?? [],
-      hasTextLayer: Boolean(scanData.hasTextLayer),
+      hasTextLayer,
       landscapePages: scanData.landscapePages ?? [],
       metaConfidence: manual.title || manual.author ? 'manual' : parsed.confidence ?? 'low',
       sourceFile: driveFile.name,

@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SavedList from '../../components/book/SavedList.astro';
+---
+
+<BaseLayout title="Bookmark" description="Buku yang kamu simpan di Pojok Baca RPL.">
+  <main id="main-content" class="flex-1">
+    <div class="container py-8 sm:py-10 space-y-6">
+      <header>
+        <h1 class="text-2xl sm:text-3xl font-bold text-text">Bookmark</h1>
+        <p class="mt-2 text-text-muted">Buku yang kamu simpan untuk dibaca nanti.</p>
+      </header>
+
+      <SavedList mode="bookmark" />
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SavedList from '../../components/book/SavedList.astro';
+---
+
+<BaseLayout title="Riwayat Baca" description="Buku yang pernah kamu buka di Pojok Baca RPL.">
+  <main id="main-content" class="flex-1">
+    <div class="container py-8 sm:py-10 space-y-6">
+      <header class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-text">Riwayat Baca</h1>
+          <p class="mt-2 text-text-muted">Buku yang pernah kamu buka, tersimpan di perangkat ini.</p>
+        </div>
+        <button
+          type="button"
+          id="clear-history"
+          class="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text transition-colors hover:bg-secondary"
+        >
+          Hapus riwayat
+        </button>
+      </header>
+
+      <SavedList mode="history" />
+    </div>
+  </main>
+
+  <script>
+    import { clearHistory } from '../../scripts/library';
+
+    document.getElementById('clear-history')?.addEventListener('click', () => {
+      if (!confirm('Hapus seluruh riwayat baca di perangkat ini?')) return;
+      clearHistory();
+    });
+  </script>
+</BaseLayout>

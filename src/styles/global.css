@@ -147,6 +147,15 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  /* Ukuran font yang bisa diatur pengguna (halaman /setting/). */
+  html[data-font='sm'] {
+    font-size: 15px;
+  }
+
+  html[data-font='lg'] {
+    font-size: 18px;
+  }
+
   body {
     margin: 0;
     font-family: var(--font-sans);
@@ -368,8 +377,10 @@ mark {
   object-fit: cover;
 }
 
+/* Teks bacaan panjang: ukuran dan jarak baris yang lebih nyaman. */
 .prose {
   max-width: 65ch;
+  line-height: 1.85;
 }
 
 .prose p {

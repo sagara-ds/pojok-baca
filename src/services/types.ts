@@ -18,6 +18,12 @@ export interface Book {
   language: string;
   isbn?: string;
   readingUrl?: string;
+  /** Buku punya lapisan teks asli -> bisa dibaca mode teks, bukan gambar. */
+  hasTextLayer?: boolean;
+  /** Prolog manual (dari override / pipeline), ditampilkan terpisah. */
+  prolog?: string;
+  /** Jumlah pembaca (dari statistik), diisi saat sort=popular. */
+  readCount?: number;
 }
 
 export interface BookListResponse {

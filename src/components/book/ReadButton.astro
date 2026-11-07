@@ -32,7 +32,7 @@ const ariaLabel = continueReading
   class={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${className} ${
     variant === 'primary'
       ? 'bg-primary text-background hover:bg-primary-light active:bg-primary-dark shadow-sm'
-      : 'bg-secondary text-primary hover:bg-secondary-dark active:bg-secondary shadow-sm border border-border'
+      : 'bg-secondary text-text hover:bg-secondary-dark active:bg-secondary-dark shadow-sm border border-border'
   }`}
   aria-label={ariaLabel}
 >
@@ -48,9 +48,15 @@ const ariaLabel = continueReading
 <script>
   // Kalau buku ini sudah pernah dibaca, tombol jadi "Lanjutkan Baca (hlm N)".
   // Data posisi disimpan reader di localStorage.
+  import { trackEvent } from '../../scripts/library';
+
   document.querySelectorAll<HTMLAnchorElement>('[data-read-button]').forEach((button) => {
     const slug = button.dataset.slug;
     if (!slug) return;
+
+    // Hitung "mulai baca" saat tombol diklik (bukan saat halaman dimuat).
+    button.addEventListener('click', () => trackEvent('read', slug));
+
     try {
       const raw = localStorage.getItem(`pb:pos:${slug}`);
       if (!raw) return;

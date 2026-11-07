@@ -37,6 +37,21 @@ const ogImageURL = ogImage ? new URL(ogImage, siteURL).href : new URL('/og-defau
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
 
+    <!-- Terapkan preferensi (tema & ukuran font) sebelum render agar tidak kedip. -->
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('pb:theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const dark = theme === 'dark' || ((theme === null || theme === 'system') && prefersDark);
+        document.documentElement.classList.toggle('dark', dark);
+        document.documentElement.dataset.theme = theme || 'system';
+        const font = localStorage.getItem('pb:font');
+        if (font === 'sm' || font === 'lg') document.documentElement.dataset.font = font;
+      } catch (e) {
+        /* localStorage tidak tersedia */
+      }
+    </script>
+
     <!-- Primary Meta Tags -->
     <title>{fullTitle}</title>
     <meta name="title" content={fullTitle} />
@@ -94,6 +109,25 @@ const ogImageURL = ogImage ? new URL(ogImage, siteURL).href : new URL('/og-defau
     <slot />
 
     <Footer />
+
+    <!-- Bookmark global: tombol simpan di kartu & detail -->
+    <script>
+      import '../scripts/bookmarks-ui';
+    </script>
+
+    <!-- Statistik kunjungan (halaman, tanpa data pribadi) -->
+    <script is:inline>
+      try {
+        fetch('/api/stats/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'pageview' }),
+          keepalive: true,
+        }).catch(() => {});
+      } catch (e) {
+        /* offline */
+      }
+    </script>
 
     <!-- View Transitions for smooth page navigation -->
     <script is:inline>

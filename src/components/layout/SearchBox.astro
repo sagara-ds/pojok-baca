@@ -1,9 +1,21 @@
 ---
-import { debounce } from '../../utils/debounce';
 const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
+
+interface Props {
+  /** Versi ringkas untuk header desktop. */
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
 ---
 
-<form action="/books/" method="get" role="search" data-search-box class="w-full">
+<form
+  action="/books/"
+  method="get"
+  role="search"
+  data-search-box
+  class={compact ? 'w-full' : 'w-full max-w-2xl mx-auto'}
+>
   <div class="relative">
     <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface border border-border focus-within:border-primary focus-within:outline-none focus-within:ring-1 focus-within:ring-primary/50 transition-colors">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-text-muted flex-shrink-0" aria-hidden="true">
@@ -14,13 +26,13 @@ const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
       <input
         type="search"
         name="q"
-        placeholder="Cari buku, penulis..."
+        placeholder={compact ? 'Cari buku atau cerita…' : 'Cari judul, penulis, atau alur cerita…'}
         autocomplete="off"
-        aria-label="Cari buku"
+        aria-label="Cari buku berdasarkan judul, penulis, atau alur cerita"
         aria-expanded="false"
         aria-haspopup="listbox"
         aria-controls={resultsId}
-        class="flex-1 bg-transparent text-text placeholder-text-muted outline-none text-sm"
+        class="flex-1 min-w-0 bg-transparent text-text placeholder-text-muted outline-none text-sm"
         data-search-input
       />
 
@@ -75,6 +87,7 @@ const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
     title: string;
     author: string;
     coverUrl: string;
+    description?: string;
   }
 
   interface SearchResponse {
@@ -108,13 +121,13 @@ const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
     let abortController: AbortController | null = null;
 
     function hideResults() {
-      resultsContainer.classList.add('hidden');
-      input.setAttribute('aria-expanded', 'false');
+      resultsContainer?.classList.add('hidden');
+      input?.setAttribute('aria-expanded', 'false');
     }
 
     function showResults() {
-      resultsContainer.classList.remove('hidden');
-      input.setAttribute('aria-expanded', 'true');
+      resultsContainer?.classList.remove('hidden');
+      input?.setAttribute('aria-expanded', 'true');
     }
 
     function showState(state: 'empty' | 'loading' | 'error' | 'results') {
@@ -240,6 +253,18 @@ const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
         authorP.textContent = book.author;
 
         infoDiv.append(titleP, authorP);
+
+        // Kalau query tidak muncul di judul/penulis tetapi cocok dengan
+        // sinopsis, tampilkan potongan sinopsis sebagai bukti kecocokan.
+        const q = query.toLowerCase();
+        const titleMatch = book.title.toLowerCase().includes(q) || book.author.toLowerCase().includes(q);
+        if (!titleMatch && book.description) {
+          const snippet = document.createElement('p');
+          snippet.className = 'text-xs text-text-light line-clamp-2 mt-0.5';
+          snippet.textContent = book.description.slice(0, 140);
+          infoDiv.append(snippet);
+        }
+
         link.append(createMiniCover(book), infoDiv);
         resultsList!.append(link);
       });

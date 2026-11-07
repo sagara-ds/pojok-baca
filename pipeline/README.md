@@ -9,7 +9,7 @@ menjadi aset statis siap-deploy plus manifest `data/books.json`.
 npm run pipe:list      # enumerasi isi folder Drive
 npm run pipe:fetch     # unduh PDF/EPUB ke .cache/pdf/
 npm run pipe:scan      # halaman, sha256, dHash, text layer, metadata, dedup
-npm run pipe:render    # WebP + watermark ke .cache/pages & public/covers
+npm run pipe:render    # WebP tanpa watermark ke .cache/pages & public/covers
 npm run pipe:manifest  # data/books.json + data/links.private.json + laporan
 npm run pipe:pdf       # salin PDF asli ke public/dl/<dlId>.pdf (nama acak)
 npm run pipe:bundle    # gabung halaman jadi strip (host dengan limit file)
@@ -216,19 +216,11 @@ Pilihan:
 Perintah `bundle` (bagian M2) menggabungkan halaman dari `public/pages/` yang
 sudah jadi — tanpa render ulang dari PDF.
 
-## Kenapa watermark dipasang saat pipeline
+## Watermark dan render ulang
 
-Tanpa object storage berbayar (R2 dll.), file aset harus dilayani sebagai
-static asset → URL-nya bisa ditebak dan di-scrape. Yang **benar-benar** protects
-adalah watermark yang tertanam di piksel: masih ada walau gambar di-screenshot
-atau di-share ulang. Di luar itu, proteksi hanya "obscurity" (nama file opaque).
+Watermark dinonaktifkan melalui config.watermark.enabled: false. Untuk mengganti aset lama jalankan pipe:render tanpa --resume, lalu pipe:bundle dan pipe:manifest. Opsi resume melewati gambar yang sudah ada sehingga tidak cocok untuk menghapus watermark lama.
 
-Watermark ada dua lapis:
-1. Pola teks miring berulang — sudah ikut ter-render ke dalam `.webp`.
-2. Corner mark berisi slug buku.
-
-> Overlay per-sesi berbasis CSS (untuk traceability) bisa ditambahkan di sisi
-> reader tanpa biaya server, tapi bisa dilepas lewat devtools.
+Bundling hanya memproses buku gambar dalam manifest aktif. Gunakan --slug <slug> untuk memproses satu buku. Sinopsis manual disimpan di data/books.override.json agar tetap ada setelah manifest dibuat ulang.
 
 ## Download PDF tanpa R2
 

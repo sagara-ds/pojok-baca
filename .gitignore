@@ -11,6 +11,7 @@ public/pages/
 public/sheets/
 public/covers/
 public/dl/
+public/data/text/
 
 # dependencies
 node_modules/

@@ -9,9 +9,11 @@
  * Karena itu kode di sini tidak perlu tahu mode-nya.
  *
  * Data come dari SSR (lihat Reader.astro):
- *   #reader-data -> { slug, count, pageW, pageH, mode, indexUrl }
+ *   #reader-data -> { slug, count, pageW, pageH, mode, indexUrl, title, author, coverUrl }
  * Indeks lengkap (posisi tiap halaman) diambil dari indexUrl.
  */
+
+import { recordHistory, trackEvent } from './library';
 
 export interface ReaderData {
   slug: string;
@@ -20,6 +22,9 @@ export interface ReaderData {
   pageH: number;
   mode: 'sheets' | 'images';
   indexUrl: string;
+  title?: string;
+  author?: string;
+  coverUrl?: string;
 }
 
 interface PageIndex {
@@ -66,6 +71,17 @@ function storePosition(slug: string, page: number) {
   } catch {
     /* kuota penuh / mode privat */
   }
+}
+
+/** Catat buku ini ke riwayat baca (dipakai beranda & /riwayat/). */
+function storeHistory(data: ReaderData, page: number) {
+  recordHistory({
+    slug: data.slug,
+    title: data.title ?? data.slug,
+    author: data.author ?? '',
+    cover: data.coverUrl ?? '',
+    page: page + 1,
+  });
 }
 
 function readTheme(): 'light' | 'dark' {
@@ -115,14 +131,15 @@ export function initReader() {
   let touchStartX = 0;
   let touchStartY = 0;
   const prefetched = new Set<string>();
+  let completionTracked = false;
 
   // ---------------------------------------------------------------------
   // Tema
   // ---------------------------------------------------------------------
   function applyTheme(theme: 'light' | 'dark') {
     document.documentElement.classList.toggle('dark', theme === 'dark');
-    root.dataset.theme = theme;
-    const btn = root.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+    if (root) root.dataset.theme = theme;
+    const btn = root?.querySelector<HTMLButtonElement>('[data-theme-toggle]');
     if (btn) {
       btn.setAttribute('aria-pressed', String(theme === 'dark'));
       btn.setAttribute('aria-label', theme === 'dark' ? 'Mode terang' : 'Mode gelap');
@@ -135,8 +152,8 @@ export function initReader() {
   // Penskalaan & geometri
   // ---------------------------------------------------------------------
   function scale(): number {
-    const vw = stage.clientWidth;
-    const vh = stage.clientHeight;
+    const vw = stage?.clientWidth ?? 0;
+    const vh = stage?.clientHeight ?? 0;
     if (!vw || !vh) return 1;
     return Math.min(vw / data.pageW, vh / data.pageH);
   }
@@ -154,8 +171,8 @@ export function initReader() {
   }
 
   function layoutViewport(s: number) {
-    viewport.style.width = `${data.pageW * s}px`;
-    viewport.style.height = `${data.pageH * s}px`;
+    if (viewport) viewport.style.width = `${data.pageW * s}px`;
+    if (viewport) viewport.style.height = `${data.pageH * s}px`;
   }
 
   // ---------------------------------------------------------------------
@@ -192,6 +209,13 @@ export function initReader() {
     page = Math.min(Math.max(0, n), total - 1);
     const loc = locs[page];
     if (!loc) return;
+
+    // Statistik "selesai baca": hanya sekali per sesi reader, saat
+    // pembaca mencapai halaman terakhir.
+    if (!completionTracked && total > 1 && page === total - 1) {
+      completionTracked = true;
+      trackEvent('complete', data.slug);
+    }
 
     const file = index.strips[loc.strip].file;
     const s = scale();
@@ -236,7 +260,10 @@ export function initReader() {
 
   function scheduleSave() {
     window.clearTimeout(saveTimer);
-    saveTimer = window.setTimeout(() => storePosition(data.slug, page), 600);
+    saveTimer = window.setTimeout(() => {
+      storePosition(data.slug, page);
+      storeHistory(data, page);
+    }, 600);
   }
 
   function syncUrl() {
@@ -262,10 +289,10 @@ export function initReader() {
   // Chrome (bar atas/bawah, auto-hide)
   // ---------------------------------------------------------------------
   function wakeChrome() {
-    root.classList.remove('is-idle');
+    root?.classList.remove('is-idle');
     window.clearTimeout(chromeTimer);
     chromeTimer = window.setTimeout(() => {
-      root.classList.add('is-idle');
+      root?.classList.add('is-idle');
     }, 3200);
   }
 
@@ -365,7 +392,7 @@ export function initReader() {
     jumpInput.blur();
   });
 
-  root.querySelector<HTMLButtonElement>('[data-theme-toggle]')?.addEventListener('click', () => {
+  root?.querySelector<HTMLButtonElement>('[data-theme-toggle]')?.addEventListener('click', () => {
     const next = readTheme() === 'dark' ? 'light' : 'dark';
     try {
       localStorage.setItem(THEME_KEY, next);
@@ -409,6 +436,10 @@ export function initReader() {
       layoutViewport(s);
       showPage(page, { animate: false });
       wakeChrome();
+
+      // Statistik + riwayat: sekali saat reader benar-benar terbuka.
+      trackEvent('read', data.slug);
+      storeHistory(data, page);
     })
     .catch(() => {
       loader?.classList.add('is-hidden');

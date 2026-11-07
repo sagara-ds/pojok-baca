@@ -1,4 +1,5 @@
 import { unzipSync } from 'fflate';
+import { decodeEntities } from './util.mjs';
 
 /**
  * Parser EPUB minimal (EPUB 2 & 3).
@@ -42,7 +43,7 @@ function parseXml(xml) {
 
 /**
  * @param {Buffer} buffer isi file .epub
- * @returns {{title?:string, author?:string, language?:string, chapters:{href:string,title:string}[], coverPath?:string, files:string[]}}
+ * @returns {{title?:string, author?:string, language?:string, chapters:{href:string,title:string,text?:string}[], coverPath?:string, files:string[]}}
  */
 export function parseEpub(buffer) {
   const files = unzipSync(new Uint8Array(buffer));
@@ -115,6 +116,15 @@ export function parseEpub(buffer) {
     const raw = files[chapter.href];
     if (!raw) continue;
     const html = decoder.decode(raw);
+    const body = html.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? html;
+    chapter.text = decodeEntities(body
+      .replace(/<(script|style|head)\b[^>]*>[\s\S]*?<\/\1>/gi, '')
+      .replace(/<br\s*\/?\s*>|<\/(?:p|div|h[1-6]|li|blockquote|section)>/gi, '\n\n')
+      .replace(/<[^>]+>/g, ''))
+      .replace(/[^\S\n]+/g, ' ')
+      .replace(/ *\n */g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
     const t = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1];
     if (t) {
       chapter.title = t
