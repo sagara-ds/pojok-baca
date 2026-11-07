@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Setting" description="Atur tema, ukuran font, dan mode baca di Pojok Baca RPL.">
+  <main id="main-content" class="flex-1">
+    <div class="container py-8 sm:py-10">
+      <header class="mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-text">Setting</h1>
+        <p class="mt-2 text-text-muted">
+          Preferensi disimpan di perangkat ini, tidak perlu akun.
+        </p>
+      </header>
+
+      <div class="max-w-2xl space-y-6">
+        <!-- Tema -->
+        <section class="rounded-xl border border-border bg-surface p-6" aria-labelledby="theme-heading">
+          <h2 id="theme-heading" class="text-lg font-semibold text-text">Tema</h2>
+          <p class="mt-1 text-sm text-text-muted">Pilih tampilan terang, gelap, atau ikuti sistem.</p>
+
+          <div class="mt-4 flex flex-wrap gap-2" role="group" aria-labelledby="theme-heading">
+            <button type="button" data-theme-option="light" class="setting-pill">Terang</button>
+            <button type="button" data-theme-option="dark" class="setting-pill">Gelap</button>
+            <button type="button" data-theme-option="system" class="setting-pill">Ikuti sistem</button>
+          </div>
+        </section>
+
+        <!-- Ukuran font -->
+        <section class="rounded-xl border border-border bg-surface p-6" aria-labelledby="font-heading">
+          <h2 id="font-heading" class="text-lg font-semibold text-text">Ukuran teks</h2>
+          <p class="mt-1 text-sm text-text-muted">Berlaku untuk seluruh halaman, termasuk sinopsis.</p>
+
+          <div class="mt-4 flex flex-wrap gap-2" role="group" aria-labelledby="font-heading">
+            <button type="button" data-font-option="sm" class="setting-pill">Kecil</button>
+            <button type="button" data-font-option="md" class="setting-pill">Normal</button>
+            <button type="button" data-font-option="lg" class="setting-pill">Besar</button>
+          </div>
+        </section>
+
+        <!-- Mode baca -->
+        <section class="rounded-xl border border-border bg-surface p-6" aria-labelledby="mode-heading">
+          <h2 id="mode-heading" class="text-lg font-semibold text-text">Mode baca default</h2>
+          <p class="mt-1 text-sm text-text-muted">
+            Buku dengan lapisan teks bisa dibaca sebagai teks (bisa di-copy), bukan gambar.
+          </p>
+
+          <div class="mt-4 flex flex-wrap gap-2" role="group" aria-labelledby="mode-heading">
+            <button type="button" data-mode-option="image" class="setting-pill">Gambar halaman</button>
+            <button type="button" data-mode-option="text" class="setting-pill">Teks</button>
+          </div>
+        </section>
+
+        <p class="text-sm text-text-light">
+          Catatan: mode teks hanya tersedia untuk buku yang punya lapisan teks asli. Buku hasil
+          scan tetap dibaca sebagai gambar.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    import {
+      getTheme,
+      setTheme,
+      getFontSize,
+      setFontSize,
+      getReadingMode,
+      setReadingMode,
+      type Theme,
+      type FontSize,
+      type ReadingMode,
+    } from '../../scripts/settings';
+
+    const ACTIVE = ['bg-primary', 'text-background'];
+    const INACTIVE = ['bg-secondary', 'text-text-muted'];
+
+    function paint(group: string, attribute: string, value: string) {
+      document.querySelectorAll<HTMLButtonElement>(`[${group}]`).forEach((button) => {
+        const active = button.getAttribute(group) === value;
+        button.classList.remove(...ACTIVE, ...INACTIVE);
+        button.classList.add(...(active ? ACTIVE : INACTIVE));
+        button.setAttribute('aria-pressed', String(active));
+      });
+    }
+
+    function sync() {
+      paint('data-theme-option', 'data-theme-option', getTheme());
+      paint('data-font-option', 'data-font-option', getFontSize());
+      paint('data-mode-option', 'data-mode-option', getReadingMode());
+    }
+
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-option]').forEach((button) => {
+      button.addEventListener('click', () => {
+        setTheme(button.getAttribute('data-theme-option') as Theme);
+        sync();
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-font-option]').forEach((button) => {
+      button.addEventListener('click', () => {
+        setFontSize(button.getAttribute('data-font-option') as FontSize);
+        sync();
+      });
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-mode-option]').forEach((button) => {
+      button.addEventListener('click', () => {
+        setReadingMode(button.getAttribute('data-mode-option') as ReadingMode);
+        sync();
+      });
+    });
+
+    sync();
+  </script>
+
+  <style>
+    .setting-pill {
+      border-radius: 0.5rem;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: background-color 150ms ease, color 150ms ease;
+    }
+  </style>
+</BaseLayout>

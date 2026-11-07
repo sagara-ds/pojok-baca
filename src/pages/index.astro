@@ -1,8 +1,141 @@
 ---
-// Home page - redirect to books list
+// Beranda — daftar buku langsung terlihat saat pertama kali dibuka.
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { fetchBooks } from '../services/api';
+import BookCard from '../components/book/BookCard.astro';
+import SearchBox from '../components/layout/SearchBox.astro';
+import { getReadCounts, getStatsEnv } from '../server/stats';
 
-return Astro.redirect('/books');
+const readCounts = await getReadCounts(getStatsEnv(Astro.locals));
+
+const [newest, popular] = await Promise.all([
+  fetchBooks({ sort: 'newest', limit: 10 }),
+  fetchBooks({ sort: 'popular', limit: 10 }, { readCounts }),
+]);
+
+const totalBooks = newest.pagination.total;
+const hasPopularityData = Object.keys(readCounts).length > 0;
 ---
 
-<BaseLayout title="Pojok Baca RPL" description="Temukan buku favoritmu di perpustakaan digital Pojok Baca RPL" />
+<BaseLayout
+  title="Beranda"
+  description="Perpustakaan digital Pojok Baca RPL — baca novel dan buku pelajaran secara online."
+>
+  <main id="main-content" class="flex-1">
+    <div class="container py-8 sm:py-12 space-y-12">
+      <!-- Hero: langsung tunjukkan katalog, bukan halaman kosong -->
+      <section class="text-center space-y-4">
+        <h1 class="text-3xl sm:text-4xl font-bold text-text">Pojok Baca RPL</h1>
+        <p class="mx-auto max-w-2xl text-text-muted">
+          {totalBooks} buku tersedia untuk dibaca online. Cari judul, penulis, atau
+          potongan cerita yang kamu ingat.
+        </p>
+        <div class="mx-auto max-w-xl">
+          <SearchBox />
+        </div>
+      </section>
+
+      <!-- Lanjutkan Baca (client-side dari localStorage) -->
+      <section id="continue-section" class="hidden" aria-labelledby="continue-heading">
+        <div class="mb-4 flex items-center justify-between gap-4">
+          <h2 id="continue-heading" class="text-xl font-bold text-text">Lanjutkan Baca</h2>
+          <a href="/riwayat/" class="text-sm font-medium text-primary hover:underline">Semua riwayat</a>
+        </div>
+        <div id="continue-list" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5"></div>
+      </section>
+
+      <!-- Terbaru -->
+      <section aria-labelledby="newest-heading">
+        <div class="mb-4 flex items-center justify-between gap-4">
+          <h2 id="newest-heading" class="text-xl font-bold text-text">Terbaru</h2>
+          <a href="/books/" class="text-sm font-medium text-primary hover:underline">Lihat katalog</a>
+        </div>
+        <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5">
+          {newest.data.map(book => <BookCard book={book} />)}
+        </div>
+      </section>
+
+      <!-- Populer -->
+      <section aria-labelledby="popular-heading">
+        <div class="mb-4 flex items-center justify-between gap-4">
+          <h2 id="popular-heading" class="text-xl font-bold text-text">Populer</h2>
+          <a href="/books/?sort=popular" class="text-sm font-medium text-primary hover:underline">
+            Lihat semua
+          </a>
+        </div>
+        {hasPopularityData ? (
+          <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5">
+            {popular.data.map(book => <BookCard book={book} showReadCount />)}
+          </div>
+        ) : (
+          <p class="rounded-xl border border-border bg-surface p-6 text-sm text-text-muted">
+            Data pembaca belum tersedia. Angka akan muncul setelah pengunjung mulai membaca buku.
+          </p>
+        )}
+      </section>
+    </div>
+  </main>
+
+  <script>
+    import { getHistory } from '../scripts/library';
+
+    interface Entry {
+      slug: string;
+      title: string;
+      author: string;
+      cover: string;
+      page?: number;
+    }
+
+    function renderContinue() {
+      const section = document.getElementById('continue-section');
+      const list = document.getElementById('continue-list');
+      if (!section || !list) return;
+
+      const history = getHistory().slice(0, 5) as Entry[];
+      if (history.length === 0) {
+        section.classList.add('hidden');
+        return;
+      }
+
+      list.innerHTML = '';
+      for (const item of history) {
+        const link = document.createElement('a');
+        link.href = `/books/${item.slug}/read/${item.page && item.page > 1 ? `?p=${item.page}` : ''}`;
+        link.className =
+          'group flex gap-3 rounded-xl border border-border bg-surface p-3 transition-colors hover:border-accent/50';
+
+        const cover = document.createElement('div');
+        cover.className =
+          'relative h-20 w-14 flex-shrink-0 overflow-hidden rounded bg-[linear-gradient(to_bottom,#0f3c65,#0a2947)]';
+        if (item.cover) {
+          const img = document.createElement('img');
+          img.src = item.cover;
+          img.alt = '';
+          img.loading = 'lazy';
+          img.className = 'absolute inset-0 h-full w-full object-cover';
+          img.addEventListener('error', () => img.remove());
+          cover.append(img);
+        }
+
+        const info = document.createElement('div');
+        info.className = 'min-w-0';
+        const title = document.createElement('p');
+        title.className = 'line-clamp-2 text-sm font-semibold text-text';
+        title.textContent = item.title;
+        const meta = document.createElement('p');
+        meta.className = 'mt-1 text-xs text-text-muted';
+        meta.textContent = item.page && item.page > 1 ? `Halaman ${item.page}` : item.author;
+        info.append(title, meta);
+
+        link.append(cover, info);
+        list.append(link);
+      }
+
+      section.classList.remove('hidden');
+    }
+
+    renderContinue();
+    window.addEventListener('pb:library-change', renderContinue);
+  </script>
+</BaseLayout>

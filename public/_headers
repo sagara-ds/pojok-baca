@@ -1,5 +1,22 @@
-# Security Headers for Netlify/Vercel
-# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/sheets/*
+  Cache-Control: public, max-age=604800
+
+/pages/*
+  Cache-Control: public, max-age=86400
+
+/covers/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/dl/*
+  Content-Disposition: attachment
+  Cache-Control: public, max-age=86400
+  X-Robots-Tag: noindex
+
+/data/*
+  Cache-Control: public, max-age=86400
 
 /*
   X-Frame-Options: DENY
@@ -8,27 +25,15 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   X-XSS-Protection: 1; mode=block
 
-# Cache static assets aggressively
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
-
-# Cache API responses
-/api/*
-  Cache-Control: public, max-age=300, stale-while-revalidate=3600
-  Access-Control-Allow-Origin: *
-
-# HTML pages - short cache with revalidation
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-# Manifest and robots
 /manifest.json
   Cache-Control: public, max-age=86400
 
 /robots.txt
   Cache-Control: public, max-age=86400
 
-# Favicon
 /favicon.svg
   Cache-Control: public, max-age=86400
 

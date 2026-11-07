@@ -1,110 +1,60 @@
-# API Integration - Welib.org / Anna's Archive
+# API Integration — Katalog Lokal (hasil pipeline)
 
-## 📡 API Overview
-**Base URL:** `https://id.welib.org/api`  
-**Sumber Data:** Anna's Archive (shadow library metadata aggregator)  
-**Auth:** Tidak perlu API key (public)  
-**Rate Limit:** Self-imposed 60 req/min per IP via proxy
+> **Riwayat:** pernah mencoba welib.org (lineage Anna's Archive) — Cloudflare
+> memblokir akses server-side (HTTP 403). Sempat integrasi Open Library &
+> skeleton Google Books di `feat/openlibrary-integration`, lalu **dihapus** di
+> `feat/data-lokal` karena keputusan proyek: **tanpa API dari web manapun,
+> pembangunan koleksi lokal**.
+>
+> **2026-10-21:** mock 24 buku diganti **koleksi asli** dari pipeline
+> `feat/pipeline-koleksi` → `data/books.json` (140 buku).
 
-## 🔗 Endpoints (Asumsi - perlu verifikasi)
-| Endpoint | Method | Params | Response |
-|----------|--------|--------|----------|
-| `/books` | GET | `page`, `limit`, `category`, `year`, `language`, `sort` | `{ data: Book[], pagination }` |
-| `/books/:slug` | GET | - | `Book` |
-| `/books/search` | GET | `q`, `page`, `limit`, `category`, `sort` | `{ data: Book[], pagination }` |
-| `/categories` | GET | - | `Category[]` |
+## 📡 Sumber Data
+**Tunggal & lokal:** `data/books.json`
+- 140 buku hasil deduplikasi dari 154 file di folder Google Drive
+  (147 PDF + 7 EPUB), 41.669 halaman
+- Cover: `/covers/<slug>.webp` (400 px, hasil render + watermark), fallback
+  `/book-placeholder.svg`
+- Halaman: `/pages/<slug>/001.webp` … (900 px, WebP q78, ber-watermark)
+- `readingUrl` → route internal `/books/{slug}/read`
 
-## 📦 TypeScript Types (`src/services/types.ts`)
-```typescript
-interface Book {
-  id: string;
-  slug: string;
-  title: string;
-  author: string;
-  coverUrl: string;
-  description: string;      // HTML dari API
-  category: string;
-  publishedYear: number;
-  pages: number;
-  language: string;         // "id", "en", dll
-  isbn?: string;
-  readingUrl?: string;      // URL ke EPUB/PDF
-}
+## 🧩 Antarmuka (`src/services/api.ts`)
+| Fungsi | Delegasi ke | Dipakai |
+|--------|-------------|---------|
+| `fetchBooks(params)` | `getAllBooks()` + filter/paginasi/sort | `pages/books/index.astro` |
+| `fetchBook(slug)` | `getBook(slug)` | `pages/books/[slug].astro` |
+| `searchBooks(query, params)` | `searchBooksLocal()` | (siap untuk pencarian) |
+| `fetchCategories()` | `getCategories()` | (siap untuk filter kategori) |
+| `sanitizeHtml(text)` / `sanitizeText(text)` | utility lokal | `BookDescription`, `BookMeta`, `[slug]` |
 
-interface BookListResponse {
-  data: Book[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-```
+Adapter manifest → UI ada di `src/services/books.ts`. Antarmuka sengaja
+dijaga supaya.pages tidak berubah.
 
-## 🛡️ Security Layer (`src/services/api.ts`)
+## 🔁 Regenerasi katalog
 
-### Sanitization Functions
-```typescript
-// Strip dangerous HTML, keep safe tags
-sanitizeHtml(html: string): string
-
-// Strip ALL HTML, plain text only
-sanitizeText(text: string): string
-
-// Validate & sanitize book object dari API
-sanitizeBook(raw: unknown): Book | null
-```
-
-### Rate Limiting (Proxy Routes)
-- **File:** `src/pages/api/proxy/books/[...slug].ts`
-- **Limit:** 60 req/menit per IP (in-memory Map)
-- **Headers:** `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`
-
-### Caching Strategy
-| Endpoint | Cache-Control | Stale-While-Revalidate |
-|----------|---------------|------------------------|
-| `/books/:slug` (detail) | `max-age=3600` (1 jam) | 86400 (1 hari) |
-| `/books` (list) | `max-age=300` (5 menit) | 3600 (1 jam) |
-| `/categories` | `max-age=86400` (1 hari) | 604800 (1 minggu) |
-
-## ⚠️ Error Handling
-```typescript
-// Timeout: 10 detik (AbortSignal)
-// Retry: 3x untuk 5xx errors (exponential backoff 1s)
-// Fallback: ErrorState component di UI
-```
-
-## 🔄 Data Flow
-```
-Client (Browser)
-    ↓
-Astro Page (SSR/SSG)
-    ↓
-API Proxy Route (/api/proxy/books/...)
-    ↓ [Rate Limit + Timeout + Sanitize]
-Welib.org API
-    ↓
-Sanitized JSON Response
-    ↓
-Client Render
-```
-
-## 🧪 Testing API
 ```bash
-# Test proxy langsung
-curl "http://localhost:4321/api/proxy/books?page=1&limit=5"
-curl "http://localhost:4321/api/proxy/books/slug-buku-ini"
-curl "http://localhost:4321/api/proxy/books/search?q=pemrograman"
-curl "http://localhost:4321/api/proxy/categories"
+npm run pipe:all        # list → fetch → scan → render → manifest
+npm run pipe:manifest   # saja, kalau render sudah selesai
+npm run pipe:verify     # cek kelengkapan output
 ```
 
-## 📝 Notes untuk Development
-- [ ] Verifikasi endpoint aktual welib.org (Cloudflare protected)
-- [ ] Handle pagination style (cursor vs offset)
-- [ ] Cek format `readingUrl` (EPUB/PDF direct link?)
-- [ ] Handle missing fields gracefully (optional chaining)
-- [ ] Add request/response logging untuk debugging
+Override manual: `data/books.override.json` (key = slug **atau** nama file
+sumber). Dipakai untuk memperbaiki judul/penulis/sinopsis/kategori, dan untuk
+mengganti slug yang berantakan.
+
+## ⚠️ Catatan metadata
+
+- Mayoritas PDF hasil **scan** → **tidak punya text layer** → synopsis kosong
+  (`synopsisStatus: "no-text-layer"`) dan **tidak bisa dicari** di dalam buku.
+- 60 dari 147 PDF punya text layer → synopsis bisa di-draft otomatis
+  (`synopsisStatus: "auto"`).
+- Metadata PDF & nama file sering berantakan (prefix tag `{SB}`, `CamScanner`,
+  ALL-CAPS). Pipeline membersihkan sebagian; sisanya perlu override manual.
+  Lihat `.cache/report.json` → `lowConfidenceMetadata` (43 buku) &
+  `missingSynopsis` (92 buku).
+- 10 buku punya halaman **landscape** (spread 2 halaman) → **tidak dirotasi**,
+  ditandai di `landscapePages`.
 
 ---
-*Related: [[Tech Stack]], [[Components - Book]], [[Project Overview]]*
+
+*Related: [[Pipeline & Hosting]], [[Components - Book]], [[Project Overview]]*

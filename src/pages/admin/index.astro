@@ -1,0 +1,279 @@
+---
+// Panel admin: login, statistik, unggah buku, dan daftar pending.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { isAdmin } from '../../server/auth';
+import {
+  getDailyPageviews,
+  getEventCounts,
+  getReadCounts,
+  getStatsEnv,
+  getTotalPageviews,
+} from '../../server/stats';
+import { listPending } from '../../server/catalog';
+import { getBook } from '../../services/books';
+
+export const prerender = false;
+
+const env = getStatsEnv(Astro.locals);
+const authed = isAdmin(Astro.cookies, env);
+
+const error = Astro.url.searchParams.get('error');
+const uploaded = Astro.url.searchParams.get('uploaded');
+const stored = Astro.url.searchParams.get('stored');
+
+const pageviews = authed ? await getTotalPageviews(env) : 0;
+const readCounts = authed ? await getReadCounts(env) : {};
+const bookmarkCounts = authed ? await getEventCounts(env, 'bookmark') : {};
+const completeCounts = authed ? await getEventCounts(env, 'complete') : {};
+const daily = authed ? await getDailyPageviews(env, 7) : [];
+const pending = authed ? await listPending(env) : [];
+
+const topBooks = Object.entries(readCounts)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8)
+  .map(([slug, count]) => ({ book: getBook(slug, { includeHidden: true }), slug, count }));
+
+const topBookmarks = Object.entries(bookmarkCounts)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8)
+  .map(([slug, count]) => ({ book: getBook(slug, { includeHidden: true }), slug, count }));
+
+const totalReads = Object.values(readCounts).reduce((sum, value) => sum + value, 0);
+const totalComplete = Object.values(completeCounts).reduce((sum, value) => sum + value, 0);
+const totalBookmarks = Object.values(bookmarkCounts).reduce((sum, value) => sum + value, 0);
+const maxDaily = Math.max(1, ...daily.map((d) => d.count));
+
+const ERROR_MESSAGES: Record<string, string> = {
+  title: 'Judul wajib diisi.',
+  file: 'File PDF wajib diunggah.',
+  size: 'Ukuran file melebihi 100 MB.',
+};
+---
+
+<BaseLayout title="Admin" description="Panel admin Pojok Baca RPL." noIndex hideSearch>
+  <main id="main-content" class="flex-1">
+    <div class="container py-8 sm:py-10">
+      {!authed ? (
+        <div class="mx-auto max-w-md">
+          <h1 class="text-2xl font-bold text-text">Masuk Admin</h1>
+          <p class="mt-2 text-sm text-text-muted">
+            Panel ini untuk mengelola katalog dan melihat statistik. Bukan untuk pengunjung umum.
+          </p>
+
+          {error === '1' && (
+            <p class="mt-4 rounded-lg border border-error/40 bg-error/10 px-4 py-2 text-sm text-error">
+              Token salah. Coba lagi.
+            </p>
+          )}
+
+          <form method="post" action="/api/admin/login/" class="mt-6 space-y-4">
+            <label class="block">
+              <span class="text-sm font-medium text-text">Token admin</span>
+              <input
+                type="password"
+                name="token"
+                required
+                class="mt-1 w-full"
+                placeholder="Masukkan token"
+                autocomplete="current-password"
+              />
+            </label>
+            <button
+              type="submit"
+              class="w-full rounded-lg bg-primary px-4 py-2 font-medium text-background transition-colors hover:bg-primary-light"
+            >
+              Masuk
+            </button>
+          </form>
+
+          <p class="mt-4 text-xs text-text-light">
+            Login hanya tersedia setelah token admin dikonfigurasi oleh pengelola situs.
+          </p>
+        </div>
+      ) : (
+        <div class="space-y-8">
+          <header class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl sm:text-3xl font-bold text-text">Admin</h1>
+              <p class="mt-1 text-sm text-text-muted">Kelola katalog dan pantau statistik.</p>
+            </div>
+            <form method="post" action="/api/admin/logout/">
+              <button
+                type="submit"
+                class="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text transition-colors hover:bg-secondary"
+              >
+                Keluar
+              </button>
+            </form>
+          </header>
+
+
+          {uploaded && (
+            <p class="rounded-lg border border-success/40 bg-success/10 px-4 py-3 text-sm text-success">
+              Buku <strong>{uploaded}</strong> ditambahkan ke antrean.
+              {stored === 'r2'
+                ? ' File tersimpan di R2.'
+                : ' File belum tersimpan permanen — jalankan alur manual (lihat catatan di bawah).'}
+            </p>
+          )}
+
+          {error && ERROR_MESSAGES[error] && (
+            <p class="rounded-lg border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
+              {ERROR_MESSAGES[error]}
+            </p>
+          )}
+
+          <!-- Ringkasan -->
+          <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Ringkasan statistik">
+            <div class="rounded-xl border border-border bg-surface p-6">
+              <p class="text-sm text-text-muted">Total kunjungan</p>
+              <p class="mt-2 text-3xl font-bold text-text">{pageviews.toLocaleString('id-ID')}</p>
+            </div>
+            <div class="rounded-xl border border-border bg-surface p-6">
+              <p class="text-sm text-text-muted">Mulai baca</p>
+              <p class="mt-2 text-3xl font-bold text-text">{totalReads.toLocaleString('id-ID')}</p>
+            </div>
+            <div class="rounded-xl border border-border bg-surface p-6">
+              <p class="text-sm text-text-muted">Selesai baca</p>
+              <p class="mt-2 text-3xl font-bold text-text">{totalComplete.toLocaleString('id-ID')}</p>
+            </div>
+            <div class="rounded-xl border border-border bg-surface p-6">
+              <p class="text-sm text-text-muted">Disimpan</p>
+              <p class="mt-2 text-3xl font-bold text-text">{totalBookmarks.toLocaleString('id-ID')}</p>
+            </div>
+          </section>
+
+          <div class="grid gap-6 lg:grid-cols-2">
+            <!-- Kunjungan harian -->
+            <section class="rounded-xl border border-border bg-surface p-6" aria-labelledby="daily-heading">
+              <h2 id="daily-heading" class="text-lg font-semibold text-text">Kunjungan 7 hari</h2>
+              <div class="mt-4 space-y-2">
+                {daily.map((day) => (
+                  <div class="flex items-center gap-3 text-sm">
+                    <span class="w-24 shrink-0 text-text-muted">{day.date.slice(5)}</span>
+                    <div class="h-3 flex-1 overflow-hidden rounded-full bg-secondary">
+                      <div
+                        class="h-full rounded-full bg-primary"
+                        style={`width: ${Math.round((day.count / maxDaily) * 100)}%`}
+                      />
+                    </div>
+                    <span class="w-10 text-right tabular-nums text-text">{day.count}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <!-- Paling dibaca -->
+            <section class="rounded-xl border border-border bg-surface p-6" aria-labelledby="top-heading">
+              <h2 id="top-heading" class="text-lg font-semibold text-text">Paling dibaca</h2>
+              {topBooks.length === 0 ? (
+                <p class="mt-4 text-sm text-text-muted">Belum ada data pembaca.</p>
+              ) : (
+                <ol class="mt-4 space-y-2 text-sm">
+                  {topBooks.map((item, index) => (
+                    <li class="flex items-center gap-3">
+                      <span class="w-5 text-text-light">{index + 1}.</span>
+                      <span class="min-w-0 flex-1 truncate text-text">
+                        {item.book?.title ?? item.slug}
+                      </span>
+                      <span class="tabular-nums font-medium text-text-muted">{item.count}×</span>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </section>
+
+            <!-- Paling disimpan -->
+            <section class="rounded-xl border border-border bg-surface p-6" aria-labelledby="saved-heading">
+              <h2 id="saved-heading" class="text-lg font-semibold text-text">Paling disimpan</h2>
+              {topBookmarks.length === 0 ? (
+                <p class="mt-4 text-sm text-text-muted">Belum ada buku yang disimpan.</p>
+              ) : (
+                <ol class="mt-4 space-y-2 text-sm">
+                  {topBookmarks.map((item, index) => (
+                    <li class="flex items-center gap-3">
+                      <span class="w-5 text-text-light">{index + 1}.</span>
+                      <span class="min-w-0 flex-1 truncate text-text">
+                        {item.book?.title ?? item.slug}
+                      </span>
+                      <span class="tabular-nums font-medium text-text-muted">{item.count}×</span>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </section>
+          </div>
+
+          <!-- Unggah buku -->
+          <section class="rounded-xl border border-border bg-surface p-6" aria-labelledby="upload-heading">
+            <h2 id="upload-heading" class="text-lg font-semibold text-text">Unggah buku baru</h2>
+            <p class="mt-1 text-sm text-text-muted">
+              Tahap 1 (manual): file disimpan sebagai sumber, lalu pipeline lokal dijalankan
+              untuk menghasilkan cover &amp; halaman.
+            </p>
+
+            <form method="post" action="/api/admin/upload/" enctype="multipart/form-data" class="mt-6 grid gap-4 sm:grid-cols-2">
+              <label class="block sm:col-span-2">
+                <span class="text-sm font-medium text-text">Judul</span>
+                <input type="text" name="title" required class="mt-1 w-full" />
+              </label>
+              <label class="block">
+                <span class="text-sm font-medium text-text">Penulis</span>
+                <input type="text" name="author" class="mt-1 w-full" />
+              </label>
+              <label class="block">
+                <span class="text-sm font-medium text-text">Kategori (pisahkan dengan koma)</span>
+                <input type="text" name="categories" class="mt-1 w-full" placeholder="fiksi, fantasi" />
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="text-sm font-medium text-text">Sinopsis</span>
+                <textarea name="synopsis" rows="4" class="mt-1 w-full"></textarea>
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="text-sm font-medium text-text">File PDF</span>
+                <input type="file" name="file" accept="application/pdf" required class="mt-1 w-full" />
+              </label>
+              <div class="sm:col-span-2">
+                <button
+                  type="submit"
+                  class="rounded-lg bg-primary px-4 py-2 font-medium text-background transition-colors hover:bg-primary-light"
+                >
+                  Tambahkan ke antrean
+                </button>
+              </div>
+            </form>
+
+            <p class="mt-4 text-xs text-text-light">
+              Setelah unggah, jalankan: <code>npm run pipe:scan</code> &rarr;
+              <code>npm run pipe:render</code> &rarr; <code>npm run pipe:manifest</code>.
+            </p>
+          </section>
+
+          <!-- Antrean -->
+          <section class="rounded-xl border border-border bg-surface p-6" aria-labelledby="pending-heading">
+            <h2 id="pending-heading" class="text-lg font-semibold text-text">Antrean unggahan</h2>
+            {pending.length === 0 ? (
+              <p class="mt-4 text-sm text-text-muted">Belum ada buku di antrean.</p>
+            ) : (
+              <ul class="mt-4 divide-y divide-border">
+                {pending.map((item) => (
+                  <li class="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
+                    <div class="min-w-0">
+                      <p class="truncate font-medium text-text">{item.title}</p>
+                      <p class="text-text-muted">
+                        {item.author || 'Tanpa penulis'} · {item.slug} · {item.createdAt.slice(0, 10)}
+                      </p>
+                    </div>
+                    <span class="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-text-muted">
+                      {item.fileKey ? 'file tersimpan' : 'metadata saja'}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      )}
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,35 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pojok-baca",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "compatibility_date": "2026-10-22",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  },
+
+  "kv_namespaces": [
+    { "binding": "PB_STATS", "id": "2c246a02dd364f8889b3af28e46af06a" },
+    { "binding": "PB_CATALOG", "id": "c0b7cee905f442efb8cd44624b1a304f" }
+  ],
+
+  // ---------------------------------------------------------------------
+  // Binding R2 opsional untuk menyimpan PDF sumber hasil unggahan admin.
+  //
+  //   npx wrangler r2 bucket create pojok-baca-sources
+  //
+  // Tanpa R2, upload hanya menyimpan metadata di KV (PB_CATALOG); file
+  // sumber tidak dipersist dan harus masuk lewat alur pipeline manual.
+  //
+  // "r2_buckets": [
+  //   { "binding": "PB_BOOKS", "bucket_name": "pojok-baca-sources" }
+  // ],
+  //
+  // Token admin (WAJIB diset sebelum login admin bisa dipakai):
+  //   npx wrangler secret put PB_ADMIN_TOKEN
+  // ---------------------------------------------------------------------
+}

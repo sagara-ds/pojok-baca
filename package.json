@@ -6,17 +6,37 @@
     "node": ">=22.22.0"
   },
   "scripts": {
+    "test": "node --test tests/*.test.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "pipe": "node pipeline/cli.mjs",
+    "pipe:list": "node pipeline/cli.mjs list",
+    "pipe:fetch": "node pipeline/cli.mjs fetch",
+    "pipe:scan": "node pipeline/cli.mjs scan",
+    "pipe:render": "node pipeline/cli.mjs render",
+    "pipe:covers": "node pipeline/cli.mjs covers",
+    "pipe:manifest": "node pipeline/cli.mjs manifest",
+    "pipe:text": "node pipeline/cli.mjs text",
+    "pipe:pdf": "node pipeline/cli.mjs pdf",
+    "pipe:verify": "node pipeline/cli.mjs verify",
+    "pipe:bundle": "node pipeline/cli.mjs bundle",
+    "pipe:all": "node pipeline/cli.mjs all",
+    "deploy": "astro build && wrangler deploy -c dist/server/wrangler.json",
+    "deploy:check": "astro build && wrangler deploy -c dist/server/wrangler.json --dry-run"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.9",
+    "@astrojs/cloudflare": "^14.4.1",
     "astro": "^7.4.1"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@astrojs/node": "^11.1.9",
     "@tailwindcss/vite": "^4.3.3",
-    "tailwindcss": "^4.3.3"
+    "@types/node": "^24.19.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.151.3"
   }
 }
