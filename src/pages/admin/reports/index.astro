@@ -1,0 +1,82 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import {report} from '../../../server/teacher-admin';
+import {formatWib,reportFilters} from '../../../services/report-format';
+
+export const prerender = false;
+const identity=Astro.locals.identity;
+if(identity?.status!=='ready' || identity.profile.role==='user') return new Response('Akses ditolak.',{status:403});
+const filters=reportFilters(Astro.url.searchParams);
+if(!filters.valid) Astro.response.status=400;
+let data;
+try { if(filters.valid) data=await report(identity.profile.user_id,filters); }
+catch { Astro.response.status=503; }
+---
+<AdminLayout title="Laporan penilaian guru" description="Ringkasan aktivitas baca siswa berdasarkan kelas dan rentang tanggal WIB.">
+  <section class="report-page space-y-5">
+    <div class="no-print flex flex-wrap items-end justify-between gap-3 rounded-xl border border-border bg-surface p-4">
+      <form method="get" action="/admin/reports/" class="flex flex-wrap items-end gap-3">
+        <label class="grid gap-1 text-sm font-semibold">Kelas <select name="class">
+          <option value="">Semua kelas</option>
+          {(data?.classes??[]).map((name)=><option value={name} selected={filters.className===name}>{name}</option>)}
+        </select></label>
+        <label class="grid gap-1 text-sm font-semibold">Dari <input name="from" type="date" value={filters.from} required /></label>
+        <label class="grid gap-1 text-sm font-semibold">Sampai <input name="to" type="date" value={filters.to} required /></label>
+        <button type="submit" class="interaction-control rounded-lg border border-border px-4 py-2 text-sm font-bold hover:bg-secondary" data-pending="Memuat laporan…">Terapkan</button>
+      </form>
+      {data && (
+        <div class="flex flex-wrap gap-3">
+          <button data-print type="button" class="rounded-lg border border-border px-4 py-2 text-sm font-bold hover:bg-secondary">Cetak</button>
+          {identity.profile.role==='super_admin' && (
+            <form method="post" action="/api/admin/reports/csv/">
+              <input type="hidden" name="from" value={filters.from} /><input type="hidden" name="to" value={filters.to} />
+              <input type="hidden" name="class" value={filters.className} />
+              <button class="rounded-lg bg-[#1e4d3b] px-4 py-2 text-sm font-bold text-white" type="submit">Unduh CSV</button>
+            </form>
+          )}
+        </div>
+      )}
+    </div>
+    {!filters.valid ? <p role="alert">Pilih rentang tanggal yang valid, maksimum 366 hari.</p> : !data ? (
+      <p role="alert">Laporan belum dapat dimuat.</p>
+    ) : (
+      <>
+        <div><h2 class="font-serif text-xl font-semibold">Aktivitas baca siswa</h2>
+          <p class="text-sm text-text-muted">{filters.className || 'Semua kelas'} · {filters.from} s.d. {filters.to} (WIB)</p>
+        </div>
+        {data.rows.length ? (
+          <div class="overflow-x-auto rounded-xl border border-border bg-surface">
+            <table class="w-full border-collapse text-left text-sm">
+              <thead><tr class="border-b border-border bg-secondary">
+                {['No','Nama Lengkap Siswa','Kelas','Judul Buku Dibaca','Total Halaman Dibaca','Buku Terakhir Dibaca','Aktif Terakhir'].map((label)=><th scope="col" class="p-3">{label}</th>)}
+              </tr></thead>
+              <tbody class="divide-y divide-border">
+                {data.rows.map((r,i)=>(
+                  <tr><td class="p-3 tabular-nums">{i+1}</td><td class="min-w-36 p-3 font-semibold">{r.name}</td>
+                    <td class="p-3">{r.className}</td><td class="p-3 tabular-nums">{r.uniqueBooks}</td><td class="p-3 tabular-nums">{r.pages}</td>
+                    <td class="min-w-32 p-3">{r.lastBook??'—'}</td><td class="min-w-36 p-3">{formatWib(r.lastActive)}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : <p>Belum ada siswa untuk pilihan kelas ini.</p>}
+      </>
+    )}
+  </section>
+</AdminLayout>
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click',()=>window.print());
+</script>
+<style is:global>
+  @media print {
+    @page { size: A4 landscape; margin:12mm; }
+    body:has(.report-page) { background:white; color:black; }
+    body:has(.report-page) > header, body:has(.report-page) > footer,
+    body:has(.report-page) .no-print, body:has(.report-page) .skip-link { display:none!important; }
+    body:has(.report-page) #main-content { padding:0; width:100%; max-width:none; }
+    .report-page .overflow-x-auto { overflow:visible; }
+    .report-page table { font-size:9pt; color:black; }
+    .report-page :is(th,td) { min-width:0; padding:5pt; border:1px solid #b4b0a7; background:white; }
+    .report-page tr { break-inside:avoid; }
+  }
+</style>

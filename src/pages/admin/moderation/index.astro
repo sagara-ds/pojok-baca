@@ -1,0 +1,44 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import AdminManageAction from '../../../components/ui/AdminManageAction.astro';
+import AdminPager from '../../../components/ui/AdminPager.astro';
+import {adminPage,moderation} from '../../../server/teacher-admin';
+import {formatWib} from '../../../services/report-format';
+
+export const prerender=false;
+const identity=Astro.locals.identity;
+if(identity?.status!=='ready' || identity.profile.role==='user') return new Response('Akses ditolak.',{status:403});
+const filter=Astro.url.searchParams.get('state')??'pending';
+const state=['pending','approved','rejected'].includes(filter) ? filter : null;
+const page=adminPage(Astro.url.searchParams.get('page'));
+let items;
+try { items=await moderation(identity.profile.user_id,state,page); } catch { return new Response('Daftar moderasi belum tersedia.',{status:503}); }
+if(!items) return new Response('Akses ditolak.',{status:403});
+const result=Astro.url.searchParams.get('result');
+const labels:Record<string,string>={pending:'Menunggu',approved:'Disetujui',rejected:'Ditolak'};
+---
+<AdminLayout title="Moderasi" description="Periksa kutipan dan komentar yang diajukan sebelum ditampilkan secara publik.">
+  <nav class="flex flex-wrap gap-4 border-b border-border text-sm" aria-label="Filter moderasi">
+    {[['pending','Menunggu'],['approved','Disetujui'],['rejected','Ditolak'],['all','Semua']].map(([value,label])=>(
+      <a href={`/admin/moderation/?state=${value}`} aria-current={(state??'all')===value?'page':undefined}
+        class:list={['px-1 pb-3 font-bold',(state??'all')===value && 'border-b-2 border-primary text-primary']}>{label}</a>
+    ))}
+  </nav>
+  {result && <p role="status" class="text-sm text-primary">{result==='ok' ? 'Keputusan dicatat.' : 'Konten sudah berubah atau tidak lagi diajukan.'}</p>}
+  {items.length ? <ul class="space-y-3">
+    {items.map((item)=>(
+      <li class="rounded-xl border border-border bg-surface p-4 sm:p-5">
+        <div class="flex flex-wrap justify-between gap-2 text-sm text-text-muted">
+          <p><strong class="text-text">{item.name}</strong> · {item.kind==='quote'?'Kutipan':'Komentar'} · {item.title}</p>
+          <span>{labels[item.status]} · {formatWib(item.created)}</span>
+        </div>
+        <blockquote class="my-4 whitespace-pre-line break-words font-serif text-lg">{item.body}</blockquote>
+        <div class="flex flex-wrap gap-2">
+          {item.status!=='approved' && <AdminManageAction action="moderate" label="Setujui" fields={{kind:item.kind,id:item.id,decision:'approved'}} />}
+          {item.status!=='rejected' && <AdminManageAction action="moderate" label={item.status==='approved'?'Sembunyikan':'Tolak'} fields={{kind:item.kind,id:item.id,decision:'rejected'}} />}
+        </div>
+      </li>
+    ))}
+  </ul> : <p class="rounded-xl border border-border bg-surface p-5 text-text-muted">Belum ada pengajuan pada filter ini.</p>}
+  <AdminPager page={page} hasNext={items.length===50} />
+</AdminLayout>

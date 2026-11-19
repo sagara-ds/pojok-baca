@@ -1,0 +1,61 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import AdminManageAction from '../../../components/ui/AdminManageAction.astro';
+import AdminPager from '../../../components/ui/AdminPager.astro';
+import {adminPage,managedUsers,roles} from '../../../server/teacher-admin';
+
+export const prerender=false;
+const identity=Astro.locals.identity;
+if(identity?.status!=='ready' || identity.profile.role!=='super_admin') return new Response('Akses ditolak.',{status:403});
+const search=Astro.url.searchParams.get('q')?.trim().slice(0,100)??'';
+const role=Astro.url.searchParams.get('role')??'';
+const filter=Object.hasOwn(roles,role) ? role : null;
+const page=adminPage(Astro.url.searchParams.get('page'));
+let users;
+try { users=await managedUsers(identity.profile.user_id,search||null,filter,page); } catch { return new Response('Daftar pengguna belum tersedia.',{status:503}); }
+if(!users) return new Response('Akses ditolak.',{status:403});
+const result=Astro.url.searchParams.get('result');
+const messages:Record<string,string>={
+  ok:'Akses pengguna diperbarui.',last_super_admin:'Perubahan ditolak. Minimal satu Super Admin aktif harus tetap tersedia.',
+  busy:'Perubahan akun lain sedang diproses. Coba lagi.',incomplete_profile:'Profil pengguna belum lengkap.',
+  user_not_found:'Pengguna tidak ditemukan.',
+};
+---
+<AdminLayout title="Manajemen pengguna" description="Cari akun siswa atau admin, lalu ubah role dan status akses.">
+  <form method="get" action="/admin/users/" class="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-surface p-4">
+    <label class="grid min-w-0 flex-1 basis-52 gap-1 text-sm font-semibold">Nama, kelas, atau NISN <input type="search" name="q" value={search} maxlength="100" /></label>
+    <label class="grid gap-1 text-sm font-semibold">Role <select name="role"><option value="">Semua role</option>
+      {Object.entries(roles).map(([value,label])=><option value={value} selected={value===filter}>{label}</option>)}
+    </select></label>
+    <button type="submit" class="interaction-control rounded-lg border border-border px-4 py-2 text-sm font-bold hover:bg-secondary" data-pending="Mencari…">Cari</button>
+  </form>
+  {result && <p role={result==='ok'?'status':'alert'} class="rounded-lg border border-border bg-surface p-3 text-sm">{messages[result]??'Perubahan belum dapat disimpan.'}</p>}
+  {users.length ? <div class="overflow-x-auto rounded-xl border border-border bg-surface">
+    <table class="w-full text-left text-sm">
+      <thead><tr class="border-b border-border bg-secondary">
+        {['Nama','Kelas','Role','Status','Tindakan'].map((name)=><th scope="col" class="p-3">{name}</th>)}
+      </tr></thead>
+      <tbody class="divide-y divide-border">
+        {users.map((user)=>(
+          <tr>
+            <td class="min-w-36 p-3 font-semibold">{user.name}</td><td class="p-3">{user.class??'—'}</td>
+            <td class="p-3">{roles[user.role]}</td><td class="p-3">{user.active?'Aktif':'Nonaktif'}</td>
+            <td class="p-3">
+              <div class="flex min-w-72 flex-wrap gap-2">
+                <form method="post" action="/api/admin/manage/" class="flex gap-2">
+                  <input type="hidden" name="action" value="user" /><input type="hidden" name="id" value={user.id} />
+                  <select name="role" aria-label={`Role ${user.name}`}>
+                    {Object.entries(roles).map(([value,label])=><option selected={value===user.role} value={value}>{label}</option>)}
+                  </select>
+                  <button type="submit" class="interaction-control rounded-lg border border-border px-3 py-2 font-bold hover:bg-secondary" data-pending="Menyimpan…">Simpan role</button>
+                </form>
+                <AdminManageAction action="user" fields={{id:user.id,active:String(!user.active)}} label={user.active?'Nonaktifkan':'Aktifkan'} />
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div> : <p class="rounded-xl border border-border bg-surface p-5 text-text-muted">Tidak ada pengguna yang cocok dengan filter.</p>}
+  <AdminPager page={page} hasNext={users.length===50} />
+</AdminLayout>
