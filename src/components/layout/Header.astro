@@ -15,16 +15,19 @@ const normalizedPath = basePath.replace(/\/+$/, '') || '/';
 
 // trailingSlash: 'always' — semua internal link wajib berakhir '/'.
 const navItems = [
-  { href: '/books/', label: 'Katalog', match: (p: string) => p === '/books' || p.startsWith('/books/') },
-  { href: '/riwayat/', label: 'Riwayat Baca', match: (p: string) => p.startsWith('/riwayat') },
-  { href: '/bookmark/', label: 'Bookmark', match: (p: string) => p.startsWith('/bookmark') },
-  { href: '/setting/', label: 'Setting', match: (p: string) => p.startsWith('/setting') },
+  { href: '/', label: 'Eksplorasi', match: (p: string) => p === '/' || p.startsWith('/book/') || p.startsWith('/books') },
+  { href: '/my-library/', label: 'Koleksiku', match: (p: string) => p.startsWith('/my-library') },
+  { href: '/setting/', label: 'Setelan', match: (p: string) => p.startsWith('/setting') },
 ];
+const identity = Astro.locals.identity;
+if (identity?.status === 'ready' && identity.profile.role !== 'user') {
+  navItems[1] = { href: '/admin/', label: 'Admin', match: (p: string) => p.startsWith('/admin') };
+}
 
 const isActive = (item: (typeof navItems)[number]) => item.match(normalizedPath);
 ---
 
-<header class="border-b border-border sticky top-0 z-40 bg-background/95 backdrop-blur-sm" role="banner">
+<header class="sticky top-0 z-40 border-b border-border bg-surface" role="banner">
   <div class="container">
     <div class="flex items-center justify-between gap-4 h-16">
       <!-- Logo/Title -->
@@ -35,7 +38,7 @@ const isActive = (item: (typeof navItems)[number]) => item.match(normalizedPath)
           <path d="M8 10h10" />
           <path d="M8 14h10" />
         </svg>
-        <span class="hidden sm:inline">Pojok Baca RPL</span>
+        <span class="font-serif font-semibold">Pojok Baca</span>
       </a>
 
       <!-- Desktop search: selalu terlihat, bukan ikon yatim -->
@@ -61,14 +64,19 @@ const isActive = (item: (typeof navItems)[number]) => item.match(normalizedPath)
             </a>
           );
         })}
+        {!identity || identity.status==='guest' ? <a href="/login/" class="ml-2 rounded-lg border border-border px-3 py-2 text-sm font-bold hover:bg-secondary">Masuk</a> : null}
+        {identity?.status==='ready' && identity.profile.role==='user' && (
+          <form method="post" action="/api/auth/sign-out/" class="ml-2"><button type="submit" class="rounded-lg border border-border px-3 py-2 text-sm font-bold hover:bg-secondary" data-pending="Keluar…">Keluar</button></form>
+        )}
       </nav>
 
       <!-- Mobile controls: search icon + hamburger -->
       <div class="md:hidden flex items-center gap-1 ml-auto flex-shrink-0">
+        {(!identity || identity.status==='guest') && <a href="/login/" class="px-2 py-1 text-sm font-bold">Masuk</a>}
         {!hideSearch && (
           <button
             type="button"
-            class="p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
+            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 text-text-muted transition-colors hover:bg-secondary hover:text-text"
             aria-label="Buka pencarian"
             aria-expanded="false"
             aria-controls="mobile-search-panel"
@@ -82,7 +90,8 @@ const isActive = (item: (typeof navItems)[number]) => item.match(normalizedPath)
         )}
 
         <button
-          class="p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
+          type="button"
+          class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 text-text-muted transition-colors hover:bg-secondary hover:text-text"
           aria-label="Buka menu navigasi"
           aria-expanded="false"
           aria-controls="mobile-menu"
@@ -122,6 +131,9 @@ const isActive = (item: (typeof navItems)[number]) => item.match(normalizedPath)
               </a>
             );
           })}
+          {identity?.status==='ready' && identity.profile.role==='user' && (
+            <form method="post" action="/api/auth/sign-out/"><button type="submit" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-secondary" data-pending="Keluar…">Keluar</button></form>
+          )}
         </div>
       </div>
     </nav>
@@ -134,19 +146,22 @@ const isActive = (item: (typeof navItems)[number]) => item.match(normalizedPath)
     const mobileSearchToggle = document.querySelector('[data-mobile-search-toggle]');
     const mobileSearchPanel = document.getElementById('mobile-search-panel');
 
-    function setMobileMenuOpen(open) {
+    function setMobileMenuOpen(open, restoreFocus = false) {
       if (!menu) return;
       menu.classList.toggle('hidden', !open);
       if (menuToggle) menuToggle.setAttribute('aria-expanded', String(open));
+      if (!open && restoreFocus && menuToggle) menuToggle.focus();
     }
 
-    function setMobileSearchOpen(open) {
+    function setMobileSearchOpen(open, restoreFocus = false) {
       if (!mobileSearchPanel) return;
       mobileSearchPanel.classList.toggle('hidden', !open);
       if (mobileSearchToggle) mobileSearchToggle.setAttribute('aria-expanded', String(open));
       if (open) {
         const input = mobileSearchPanel.querySelector('input');
         if (input) input.focus();
+      } else if (restoreFocus && mobileSearchToggle) {
+        mobileSearchToggle.focus();
       }
     }
 
@@ -178,6 +193,18 @@ const isActive = (item: (typeof navItems)[number]) => item.match(normalizedPath)
         !mobileSearchToggle.contains(e.target)
       ) {
         setMobileSearchOpen(false);
+      }
+    });
+
+    // Escape menutup panel dan mengembalikan fokus ke tombol pembukanya.
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      if (menu && !menu.classList.contains('hidden')) {
+        event.preventDefault();
+        setMobileMenuOpen(false, true);
+      } else if (mobileSearchPanel && !mobileSearchPanel.classList.contains('hidden')) {
+        event.preventDefault();
+        setMobileSearchOpen(false, true);
       }
     });
   </script>

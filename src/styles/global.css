@@ -1,33 +1,35 @@
 @import "tailwindcss";
+@import "@fontsource-variable/manrope";
+@import "@fontsource/lora/latin-400.css";
+@import "@fontsource/lora/latin-600.css";
 
 /* Tailwind v4 CSS-first configuration */
 @theme {
-  /* Color palette - Buttermilk (#FFF2BA) + Midnight Blue (#0F3C65) */
-  /* Light: kertas buttermilk + tinta midnight blue */
-  --color-primary: #0f3c65;
-  --color-primary-light: #1b5a8f;
-  --color-primary-dark: #0a2947;
-  --color-secondary: #f0dfa8;
-  --color-secondary-dark: #e8d28c;
-  --color-accent: #0f3c65;
-  --color-accent-light: #1b5a8f;
-  --color-accent-dark: #0a2947;
-  --color-background: #fff2ba;
-  --color-surface: #fffbef;
-  --color-surface-hover: #fff6d0;
-  --color-text: #0f3c65;
-  --color-text-muted: #4e5f73;
-  --color-text-light: #66788f;
-  --color-border: #e3d7a6;
-  --color-border-focus: #0f3c65;
+  --color-primary: #1e4d3b;
+  --color-primary-light: #32644d;
+  --color-primary-dark: #173b2d;
+  --color-secondary: #eee9df;
+  --color-secondary-dark: #e6e2d8;
+  --color-accent: #1e4d3b;
+  --color-accent-light: #32644d;
+  --color-accent-dark: #173b2d;
+  --color-background: #faf8f5;
+  --color-surface: #fff;
+  --color-surface-hover: #f5f1ea;
+  --color-text: #1c1917;
+  --color-text-muted: #57534e;
+  --color-text-light: #635b53;
+  --color-border: #e6e2d8;
+  --color-border-focus: #1e4d3b;
+  --color-rank: #d97706;
   --color-error: #b3261e;
   --color-error-light: #fbebe9;
   --color-success: #1b6e3f;
   --color-success-light: #ebf7ee;
 
   /* Typography scale */
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-  --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-sans: 'Manrope Variable', system-ui, sans-serif;
+  --font-serif: Lora, Georgia, serif;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
   --text-xs: 0.75rem;     /* 12px */
@@ -76,50 +78,42 @@
   --container-padding: 1rem; /* 16px */
 }
 
-/* Dark mode - navy: midnight blue diperdalam, buttermilk jadi tinta terang */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary: #fff2ba;
-    --color-primary-light: #fff8d9;
-    --color-primary-dark: #f3e4a6;
-    --color-secondary: #17496f;
-    --color-secondary-dark: #1f5581;
-    --color-accent: #fff2ba;
-    --color-accent-light: #fff8d9;
-    --color-accent-dark: #e7dca8;
-    --color-background: #0a2947;
-    --color-surface: #0f3c65;
-    --color-surface-hover: #16496f;
-    --color-text: #fff2ba;
-    --color-text-muted: #d5c89e;
-    --color-text-light: #9fb0c4;
-    --color-border: #2c5b84;
-    --color-border-focus: #fff2ba;
-    --color-error: #f8a9a2;
-    --color-error-light: #3b1713;
-    --color-success: #7fd9a4;
-    --color-success-light: #10331f;
-  }
+:root {
+  color-scheme: light;
 }
 
-/* Manual dark mode class */
+.interaction-control {
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.interaction-control[aria-disabled="true"], .interaction-control:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.scroll-smooth { scroll-behavior: auto; }
+  .interaction-control { transition: none; }
+}
+
 .dark {
-  --color-primary: #fff2ba;
-  --color-primary-light: #fff8d9;
-  --color-primary-dark: #f3e4a6;
-  --color-secondary: #17496f;
-  --color-secondary-dark: #1f5581;
-  --color-accent: #fff2ba;
-  --color-accent-light: #fff8d9;
-  --color-accent-dark: #e7dca8;
-  --color-background: #0a2947;
-  --color-surface: #0f3c65;
-  --color-surface-hover: #16496f;
-  --color-text: #fff2ba;
-  --color-text-muted: #d5c89e;
-  --color-text-light: #9fb0c4;
-  --color-border: #2c5b84;
-  --color-border-focus: #fff2ba;
+  color-scheme: dark;
+  --color-primary: #b8dbc8;
+  --color-primary-light: #cee7d8;
+  --color-primary-dark: #e1f0e7;
+  --color-secondary: #333731;
+  --color-secondary-dark: #3e453c;
+  --color-accent: #b8dbc8;
+  --color-accent-light: #cee7d8;
+  --color-accent-dark: #e1f0e7;
+  --color-background: #1c211d;
+  --color-surface: #252c26;
+  --color-surface-hover: #303a31;
+  --color-text: #f9f3e9;
+  --color-text-muted: #d7d2c8;
+  --color-text-light: #c2bcb1;
+  --color-border: #434a42;
+  --color-border-focus: #b8dbc8;
   --color-error: #f8a9a2;
   --color-error-light: #3b1713;
   --color-success: #7fd9a4;
@@ -214,7 +208,44 @@
   input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--color-border-focus);
-    box-shadow: 0 0 0 3px var(--color-accent)33;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
+
+  select:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  @supports (appearance: base-select) and selector(::picker(select)) {
+    @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+      select:not([multiple], [size]), select:not([multiple], [size])::picker(select) {
+        appearance: base-select;
+      }
+
+      select:not([multiple], [size])::picker(select) {
+        color: var(--color-text);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        max-block-size: min(20rem, 55dvh);
+      }
+
+      select:not([multiple], [size]) option {
+        padding: var(--space-2) var(--space-3);
+      }
+
+      select:not([multiple], [size]) option:checked {
+        color: var(--color-text);
+        background: color-mix(in srgb, var(--color-surface) 84%, var(--color-text));
+      }
+
+      select:not([multiple], [size]) option:enabled:is(:hover, :focus-visible) {
+        color: var(--color-text);
+        background: color-mix(in srgb, var(--color-surface) 92%, var(--color-text));
+        outline: 2px solid var(--color-primary);
+        outline-offset: -2px;
+      }
+    }
   }
 
   /* Hilangkan tombol "X" bawaan browser pada input search supaya tidak
@@ -246,42 +277,28 @@
 }
 
 /* Selection — pasangan kontras tetap di kedua mode (buttermilk <-> midnight) */
-:root {
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-  }
-}
-
-.dark {
-  color-scheme: dark;
-}
-
 ::selection {
-  background-color: #0f3c65;
-  color: #fff2ba;
+  background-color: #1e4d3b;
+  color: #faf8f5;
 }
 
 @media (prefers-color-scheme: dark) {
   ::selection {
-    background-color: #fff2ba;
-    color: #0a2947;
+    background-color: #faf8f5;
+    color: #173b2d;
   }
 }
 
 .dark ::selection {
-  background-color: #fff2ba;
-  color: #0a2947;
+  background-color: #faf8f5;
+  color: #173b2d;
 }
 
 /* Highlight <mark> (typeahead search) — pasangan invert yang menyala di
    kedua mode; menggantikan styling bawaan UA yang gelap-atas-gelap */
 mark {
-  background-color: #0f3c65;
-  color: #fff2ba;
+  background-color: #1e4d3b;
+  color: #faf8f5;
   border-radius: 0.2em;
   padding: 0 0.15em;
   font-weight: 600;
@@ -289,14 +306,14 @@ mark {
 
 @media (prefers-color-scheme: dark) {
   mark {
-    background-color: #fff2ba;
-    color: #0a2947;
+    background-color: #faf8f5;
+    color: #173b2d;
   }
 }
 
 .dark mark {
-  background-color: #fff2ba;
-  color: #0a2947;
+  background-color: #faf8f5;
+  color: #173b2d;
 }
 
 /* Scrollbar */
@@ -337,7 +354,7 @@ mark {
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 var(--container-padding);
+  padding-inline: var(--container-padding);
 }
 
 /* Screen reader only */

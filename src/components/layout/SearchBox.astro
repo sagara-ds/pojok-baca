@@ -1,5 +1,6 @@
 ---
 const resultsId = `search-results-${Math.random().toString(36).slice(2, 9)}`;
+const listboxId = `${resultsId}-listbox`;
 
 interface Props {
   /** Versi ringkas untuk header desktop. */
@@ -29,9 +30,11 @@ const { compact = false } = Astro.props;
         placeholder={compact ? 'Cari buku atau cerita…' : 'Cari judul, penulis, atau alur cerita…'}
         autocomplete="off"
         aria-label="Cari buku berdasarkan judul, penulis, atau alur cerita"
+        role="combobox"
+        aria-autocomplete="list"
         aria-expanded="false"
         aria-haspopup="listbox"
-        aria-controls={resultsId}
+        aria-controls={listboxId}
         class="flex-1 min-w-0 bg-transparent text-text placeholder-text-muted outline-none text-sm"
         data-search-input
       />
@@ -57,20 +60,20 @@ const { compact = false } = Astro.props;
       </div>
     </div>
 
-    <div id={resultsId} role="listbox" data-search-results class="hidden absolute top-full left-0 right-0 mt-2 bg-surface border border-border rounded-lg shadow-lg max-h-80 overflow-y-auto z-50">
-      <div class="p-3 text-sm text-text-muted text-center" data-empty-state hidden>
+    <div id={resultsId} data-search-results class="hidden absolute top-full left-0 right-0 mt-2 bg-surface border border-border rounded-lg shadow-lg max-h-80 overflow-y-auto z-50">
+      <div class="p-3 text-sm text-text-muted text-center" data-empty-state role="status" hidden>
         Tidak ada hasil untuk "<span data-query></span>"
       </div>
 
-      <div class="p-3 text-sm text-text-muted text-center" data-loading-state hidden>
+      <div class="p-3 text-sm text-text-muted text-center" data-loading-state aria-hidden="true" hidden>
         Memuat…
       </div>
 
-      <div class="p-3 text-sm text-error text-center" data-error-state hidden>
+      <div class="p-3 text-sm text-error text-center" data-error-state role="status" hidden>
         Gagal memuat hasil. Coba lagi.
       </div>
 
-      <div data-results-list class="divide-y divide-border"></div>
+      <div id={listboxId} role="listbox" aria-label="Hasil pencarian" data-results-list class="divide-y divide-border"></div>
 
       <a href="/books/" data-view-all-link class="block px-3 py-2 text-center text-sm font-medium text-primary hover:bg-secondary/50 transition-colors border-t border-border hidden">
         Lihat semua hasil
@@ -119,8 +122,41 @@ const { compact = false } = Astro.props;
     if (!input || !resultsContainer || !resultsList) return;
 
     let abortController: AbortController | null = null;
+    let activeIndex = -1;
+
+    function options(): HTMLAnchorElement[] {
+      return Array.from(resultsList?.querySelectorAll<HTMLAnchorElement>('[role="option"]') ?? []);
+    }
+
+    function clearActive() {
+      activeIndex = -1;
+      input?.removeAttribute('aria-activedescendant');
+      for (const option of options()) {
+        option.setAttribute('aria-selected', 'false');
+        option.classList.remove('bg-secondary');
+      }
+    }
+
+    function setActive(index: number) {
+      const items = options();
+      if (!items.length) {
+        clearActive();
+        return;
+      }
+      activeIndex = (index + items.length) % items.length;
+      items.forEach((option, optionIndex) => {
+        const selected = optionIndex === activeIndex;
+        option.setAttribute('aria-selected', String(selected));
+        option.classList.toggle('bg-secondary', selected);
+        if (selected) {
+          input?.setAttribute('aria-activedescendant', option.id);
+          option.scrollIntoView({ block: 'nearest' });
+        }
+      });
+    }
 
     function hideResults() {
+      clearActive();
       resultsContainer?.classList.add('hidden');
       input?.setAttribute('aria-expanded', 'false');
     }
@@ -131,29 +167,14 @@ const { compact = false } = Astro.props;
     }
 
     function showState(state: 'empty' | 'loading' | 'error' | 'results') {
-      emptyState?.classList.add('hidden');
-      loadingState?.classList.add('hidden');
-      errorState?.classList.add('hidden');
-      resultsList?.classList.add('hidden');
-      viewAllLink?.classList.add('hidden');
-      loadingSpinner?.classList.add('hidden');
-
-      switch (state) {
-        case 'empty':
-          emptyState?.classList.remove('hidden');
-          break;
-        case 'loading':
-          loadingState?.classList.remove('hidden');
-          loadingSpinner?.classList.remove('hidden');
-          break;
-        case 'error':
-          errorState?.classList.remove('hidden');
-          break;
-        case 'results':
-          resultsList?.classList.remove('hidden');
-          viewAllLink?.classList.remove('hidden');
-          break;
-      }
+      if (state !== 'results') clearActive();
+      resultsList?.setAttribute('aria-busy', String(state === 'loading'));
+      if (emptyState) emptyState.hidden = state !== 'empty';
+      if (loadingState) loadingState.hidden = state !== 'loading';
+      if (errorState) errorState.hidden = state !== 'error';
+      resultsList?.classList.toggle('hidden', state !== 'results');
+      viewAllLink?.classList.toggle('hidden', state !== 'results');
+      loadingSpinner?.classList.toggle('hidden', state !== 'loading');
     }
 
     function highlightMatch(text: string, query: string): HTMLElement {
@@ -234,12 +255,16 @@ const { compact = false } = Astro.props;
 
     function renderResults(results: SearchResult[], query: string) {
       resultsList!.innerHTML = '';
-      results.forEach(book => {
+      activeIndex = -1;
+      results.forEach((book, index) => {
         const link = document.createElement('a');
-        link.href = `/books/${book.slug}/`;
+        link.href = `/book/${book.slug}/`;
+        link.id = `${resultsList!.id}-option-${index}`;
         link.role = 'option';
+        link.setAttribute('aria-selected', 'false');
         link.className =
-          'flex gap-3 p-2 hover:bg-secondary/50 transition-colors group cursor-pointer';
+          'flex gap-3 p-2 transition-colors group cursor-pointer hover:bg-secondary/50';
+        link.addEventListener('mouseenter', () => setActive(index));
 
         const infoDiv = document.createElement('div');
         infoDiv.className = 'flex-1 min-w-0';
@@ -314,14 +339,45 @@ const { compact = false } = Astro.props;
     input.addEventListener('input', e => {
       const query = (e.target as HTMLInputElement).value;
       clearBtn?.classList.toggle('hidden', query.length === 0);
+      clearActive();
       performSearch(query);
     });
 
     input.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        if (resultsContainer?.classList.contains('hidden')) return;
+        if (options().length === 0) return;
+        e.preventDefault();
+        setActive(activeIndex + (e.key === 'ArrowDown' ? 1 : -1));
+        return;
+      }
+
+      if (e.key === 'Home' || e.key === 'End') {
+        if (resultsContainer?.classList.contains('hidden')) return;
+        if (options().length === 0) return;
+        e.preventDefault();
+        setActive(e.key === 'Home' ? 0 : options().length - 1);
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        const items = options();
+        if (activeIndex >= 0 && items[activeIndex]) {
+          e.preventDefault();
+          window.location.assign(items[activeIndex].href);
+        }
+        return;
+      }
+
       if (e.key === 'Escape') {
-        hideResults();
-        input.value = '';
-        clearBtn?.classList.add('hidden');
+        e.preventDefault();
+        if (!resultsContainer?.classList.contains('hidden')) {
+          hideResults();
+        } else {
+          input.value = '';
+          clearBtn?.classList.add('hidden');
+          performSearch('');
+        }
       }
     });
 

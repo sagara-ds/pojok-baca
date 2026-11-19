@@ -5,12 +5,18 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 <BaseLayout title="Setting" description="Atur tema, ukuran font, dan mode baca di Pojok Baca RPL.">
   <main id="main-content" class="flex-1">
     <div class="container pt-12 sm:pt-16 pb-16 sm:pb-20">
-      <header class="mb-8">
-        <h1 class="text-2xl sm:text-3xl font-bold text-text">Setting</h1>
-        <p class="mt-2 text-text-muted">
-          Preferensi disimpan di perangkat ini, tidak perlu akun.
-        </p>
+      <header class="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-text">Setting</h1>
+          <p class="mt-2 text-text-muted">
+            Preferensi disimpan di perangkat ini, tidak perlu akun.
+          </p>
+        </div>
+        <button type="button" data-reset-settings class="interaction-control rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary">
+          Kembalikan default
+        </button>
       </header>
+      <p data-settings-status class="sr-only" role="status" aria-live="polite"></p>
 
       <div class="max-w-2xl space-y-6">
         <!-- Tema -->
@@ -73,8 +79,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
     const ACTIVE = ['bg-primary', 'text-background'];
     const INACTIVE = ['bg-secondary', 'text-text-muted'];
+    const status = document.querySelector<HTMLElement>('[data-settings-status]');
+    const themeLabel: Record<Theme, string> = { light: 'Terang', dark: 'Gelap', system: 'Ikuti sistem' };
+    const fontLabel: Record<FontSize, string> = { sm: 'Kecil', md: 'Normal', lg: 'Besar' };
+    const modeLabel: Record<ReadingMode, string> = { image: 'Gambar halaman', text: 'Teks' };
+    const announce = (message: string) => { if (status) status.textContent = message; };
 
-    function paint(group: string, attribute: string, value: string) {
+    function paint(group: string, value: string) {
       document.querySelectorAll<HTMLButtonElement>(`[${group}]`).forEach((button) => {
         const active = button.getAttribute(group) === value;
         button.classList.remove(...ACTIVE, ...INACTIVE);
@@ -84,30 +95,44 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     }
 
     function sync() {
-      paint('data-theme-option', 'data-theme-option', getTheme());
-      paint('data-font-option', 'data-font-option', getFontSize());
-      paint('data-mode-option', 'data-mode-option', getReadingMode());
+      paint('data-theme-option', getTheme());
+      paint('data-font-option', getFontSize());
+      paint('data-mode-option', getReadingMode());
     }
 
     document.querySelectorAll<HTMLButtonElement>('[data-theme-option]').forEach((button) => {
       button.addEventListener('click', () => {
-        setTheme(button.getAttribute('data-theme-option') as Theme);
+        const theme = button.getAttribute('data-theme-option') as Theme;
+        setTheme(theme);
         sync();
+        announce(`Tema ${themeLabel[theme]} diterapkan.`);
       });
     });
 
     document.querySelectorAll<HTMLButtonElement>('[data-font-option]').forEach((button) => {
       button.addEventListener('click', () => {
-        setFontSize(button.getAttribute('data-font-option') as FontSize);
+        const size = button.getAttribute('data-font-option') as FontSize;
+        setFontSize(size);
         sync();
+        announce(`Ukuran teks ${fontLabel[size]} diterapkan.`);
       });
     });
 
     document.querySelectorAll<HTMLButtonElement>('[data-mode-option]').forEach((button) => {
       button.addEventListener('click', () => {
-        setReadingMode(button.getAttribute('data-mode-option') as ReadingMode);
+        const mode = button.getAttribute('data-mode-option') as ReadingMode;
+        setReadingMode(mode);
         sync();
+        announce(`Mode baca ${modeLabel[mode]} diterapkan.`);
       });
+    });
+
+    document.querySelector<HTMLButtonElement>('[data-reset-settings]')?.addEventListener('click', () => {
+      setTheme('system');
+      setFontSize('md');
+      setReadingMode('image');
+      sync();
+      announce('Preferensi dikembalikan ke default.');
     });
 
     sync();
