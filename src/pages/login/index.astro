@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { safeReturnTo } from '../../server/reader-guard';
+import { boundedBody, sameOrigin } from '../../server/api-identity';
+import { signInWithSchoolId } from '../../server/student-login';
+
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'private, no-store');
+const next = safeReturnTo(Astro.url.searchParams.get('next') ?? '/', Astro.url.origin);
+let message = '';
+let identifier = '';
+if (Astro.request.method === 'POST') {
+  if (!sameOrigin(Astro)) {
+    return new Response('Asal permintaan tidak valid.', { status: 403, headers: { 'Cache-Control': 'private, no-store' } });
+  }
+  try {
+    const form = new URLSearchParams(new TextDecoder().decode(await boundedBody(Astro.request, 4096)));
+    const input = form.get('identifier') ?? '';
+    identifier = input.trim().slice(0, 40);
+    const result = await signInWithSchoolId(Astro, input, form.get('password') ?? '');
+    if (result === 'ok') return Astro.redirect(next, 303);
+    Astro.response.status = result === 'limited' ? 429 : 401;
+    if (result === 'limited') Astro.response.headers.set('Retry-After', '600');
+    message = 'Username/NIS atau kata sandi salah.';
+  } catch (error) {
+    const oversized = error instanceof RangeError;
+    Astro.response.status = oversized ? 413 : 503;
+    message = oversized ? 'Username/NIS atau kata sandi salah.' : 'Layanan masuk belum tersedia. Coba lagi nanti.';
+  }
+}
+---
+
+<BaseLayout title="Masuk" noIndex hideSearch>
+  <main id="main-content" class="mx-auto w-full max-w-xl flex-1 px-4 py-10 sm:py-14">
+    <section class="rounded-xl border border-border bg-surface p-5 sm:p-8" aria-labelledby="login-heading">
+    <h1 id="login-heading" class="font-serif text-4xl font-semibold">Masuk</h1>
+    <p class="mt-2 text-text-muted">Gunakan akun sekolah untuk mulai membaca.</p>
+    {message && <p class="mt-4 rounded-lg bg-error-light p-3 text-sm font-semibold text-error" role="alert">{message}</p>}
+    <form method="post" class="mt-6 grid gap-4">
+      <label class="grid gap-1">
+        Username atau NIS
+        <input class="input" name="identifier" type="text" value={identifier} maxlength="40" autocomplete="username"
+          autocapitalize="none" spellcheck="false" required />
+      </label>
+      <div class="grid gap-1">
+        <label for="school-password">Kata sandi</label>
+        <div class="flex flex-wrap gap-2 sm:flex-nowrap">
+          <input id="school-password" class="input min-w-0 flex-1" name="password" type="password" maxlength="256" autocomplete="current-password" required />
+          <button type="button" data-password-toggle aria-controls="school-password" class="interaction-control rounded-lg border border-border px-3 py-2 text-sm font-semibold hover:bg-secondary" hidden>Tampilkan</button>
+        </div>
+      </div>
+      <button class="interaction-control rounded-lg bg-primary px-4 py-2 font-bold text-background hover:bg-primary-dark" type="submit" data-pending="Sedang masuk…">Masuk</button>
+    </form>
+    <a href="/books/" class="mt-5 inline-block text-sm font-semibold text-primary underline underline-offset-4">Jelajahi katalog</a>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  const password = document.querySelector<HTMLInputElement>('#school-password');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-password-toggle]');
+  if (password && toggle) {
+    toggle.hidden = false;
+    const reveal = (visible: boolean) => {
+      password.type = visible ? 'text' : 'password';
+      toggle.textContent = visible ? 'Sembunyikan' : 'Tampilkan';
+      toggle.setAttribute('aria-label', visible ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+    };
+    reveal(false);
+    toggle.addEventListener('click', () => reveal(password.type === 'password'));
+    window.addEventListener('pageshow', () => reveal(false));
+  }
+</script>

@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { safeReturnTo } from '../../server/reader-guard';
+import { completeProfile } from '../../server/session';
+
+export const prerender = false;
+const identity = Astro.locals.identity;
+const next = safeReturnTo(Astro.url.searchParams.get('next'), Astro.url.origin);
+if (identity?.status === 'ready') return Astro.redirect(next);
+if (identity?.status !== 'needs_onboarding') return new Response('Akses ditolak.', { status: 403 });
+
+let name = identity.name;
+let className = '';
+let message = '';
+if (Astro.request.method === 'POST') {
+  if (Astro.request.headers.get('Origin') !== Astro.url.origin) {
+    return new Response('Asal permintaan tidak valid.', { status: 403 });
+  }
+  try {
+    const form = await Astro.request.formData();
+    name = String(form.get('name') ?? '').trim();
+    className = String(form.get('className') ?? '').trim();
+    if (!name || name.length > 100 || !/^[\p{L}\p{N} .-]{1,32}$/u.test(className)) {
+      Astro.response.status = 400;
+      message = 'Isi nama dan kelas yang valid.';
+    } else {
+      await completeProfile(identity.userId, name, className);
+      return Astro.redirect(next, 303);
+    }
+  } catch {
+    Astro.response.status = 503;
+    message = 'Profil belum bisa disimpan. Coba lagi nanti.';
+  }
+}
+---
+
+<BaseLayout title="Lengkapi profil" noIndex hideSearch>
+  <main id="main-content" class="mx-auto w-full max-w-md flex-1 px-4 py-14">
+    <h1 class="text-3xl font-bold">Lengkapi profil</h1>
+    <p class="mt-2">Masukkan nama dan kelas sebelum memulai bacaan.</p>
+    {message && <p class="mt-4" role="alert">{message}</p>}
+    <form method="post" class="mt-6 grid gap-4">
+      <label class="grid gap-1">
+        Nama
+        <input class="input" name="name" value={name} maxlength="100" autocomplete="name" required />
+      </label>
+      <label class="grid gap-1">
+        Kelas
+        <input class="input" name="className" value={className} maxlength="32" placeholder="XI RPL 1" required />
+      </label>
+      <button class="interaction-control rounded-lg bg-primary px-4 py-2 font-bold text-background hover:bg-primary-dark" type="submit" data-pending="Menyimpan profil…">Simpan dan lanjutkan</button>
+    </form>
+    <form method="post" action="/api/auth/sign-out/" class="mt-4">
+      <button class="underline" type="submit">Keluar</button>
+    </form>
+  </main>
+</BaseLayout>
