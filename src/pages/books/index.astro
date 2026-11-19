@@ -3,10 +3,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { fetchBooks } from '../../services/api';
 import type { SearchParams } from '../../services/types';
-import Button from '../../components/ui/Button.astro';
 import ErrorState from '../../components/ui/ErrorState.astro';
 import BookCard from '../../components/book/BookCard.astro';
-import { getReadCounts, getStatsEnv } from '../../server/stats';
 
 export interface Props {
   page?: number;
@@ -24,16 +22,14 @@ const q = searchParams.get('q') ?? undefined;
 const limit = 20;
 const params: SearchParams = { page, limit, sort, category, q };
 
-// "Populer" memakai jumlah pembaca nyata, bukan jumlah halaman.
-const readCounts = await getReadCounts(getStatsEnv(Astro.locals));
-
 let booksData;
 let error: string | null = null;
 
 try {
-  booksData = await fetchBooks(params, { readCounts });
-} catch (e) {
-  error = e instanceof Error ? e.message : 'Gagal memuat daftar buku';
+  booksData = await fetchBooks(params);
+} catch {
+  Astro.response.status = 503;
+  error = 'Katalog belum dapat dimuat. Coba lagi nanti.';
 }
 
 const totalPages = booksData?.pagination.totalPages ?? 1;
@@ -59,10 +55,10 @@ const pageDescription = q
   ? `Hasil pencarian untuk "${q}" - ${booksData?.data.length ?? 0} buku ditemukan`
   : `Jelajahi koleksi buku lengkap di Pojok Baca RPL`;
 
-const buildUrl = (nextPage: number) => {
+const buildUrl = (nextPage: number, nextSort: string = sort) => {
   const sp = new URLSearchParams();
   sp.set('page', String(nextPage));
-  sp.set('sort', sort);
+  sp.set('sort', nextSort);
   if (category) sp.set('category', category);
   if (q) sp.set('q', q);
   return `/books/?${sp.toString()}`;
@@ -83,22 +79,21 @@ const buildUrl = (nextPage: number) => {
 
       {/* Sort — satu-satunya tempat pengurutan (header hanya navigasi) */}
       <div class="mb-8">
-        <div class="flex flex-wrap gap-2" role="group" aria-label="Urutkan">
+        <nav class="flex flex-wrap gap-2" aria-label="Urutan buku">
           {sortOptions.map(option => (
-            <button
-              type="button"
-              class={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+            <a
+              href={buildUrl(1, option.value)}
+              class={`interaction-control px-3 py-1.5 rounded-lg text-sm font-medium ${
                 sort === option.value
                   ? 'bg-primary text-background'
                   : 'bg-surface text-text-muted hover:bg-secondary hover:text-text'
               }`}
-              aria-pressed={sort === option.value}
-              data-sort={option.value}
+              aria-current={sort === option.value ? 'page' : undefined}
             >
               {option.label}
-            </button>
+            </a>
           ))}
-        </div>
+        </nav>
       </div>
 
       {/* Books Grid */}
@@ -190,21 +185,4 @@ const buildUrl = (nextPage: number) => {
     </div>
   </main>
 
-  <script is:inline>
-    // Sort mengubah URL agar hasil bisa dibagikan & tombol back bekerja.
-    document.addEventListener('DOMContentLoaded', () => {
-      const sortButtons = document.querySelectorAll('[data-sort]');
-      const urlParams = new URLSearchParams(window.location.search);
-
-      sortButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          const sortValue = button.getAttribute('data-sort');
-          if (!sortValue) return;
-          urlParams.set('sort', sortValue);
-          urlParams.set('page', '1');
-          window.location.search = urlParams.toString();
-        });
-      });
-    });
-  </script>
 </BaseLayout>

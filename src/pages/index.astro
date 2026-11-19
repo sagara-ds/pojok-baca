@@ -1,142 +1,107 @@
 ---
-// Beranda — daftar buku langsung terlihat saat pertama kali dibuka.
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { fetchBooks } from '../services/api';
-import BookCard from '../components/book/BookCard.astro';
+import EditorialShelf from '../components/book/EditorialShelf.astro';
 import SearchBox from '../components/layout/SearchBox.astro';
-import { getReadCounts, getStatsEnv } from '../server/stats';
+import { activeReadersToday, listPublicBooks, type CatalogBook } from '../server/catalog-repository';
 
-const readCounts = await getReadCounts(getStatsEnv(Astro.locals));
-
-const [newest, popular] = await Promise.all([
-  fetchBooks({ sort: 'newest', limit: 10 }),
-  fetchBooks({ sort: 'popular', limit: 10 }, { readCounts }),
-]);
-
-const totalBooks = newest.pagination.total;
-const hasPopularityData = Object.keys(readCounts).length > 0;
+let books: CatalogBook[] = [];
+let active: number | undefined;
+let unavailable = false;
+try {
+  [books, active] = await Promise.all([listPublicBooks(), activeReadersToday()]);
+} catch {
+  Astro.response.status = 503;
+  unavailable = true;
+}
+const category = Astro.url.searchParams.get('category') ?? '';
+const type = Astro.url.searchParams.get('type') ?? '';
+const categories = [...new Set(books.flatMap((book) => book.categories))].sort((a,b) => a.localeCompare(b,'id'));
+const filtered = books.filter((book) => (!category || book.categories.includes(category)) && (!type || book.bookType === type));
+const trending = filtered.filter((book) => book.weeklyReaders > 0).sort((a,b) => b.weeklyReaders-a.weeklyReaders).slice(0,4);
+const recommendations = filtered.filter((book) => book.recommended).slice(0,4);
+const viewed = filtered.filter((book) => book.detailViews > 0).sort((a,b) => b.detailViews-a.detailViews).slice(0,4);
+const jackets = ['a-man-called-ove','bumi-manusia','hujan']
+  .flatMap((slug) => {
+    const book = books.find((item) => item.slug === slug);
+    return book?.coverUrl ? [{ slug, title: book.title, cover: book.coverUrl }] : [];
+  });
+const number = new Intl.NumberFormat('id-ID');
 ---
 
-<BaseLayout
-  title="Beranda"
-  description="Perpustakaan digital Pojok Baca RPL — baca novel dan buku pelajaran secara online."
-  hideSearch
->
-  <main id="main-content" class="flex-1">
-    <div class="container pt-12 sm:pt-16 pb-16 sm:pb-24 space-y-12">
-      <!-- Hero: langsung tunjukkan katalog, bukan halaman kosong -->
-      <section class="text-center space-y-4">
-        <h1 class="text-3xl sm:text-4xl font-bold text-text">Pojok Baca RPL</h1>
-        <p class="mx-auto max-w-2xl text-text-muted">
-          {totalBooks} buku tersedia untuk dibaca online. Cari judul, penulis, atau
-          potongan cerita yang kamu ingat.
-        </p>
-        <div class="mx-auto max-w-xl">
-          <SearchBox />
-        </div>
-      </section>
-
-      <!-- Lanjutkan Baca (client-side dari localStorage) -->
-      <section id="continue-section" class="hidden" aria-labelledby="continue-heading">
-        <div class="mb-4 flex items-center justify-between gap-4">
-          <h2 id="continue-heading" class="text-xl font-bold text-text">Lanjutkan Baca</h2>
-          <a href="/riwayat/" class="text-sm font-medium text-primary hover:underline">Semua riwayat</a>
-        </div>
-        <div id="continue-list" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5"></div>
-      </section>
-
-      <!-- Terbaru -->
-      <section aria-labelledby="newest-heading">
-        <div class="mb-4 flex items-center justify-between gap-4">
-          <h2 id="newest-heading" class="text-xl font-bold text-text">Terbaru</h2>
-          <a href="/books/" class="text-sm font-medium text-primary hover:underline">Lihat katalog</a>
-        </div>
-        <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5">
-          {newest.data.map(book => <BookCard book={book} />)}
-        </div>
-      </section>
-
-      <!-- Populer -->
-      <section aria-labelledby="popular-heading">
-        <div class="mb-4 flex items-center justify-between gap-4">
-          <h2 id="popular-heading" class="text-xl font-bold text-text">Populer</h2>
-          <a href="/books/?sort=popular" class="text-sm font-medium text-primary hover:underline">
-            Lihat semua
-          </a>
-        </div>
-        {hasPopularityData ? (
-          <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5">
-            {popular.data.map(book => <BookCard book={book} showReadCount />)}
-          </div>
-        ) : (
-          <p class="rounded-xl border border-border bg-surface p-6 text-sm text-text-muted">
-            Data pembaca belum tersedia. Angka akan muncul setelah pengunjung mulai membaca buku.
-          </p>
+<BaseLayout title="Eksplorasi" description="Temukan buku dan lanjutkan bacaanmu di perpustakaan sekolah Pojok Baca." hideSearch>
+  <main id="main-content" class="container space-y-7 py-5 sm:space-y-9 sm:py-7">
+    <section class="editorial-hero relative isolate overflow-hidden rounded-2xl px-5 py-7 text-white sm:px-10 sm:py-9 lg:px-14">
+      <div class="relative z-10 max-w-xl">
+        <h1 class="text-balance font-serif text-[2.55rem] font-semibold leading-[1.13] tracking-[-0.03em] sm:text-5xl lg:text-6xl">
+          Temukan bacaan berikutnya.
+        </h1>
+        <p class="mb-5 mt-3 max-w-[38ch] text-[#e2eee5] sm:text-lg">Jelajahi novel dan bacaan sekolah, lalu lanjutkan dari halaman terakhirmu.</p>
+        <div class="max-w-md text-text"><SearchBox /></div>
+        {!unavailable && (
+          <dl class="mt-6 flex flex-wrap gap-x-8 gap-y-3 border-t border-white/25 pt-4">
+            <div><dd class="font-serif text-2xl tabular-nums sm:text-3xl">{number.format(books.length)}</dd><dt class="text-sm text-[#e2eee5]">Koleksi terbit</dt></div>
+            <div><dd class="font-serif text-2xl tabular-nums sm:text-3xl">{number.format(active ?? 0)}</dd><dt class="text-sm text-[#e2eee5]">Pembaca aktif hari ini</dt></div>
+          </dl>
         )}
-      </section>
-    </div>
+      </div>
+      {jackets.length === 3 && (
+        <nav class="hero-jackets absolute hidden lg:block" aria-label="Pilihan dari katalog">
+          {jackets.map((book) => (
+            <a href={`/book/${book.slug}/`} aria-label={`Lihat ${book.title}`} title={book.title}>
+              <img src={book.cover} alt="" width="126" height="190" fetchpriority="low" />
+            </a>
+          ))}
+        </nav>
+      )}
+    </section>
+
+    {unavailable ? (
+      <p class="rounded-xl border border-border bg-surface p-5" role="alert">Katalog belum dapat dimuat. Muat ulang halaman untuk mencoba lagi.</p>
+    ) : (
+      <>
+        <form action="/#rak-buku" method="get" id="rak-buku" class="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-surface px-4 py-4 sm:px-5">
+          <label class="flex min-w-0 flex-1 basis-36 flex-col gap-1 text-sm font-semibold sm:flex-none">
+            Kategori
+            <select name="category" class="min-w-0">
+              <option value="">Semua kategori</option>
+              {categories.map((name) => <option value={name} selected={name===category}>{name}</option>)}
+            </select>
+          </label>
+          <label class="flex min-w-0 flex-1 basis-36 flex-col gap-1 text-sm font-semibold sm:flex-none">
+            Format
+            <select name="type">
+              <option value="">Semua format</option>
+              <option value="webp_sheets" selected={type==='webp_sheets'}>Halaman</option>
+              <option value="novel_text" selected={type==='novel_text'}>Novel teks</option>
+            </select>
+          </label>
+          <button type="submit" data-pending="Memuat…" class="interaction-control rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary">Terapkan</button>
+          {(category || type) && <a href="/#rak-buku" class="mb-2 text-sm underline">Hapus filter</a>}
+          <a href="/books/" class="mb-2 ml-auto text-sm font-semibold text-primary underline underline-offset-4">Lihat katalog</a>
+        </form>
+        <EditorialShelf id="trending" title="Sedang Trending" caption="Pembaca unik dalam 7 hari terakhir"
+          books={trending} metric="trending" empty="Belum ada bacaan yang masuk trending untuk pilihan ini." />
+        <EditorialShelf id="recommendations" title="Rekomendasi"
+          books={recommendations} empty="Belum ada rekomendasi untuk pilihan ini." />
+        <EditorialShelf id="frequently-viewed" title="Paling Sering Dilihat" caption="Berdasarkan klik ke halaman detail"
+          books={viewed} metric="views" empty="Belum ada klik detail yang tercatat untuk pilihan ini." />
+      </>
+    )}
   </main>
-
-  <script>
-    import { getHistory } from '../scripts/library';
-
-    interface Entry {
-      slug: string;
-      title: string;
-      author: string;
-      cover: string;
-      page?: number;
-    }
-
-    function renderContinue() {
-      const section = document.getElementById('continue-section');
-      const list = document.getElementById('continue-list');
-      if (!section || !list) return;
-
-      const history = getHistory().slice(0, 5) as Entry[];
-      if (history.length === 0) {
-        section.classList.add('hidden');
-        return;
-      }
-
-      list.innerHTML = '';
-      for (const item of history) {
-        const link = document.createElement('a');
-        link.href = `/books/${item.slug}/read/${item.page && item.page > 1 ? `?p=${item.page}` : ''}`;
-        link.className =
-          'group flex gap-3 rounded-xl border border-border bg-surface p-3 transition-colors hover:border-accent/50';
-
-        const cover = document.createElement('div');
-        cover.className =
-          'relative h-20 w-14 flex-shrink-0 overflow-hidden rounded bg-[linear-gradient(to_bottom,#0f3c65,#0a2947)]';
-        if (item.cover) {
-          const img = document.createElement('img');
-          img.src = item.cover;
-          img.alt = '';
-          img.loading = 'lazy';
-          img.className = 'absolute inset-0 h-full w-full object-cover';
-          img.addEventListener('error', () => img.remove());
-          cover.append(img);
-        }
-
-        const info = document.createElement('div');
-        info.className = 'min-w-0';
-        const title = document.createElement('p');
-        title.className = 'line-clamp-2 text-sm font-semibold text-text';
-        title.textContent = item.title;
-        const meta = document.createElement('p');
-        meta.className = 'mt-1 text-xs text-text-muted';
-        meta.textContent = item.page && item.page > 1 ? `Halaman ${item.page}` : item.author;
-        info.append(title, meta);
-
-        link.append(cover, info);
-        list.append(link);
-      }
-
-      section.classList.remove('hidden');
-    }
-
-    renderContinue();
-    window.addEventListener('pb:library-change', renderContinue);
-  </script>
 </BaseLayout>
+
+<style>
+  .editorial-hero { background: #1e4d3b; color-scheme: light; }
+  .editorial-hero :global(form) { color: #1c1917; }
+  .hero-jackets { right: 9.5%; top: 50%; width: 300px; height: 220px; transform: translateY(-49%); }
+  .hero-jackets a { position: absolute; width: 43%; height: 93%; border-radius: 4px 9px 9px 4px; box-shadow: 0 13px 24px #0d251d6e; transition: transform 220ms cubic-bezier(.16,1,.3,1); }
+  .hero-jackets a:nth-child(1) { left: 0; top: 6%; transform: rotate(-13deg); }
+  .hero-jackets a:nth-child(2) { left: 30%; top: 0; z-index: 2; transform: rotate(-2deg); }
+  .hero-jackets a:nth-child(3) { left: 62%; top: 8%; transform: rotate(13deg); }
+  .hero-jackets a:is(:hover, :focus-visible) { z-index: 3; transform: translateY(-8px) rotate(0); outline: 2px solid #e4cc9c; outline-offset: 4px; }
+  .hero-jackets img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-jackets a { transition: none; }
+    .hero-jackets a:is(:hover, :focus-visible) { transform: none; }
+  }
+</style>

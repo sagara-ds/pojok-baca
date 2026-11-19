@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BookCover from '../../components/book/BookCover.astro';
+import ErrorState from '../../components/ui/ErrorState.astro';
+import CopyText from '../../components/ui/CopyText.astro';
+import { findPublicBook, listPublicQuotes, listRecentReaders, recordDetailView } from '../../server/catalog-repository';
+import { getReadingPosition, readingHref, type ReadingPosition } from '../../server/student-library';
+import { resolveIdentity, type Identity } from '../../server/session';
+
+export const prerender = false;
+Astro.response.headers.set('Cache-Control','private, no-store');
+const slug = Astro.params.slug ?? '';
+let detail: Awaited<ReturnType<typeof findPublicBook>> = null;
+let unavailable = false;
+try { detail = await findPublicBook(slug); } catch { unavailable = true; }
+if (!detail) Astro.response.status = unavailable ? 503 : 404;
+const book = detail?.book;
+const tab = Astro.url.searchParams.get('tab') === 'quotes' ? 'quotes' : 'readers';
+let identity: Identity = { status: 'guest' };
+let readers: Awaited<ReturnType<typeof listRecentReaders>> = [];
+let quotes: string[] = [];
+let panelUnavailable = false;
+let position: ReadingPosition | null = null;
+let views = detail?.detailViews ?? 0;
+if (detail) {
+  const session = resolveIdentity(Astro).catch(() => ({ status: 'guest' } as const));
+  const panel = (tab === 'quotes' ? listPublicQuotes(detail.id) : listRecentReaders(detail.id))
+    .then((data) => ({ data })).catch(() => ({ data: null }));
+  identity = await session;
+  Astro.locals.identity = identity;
+  if (identity.status === 'ready') {
+    const purpose = Astro.request.headers.get('sec-purpose') ?? Astro.request.headers.get('purpose');
+    const canRecord = identity.profile.role === 'user' && Astro.request.method === 'GET'
+      && !purpose?.includes('prefetch') && !Astro.url.searchParams.has('tab');
+    [position, views] = await Promise.all([
+      getReadingPosition(identity.profile.user_id, detail.id).catch(() => null),
+      canRecord ? recordDetailView(identity.profile.user_id, detail.id).catch(() => views) : Promise.resolve(views),
+    ]);
+  }
+  const result = (await panel).data;
+  panelUnavailable = result === null;
+  if (result && tab === 'quotes') quotes = result as string[];
+  else if (result) readers = result as typeof readers;
+}
+const next = readingHref(slug, position);
+const href = identity.status === 'ready' ? next :
+  `${identity.status === 'needs_onboarding' ? '/onboarding/' : '/login/'}?next=${encodeURIComponent(next)}`;
+const label = identity.status === 'ready'
+  ? position?.page != null ? `Lanjutkan Hal. ${position.page}` : position?.paragraph != null ? 'Lanjutkan Membaca' : 'Mulai Membaca'
+  : identity.status === 'needs_onboarding' ? 'Lengkapi Profil' : 'Masuk untuk Membaca';
+const number = new Intl.NumberFormat('id-ID');
+---
+
+<BaseLayout title={book?.title ?? 'Detail buku'} description={book?.description.slice(0,160)}
+  canonicalURL={`/book/${slug}/`} ogImage={book?.coverUrl} noIndex={!book}>
+  <main id="main-content" class="container py-6 sm:py-10">
+    <a href="/books/" class="text-sm font-semibold text-primary underline underline-offset-4">Kembali ke katalog</a>
+    {book ? (
+      <div class="mt-6 grid gap-7 md:grid-cols-[minmax(0,35%)_minmax(0,1fr)] md:gap-10">
+        <aside class="min-w-0">
+          <div class="mx-auto max-w-68 overflow-hidden rounded-xl border border-border bg-surface md:mx-0">
+            <BookCover src={book.coverUrl} title={book.title} author={book.author}
+              alt={`Sampul ${book.title}`} width={300} height={450} priority />
+          </div>
+          <dl class="mt-4 grid grid-cols-3 gap-2">
+            {[['Dilihat', views], ['Pembaca unik', book.readCount ?? 0], ['Kutipan', book.publicQuotes]].map(([name,value]) => (
+              <div class="rounded-lg border border-border bg-surface px-2 py-3 text-center">
+                <dd class="font-serif text-xl font-semibold tabular-nums sm:text-2xl">{number.format(Number(value))}</dd>
+                <dt class="text-xs text-text-muted">{name}</dt>
+              </div>
+            ))}
+          </dl>
+        </aside>
+        <div class="min-w-0">
+          <header class="border-b border-border pb-6">
+            <h1 class="text-balance font-serif text-4xl font-semibold leading-tight tracking-[-0.03em] sm:text-5xl">{book.title}</h1>
+            <p class="mt-2 text-lg text-text-muted">{book.author}</p>
+            {book.categories.length > 0 && (
+              <ul class="mt-3 flex flex-wrap gap-2" aria-label="Kategori buku">
+                {book.categories.map((category) => <li><a class="interaction-control inline-block rounded-md bg-secondary px-3 py-1 text-sm font-semibold hover:bg-secondary-dark"
+                  href={`/books/?category=${encodeURIComponent(category)}`}>{category}</a></li>)}
+              </ul>
+            )}
+            {identity.status === 'inactive' ? <p class="mt-5">Akun tidak aktif.</p> : (
+              <div class="mt-5 flex flex-wrap gap-3">
+                <a href={href} class="rounded-lg bg-[#1e4d3b] px-5 py-3 text-sm font-bold text-white hover:bg-[#173b2d]">{label}</a>
+                {identity.status === 'ready' && book.hasTextLayer && book.pages>0 &&
+                  <a href={readingHref(slug) + '?mode=text'} class="rounded-lg border border-border px-5 py-3 text-sm font-semibold hover:bg-secondary">Baca versi teks</a>}
+              </div>
+            )}
+          </header>
+          <section class="py-6" aria-labelledby="synopsis">
+            <h2 id="synopsis" class="font-serif text-2xl font-semibold">Sinopsis</h2>
+            <p class="mt-2 max-w-[68ch] whitespace-pre-line text-text-muted">{book.description || 'Sinopsis belum tersedia.'}</p>
+          </section>
+          <p data-activity-status class="sr-only" role="status"></p>
+          <div data-activity-panel>
+          <nav class="flex flex-wrap gap-3 border-b border-border" aria-label="Aktivitas buku">
+            <a href={`/book/${slug}/?tab=readers#activity`} aria-current={tab==='readers' ? 'page' : undefined}
+              class:list={['interaction-control px-2 py-3 text-sm font-bold hover:bg-surface-hover',tab==='readers' && 'border-b-2 border-primary text-primary']}>Pembaca Terbaru</a>
+            <a href={`/book/${slug}/?tab=quotes#activity`} aria-current={tab==='quotes' ? 'page' : undefined}
+              class:list={['interaction-control px-2 py-3 text-sm font-bold hover:bg-surface-hover',tab==='quotes' && 'border-b-2 border-primary text-primary']}>Kutipan Publik</a>
+          </nav>
+          <section id="activity" aria-label={tab==='quotes' ? 'Kutipan Publik' : 'Pembaca Terbaru'} class="py-4">
+            {panelUnavailable ? <p class="text-sm text-text-muted">Data belum dapat dimuat.</p> : tab==='quotes' ? (
+              quotes.length ? <ul class="space-y-2">{quotes.map((quote) =>
+                <li class="rounded-lg border border-border bg-surface p-4"><blockquote class="mb-3 font-serif">{quote}</blockquote><CopyText /></li>
+              )}</ul> : <p class="text-sm text-text-muted">Belum ada kutipan publik yang disetujui.</p>
+            ) : (
+              readers.length ? <ul class="divide-y divide-border">{readers.map((reader) => (
+                <li class="flex flex-wrap justify-between gap-2 py-3 text-sm">
+                  <span><strong>{reader.maskedName}</strong> · {reader.className}</span><span class="text-text-muted">{reader.readTime}</span>
+                </li>
+              ))}</ul> : <p class="text-sm text-text-muted">Belum ada pembaca yang tampil untuk buku ini.</p>
+            )}
+          </section>
+          </div>
+        </div>
+      </div>
+    ) : <ErrorState title={unavailable ? 'Detail belum tersedia' : 'Buku tidak ditemukan'} message="Kembali ke katalog untuk memilih bacaan."
+        actionLabel="Buka katalog" actionHref="/books/" variant="page" />}
+  </main>
+</BaseLayout>
+
+<script>
+  import { initBookActivity } from '../../scripts/book-activity';
+  initBookActivity();
+</script>
+
+<style>
+  [data-activity-panel][aria-busy="true"] section { opacity: .65; }
+  #activity { scroll-margin-top: 8rem; }
+</style>
