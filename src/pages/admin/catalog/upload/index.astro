@@ -1,0 +1,64 @@
+---
+import { adminUploadConcurrency } from '../../../../lib/storage';
+import AdminLayout from '../../../../layouts/AdminLayout.astro';
+import { listAdminCatalog } from '../../../../server/catalog-repository';
+
+export const prerender = false;
+const identity = Astro.locals.identity;
+if (identity?.status !== 'ready' || identity.profile.role === 'user') {
+  return new Response('Akses ditolak.', { status: 403 });
+}
+const slug = Astro.url.searchParams.get('book');
+let existing;
+if (slug) {
+  try {
+    existing = (await listAdminCatalog()).find((book) => book.slug === slug && book.status !== 'archived');
+    if (!existing) return new Response('Buku tidak ditemukan.', { status: 404 });
+  } catch {
+    return new Response('Katalog belum dapat dimuat.', { status: 503 });
+  }
+}
+---
+
+<AdminLayout title={existing ? 'Unggah edisi untuk ' + existing.title : 'Unggah buku PDF'}>
+  <div class="w-full max-w-3xl">
+    <p class="mb-4 text-sm text-text-muted">Pilih PDF yang sama untuk melanjutkan unggahan draf.</p>
+    <form id="edition-upload-form" data-existing={existing?.slug ?? ''} data-upload-concurrency={adminUploadConcurrency()} class="grid gap-4 rounded-xl border border-border bg-surface p-5">
+      {!existing && (
+        <>
+          <label class="grid gap-1">Judul <input name="title" class="input" maxlength="200" required /></label>
+          <label class="grid gap-1">Penulis <input name="author" class="input" maxlength="160" required /></label>
+          <label class="grid gap-1">Kategori, pisahkan dengan koma <input name="categories" class="input" maxlength="700" /></label>
+          <label class="grid gap-1">Sinopsis <textarea name="synopsis" class="input" rows="4" maxlength="6000"></textarea></label>
+        </>
+      )}
+      <div data-pdf-drop class="grid gap-2 rounded-lg border border-dashed border-border p-4">
+        <label class="grid gap-1 font-semibold">File PDF <input class="min-w-0 text-sm font-normal" name="pdf" type="file" accept=".pdf,application/pdf" aria-describedby="pdf-help" required /></label>
+        <p id="pdf-help" class="text-sm text-text-muted">Ukuran maksimal 100 MB.<span class="hidden sm:inline"> Kamu juga bisa menyeret PDF ke sini.</span></p>
+        <p id="pdf-selection" class="break-all text-sm text-text-muted empty:hidden" role="status"></p>
+      </div>
+      <button id="edition-start" type="submit" class="interaction-control w-fit rounded-lg bg-primary px-4 py-2 font-medium text-background hover:bg-primary-dark">Mulai unggah</button>
+    </form>
+    <div id="edition-progress" class="mt-6 space-y-4" hidden>
+      <h2 class="font-serif text-xl font-semibold">Halaman terkonfirmasi</h2>
+      <p id="edition-phase" class="text-sm font-bold text-text-muted">Draf · belum terbit</p>
+      <progress max="1" value="0" aria-label="Halaman terkonfirmasi" class="w-full"></progress>
+      <p id="edition-count" class="text-sm text-text-muted"></p>
+      <details open>
+        <summary class="font-medium">Status per halaman</summary>
+        <ol id="edition-pages" class="mt-3 max-h-72 overflow-y-auto divide-y divide-border"></ol>
+      </details>
+      <button id="edition-publish" type="button" class="rounded-lg bg-primary px-4 py-2 font-medium text-background disabled:opacity-65" disabled>Terbitkan edisi</button>
+      <a id="edition-published-link" class="ml-3 underline" hidden>Lihat buku</a>
+    </div>
+    <p id="edition-status" class="mt-4 text-sm text-text-muted" role="status"></p>
+  </div>
+</AdminLayout>
+<script>
+  import { initAdminUpload } from '../../../../scripts/admin-upload';
+  initAdminUpload();
+</script>
+
+<style>
+  [data-pdf-drop][data-dragging] { border-color: var(--color-primary); background: var(--color-surface-hover); }
+</style>
