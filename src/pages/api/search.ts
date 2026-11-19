@@ -33,11 +33,11 @@ export const GET: APIRoute = async ({ url }) => {
         'Cache-Control': 'public, max-age=60',
       },
     });
-  } catch (e) {
+  } catch {
     return new Response(
-      JSON.stringify({ error: 'Gagal memuat hasil pencarian', message: e instanceof Error ? e.message : String(e) }),
+      JSON.stringify({ error: 'Gagal memuat hasil pencarian' }),
       {
-        status: 500,
+        status: 503,
         headers: { 'Content-Type': 'application/json' },
       },
     );

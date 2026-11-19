@@ -12,6 +12,12 @@ const VALID: EventType[] = ['pageview', 'read', 'complete', 'bookmark', 'like'];
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals }) => {
+  if (locals.identity?.status !== 'ready') {
+    return Response.json({ error: 'profile_required' }, {
+      status: 403,
+      headers: { 'Cache-Control': 'private, no-store' },
+    });
+  }
   const env = getStatsEnv(locals);
 
   let payload: { type?: string; slug?: string; delta?: number };

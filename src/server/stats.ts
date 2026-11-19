@@ -20,7 +20,6 @@ export interface StatsEnv {
   PB_STATS?: KVLike | null;
   PB_CATALOG?: KVLike | null;
   PB_BOOKS?: R2Like | null;
-  PB_ADMIN_TOKEN?: string;
   [key: string]: unknown;
 }
 
