@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import cloudflare from '@astrojs/cloudflare';
 import node from '@astrojs/node';
 import { fileURLToPath } from 'node:url';
+import { stagePublicSite } from './pipeline/lib/public-site.mjs';
 
 // Adapter dipilih dari NODE_ENV yang di-set Astro sendiri:
 //   astro dev   -> development -> node (dev via workerd sering hang/lambat
@@ -13,6 +14,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 // https://astro.build/config
 export default defineConfig({
+  publicDir: stagePublicSite(fileURLToPath(new URL('.', import.meta.url))),
   site: 'https://pojok-baca.asagara2223.workers.dev',
   output: 'server', // SSR untuk halaman detail + reader
   trailingSlash: 'always',
@@ -32,6 +34,14 @@ export default defineConfig({
     },
     plugins: [tailwindcss()],
     server: {
+      fs: {
+        // Vite must not expose original or private staging files via source URLs.
+        deny: [
+          '.env', '.env.*', '.dev.vars', '.dev.vars.*', '*.{crt,pem}',
+          '**/.git/**', '**/.data/**', '**/.cache/**', '**/public/**', '**/dist/**',
+          '**/data/*.private.json',
+        ],
+      },
       watch: {
         // public/sheets berisi ~16.000 file strip hasil pipeline. Kalau Vite
         // memindainya, event loop jadi penuh dan `astro dev` timeout saat
@@ -43,6 +53,7 @@ export default defineConfig({
           '**/public/covers/**',
           '**/public/dl/**',
           '**/.cache/**',
+          '**/.data/**',
         ],
       },
     },

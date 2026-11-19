@@ -76,33 +76,18 @@ Seluruh data berasal dari manifest hasil pipeline dan disajikan lewat `src/servi
 | `fetchCategories()` | agregasi kategori dari manifest |
 
 - Halaman buku: WebP 900 px `q78`, **tanpa watermark**, digabung 3 halaman per strip
-- PDF download: `public/dl/<dlId>.pdf` dengan `Content-Disposition: attachment` (13 file > 25 MB tidak ikut karena batas file Cloudflare)
-- Mode teks: 60 buku punya lapisan teks; 4 EPUB berbasis gambar tetap dibaca sebagai halaman gambar
+- Aset reader disajikan dari storage privat melalui `/api/reader/asset/`; URL unduhan dan strip statis tidak dipublikasikan.
+- Mode teks memakai paragraf Neon; 4 EPUB gambar tanpa konten tetap berstatus draft.
 - Kurationi katalog (buku 18+ & varian duplikat) ada di `src/services/curation.ts` — non-destruktif, hanya menyembunyikan dari tampilan publik
 
 ## 🔐 Admin & Statistik
 
-Panel: `/admin` (login token). Fitur:
+Panel `/admin/catalog/` memakai akun Neon dengan role admin atau super admin.
+PDF dikonversi di browser dan halaman disimpan sebagai WebP di storage privat.
+Edisi staging terbit setelah setiap halaman dikonfirmasi. Detail publik menampilkan
+agregat klik, pembaca unik, dan pembaca terbaru yang namanya disamarkan.
 
-- Statistik kunjungan, mulai baca, selesai baca, disimpan, grafik 7 hari, serta daftar paling dibaca & paling disimpan
-- Unggah PDF + metadata (tahap 1 manual, lanjut `pipe:scan` → `pipe:render` → `pipe:manifest`)
-- Publik **tidak** melihat detail statistik; hanya jumlah "Dibaca X×" di kartu Populer
-
-Binding produksi:
-
-- `PB_STATS` (KV) — statistik persisten
-- `PB_CATALOG` (KV) — antrean metadata unggahan
-- `PB_BOOKS` (R2) — **belum dikonfigurasi**; tanpa R2, file PDF unggahan tidak dipersist
-- `PB_ADMIN_TOKEN` — **belum diset**; login admin sengaja dinonaktifkan (503) sampai secret diisi
-
-```bash
-# wajib agar admin bisa login
-npx wrangler secret put PB_ADMIN_TOKEN
-
-# opsional: simpan PDF sumber unggahan
-npx wrangler r2 bucket create pojok-baca-sources
-# lalu aktifkan blok r2_buckets di wrangler.jsonc
-```
+Konfigurasi dan cara verifikasi ada di [catatan reader dan unggah admin](docs/langkah-3-bagian-3-4.md).
 
 ## 📚 Dokumentasi
 

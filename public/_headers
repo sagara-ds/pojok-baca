@@ -1,22 +1,8 @@
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
 
-/sheets/*
-  Cache-Control: public, max-age=604800
-
-/pages/*
-  Cache-Control: public, max-age=86400
-
 /covers/*
   Cache-Control: public, max-age=31536000, immutable
-
-/dl/*
-  Content-Disposition: attachment
-  Cache-Control: public, max-age=86400
-  X-Robots-Tag: noindex
-
-/data/*
-  Cache-Control: public, max-age=86400
 
 /*
   X-Frame-Options: DENY

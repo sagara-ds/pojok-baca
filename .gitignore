@@ -5,6 +5,8 @@ dist/
 
 # pipeline: cache kerja (PDF sumber, hasil scan, laporan)
 .cache/
+.data/
+data/private-imports/
 
 # pipeline: aset hasil render (bukan untuk di-commit; di-deploy via CI/artefak)
 public/pages/
@@ -26,7 +28,10 @@ dev.log
 
 # environment variables
 .env
-.env.production
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
 
 # macOS-specific files
 .DS_Store
