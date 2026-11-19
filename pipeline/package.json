@@ -1,0 +1,23 @@
+{
+  "name": "pojok-baca-pipeline",
+  "type": "module",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Pipeline konversi PDF Drive -> WebP per halaman + manifest books.json",
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "list": "node cli.mjs list",
+    "fetch": "node cli.mjs fetch",
+    "scan": "node cli.mjs scan",
+    "render": "node cli.mjs render",
+    "manifest": "node cli.mjs manifest",
+    "all": "node cli.mjs all"
+  },
+  "dependencies": {
+    "fflate": "^0.8.2",
+    "mupdf": "^1.28.1",
+    "sharp": "^0.35.5"
+  }
+}

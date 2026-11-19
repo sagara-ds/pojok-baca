@@ -1,0 +1,46 @@
+---
+import type { Book } from '../../services/types';
+import type { Identity } from '../../server/session';
+import ReadButton from './ReadButton.astro';
+
+interface Props {
+  book: Book;
+  status: Identity['status'];
+}
+
+const { book, status } = Astro.props;
+const next = encodeURIComponent(book.readingUrl ?? '/books/');
+const signIn = status === 'needs_onboarding' ? '/onboarding/' : '/login/';
+---
+
+{status === 'ready' ? (
+  <>
+    <ReadButton slug={book.slug} title={book.title} readingUrl={book.readingUrl} class="w-full justify-center" />
+    {book.hasTextLayer && book.pages > 0 && (
+      <a href={`${book.readingUrl}?mode=text`} class="inline-flex justify-center rounded-lg border-2 border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10">
+        Baca versi teks
+      </a>
+    )}
+    <button
+      type="button"
+      class="inline-flex justify-center rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text hover:bg-secondary"
+      aria-pressed="false"
+      data-bookmark-toggle
+      data-slug={book.slug}
+      data-title={book.title}
+      data-author={book.author}
+      data-cover={book.coverUrl}
+    >
+      <span data-bookmark-label>Simpan</span>
+    </button>
+  </>
+) : status === 'inactive' ? (
+  <p class="text-sm text-text-muted">Akun tidak aktif.</p>
+) : (
+  <a
+    href={`${signIn}?next=${next}`}
+    class="block rounded-lg bg-primary px-4 py-2 text-center font-medium text-white hover:opacity-90"
+  >
+    {status === 'needs_onboarding' ? 'Lengkapi Profil' : 'Masuk untuk Membaca'}
+  </a>
+)}

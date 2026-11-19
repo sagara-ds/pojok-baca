@@ -1,0 +1,144 @@
+---
+/**
+ * Reader mode teks.
+ *
+ * Mengambil hasil ekstraksi teks dari `/data/text/<slug>.json`
+ * (dibuat oleh `npm run pipe:text`). Kalau file belum ada, tampilkan
+ * pesan + tombol kembali ke mode gambar.
+ */
+interface Props {
+  slug: string;
+  title: string;
+  author: string;
+  textUrl: string;
+}
+
+const { slug, title, author, textUrl } = Astro.props;
+---
+
+<div
+  id="text-reader"
+  class="min-h-screen bg-background text-text"
+  data-slug={slug}
+  data-title={title}
+  data-author={author}
+  data-cover={''}
+  data-text-url={textUrl}
+>
+  <header class="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
+    <div class="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
+      <a
+        href={`/books/${slug}/`}
+        class="rounded-md p-2 text-text-muted transition-colors hover:bg-secondary hover:text-text"
+        aria-label="Kembali ke detail buku"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+      </a>
+
+      <div class="min-w-0 flex-1">
+        <p class="truncate text-sm font-semibold">{title}</p>
+        <p class="truncate text-xs text-text-muted">{author}</p>
+      </div>
+
+      <a
+        href={`/books/${slug}/read/?mode=image`}
+        class="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-text-muted transition-colors hover:bg-secondary hover:text-text"
+      >
+        Mode gambar
+      </a>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-3xl px-4 py-8">
+    <div data-text-status class="text-sm text-text-muted">Memuat teks…</div>
+    <article data-text-body class="prose hidden max-w-none"></article>
+
+    <div data-text-error class="hidden rounded-xl border border-border bg-surface p-6">
+      <p class="font-medium text-text">Teks belum tersedia untuk buku ini.</p>
+      <p class="mt-1 text-sm text-text-muted">
+        Buku ini belum diekstrak ke teks. Kamu tetap bisa membacanya dalam mode gambar.
+      </p>
+      <a
+        href={`/books/${slug}/read/?mode=image`}
+        class="mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-background"
+      >
+        Baca mode gambar
+      </a>
+    </div>
+  </main>
+</div>
+
+<script>
+  interface TextPage {
+    n?: number;
+    text?: string;
+  }
+
+  interface TextPayload {
+    pages?: (string | TextPage)[];
+    chapters?: { title?: string; text?: string }[];
+  }
+
+  const root = document.getElementById('text-reader');
+  if (root) {
+    const url = root.dataset.textUrl ?? '';
+    const body = root.querySelector<HTMLElement>('[data-text-body]');
+    const status = root.querySelector<HTMLElement>('[data-text-status]');
+    const error = root.querySelector<HTMLElement>('[data-text-error]');
+
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((payload: TextPayload) => {
+        status?.classList.add('hidden');
+        if (!body) return;
+
+        const chapters = Array.isArray(payload.chapters) ? payload.chapters : null;
+        if (chapters && chapters.length > 0) {
+          for (const chapter of chapters) {
+            if (chapter.title) {
+              const heading = document.createElement('h2');
+              heading.className = 'mt-8 text-lg font-semibold text-text';
+              heading.textContent = chapter.title;
+              body.append(heading);
+            }
+            for (const paragraph of (chapter.text ?? '').split(/\n{2,}/)) {
+              if (!paragraph.trim()) continue;
+              const p = document.createElement('p');
+              p.className = 'whitespace-pre-line';
+              p.textContent = paragraph.trim();
+              body.append(p);
+            }
+          }
+        } else {
+          const pages = payload.pages ?? [];
+          for (const page of pages) {
+            const text = typeof page === 'string' ? page : page.text ?? '';
+            if (!text.trim()) continue;
+            for (const paragraph of text.split(/\n{2,}/)) {
+              if (!paragraph.trim()) continue;
+              const p = document.createElement('p');
+              p.className = 'whitespace-pre-line';
+              p.textContent = paragraph.trim();
+              body.append(p);
+            }
+          }
+        }
+
+        if (body.childElementCount === 0) {
+          error?.classList.remove('hidden');
+          return;
+        }
+
+        body.classList.remove('hidden');
+      })
+      .catch(() => {
+        status?.classList.add('hidden');
+        error?.classList.remove('hidden');
+      });
+  }
+</script>

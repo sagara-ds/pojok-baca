@@ -1,0 +1,10 @@
+---
+interface Props { action: string; tab: string; label: string; fields: Record<string,string|number|null|undefined> }
+const { action, tab, label, fields } = Astro.props;
+---
+<form method="post" action="/api/library/" class="inline-flex">
+  <input type="hidden" name="action" value={action} />
+  <input type="hidden" name="tab" value={tab} />
+  {Object.entries(fields).filter(([,value]) => value != null).map(([name,value]) => <input type="hidden" name={name} value={value} />)}
+  <button type="submit" data-pending="Menyimpan…" class="interaction-control rounded-lg border border-border px-3 py-2 text-sm font-semibold hover:bg-secondary">{label}</button>
+</form>

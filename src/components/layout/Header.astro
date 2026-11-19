@@ -1,50 +1,57 @@
 ---
-// Header component - minimal navigation
+// Header component — navigasi utama + pencarian.
+import SearchBox from './SearchBox.astro';
+
 interface Props {
   currentPath?: string;
+  hideSearch?: boolean;
 }
 
-const { currentPath } = Astro.props;
+const { currentPath, hideSearch = false } = Astro.props;
 
 const fullPath = currentPath ?? `${Astro.url.pathname}${Astro.url.search}`;
-const [basePath = '', search = ''] = fullPath.split('?');
+const basePath = fullPath.split('?')[0] ?? '';
 const normalizedPath = basePath.replace(/\/+$/, '') || '/';
-const searchParams = new URLSearchParams(search);
 
-const isActive = (href: string) => {
-  const [itemPath, itemQuery] = href.split('?');
-  if (normalizedPath !== itemPath) return false;
-  const expectedSort = itemQuery ? new URLSearchParams(itemQuery).get('sort') : null;
-  const actualSort = searchParams.get('sort');
-  if (expectedSort === null) return actualSort === null;
-  return actualSort === expectedSort;
-};
-
+// trailingSlash: 'always' — semua internal link wajib berakhir '/'.
 const navItems = [
-  { href: '/books', label: 'Semua Buku' },
-  { href: '/books?sort=newest', label: 'Terbaru' },
-  { href: '/books?sort=popular', label: 'Populer' },
+  { href: '/', label: 'Eksplorasi', match: (p: string) => p === '/' || p.startsWith('/book/') || p.startsWith('/books') },
+  { href: '/my-library/', label: 'Koleksiku', match: (p: string) => p.startsWith('/my-library') },
+  { href: '/setting/', label: 'Setelan', match: (p: string) => p.startsWith('/setting') },
 ];
+const identity = Astro.locals.identity;
+if (identity?.status === 'ready' && identity.profile.role !== 'user') {
+  navItems[1] = { href: '/admin/', label: 'Admin', match: (p: string) => p.startsWith('/admin') };
+}
+
+const isActive = (item: (typeof navItems)[number]) => item.match(normalizedPath);
 ---
 
-<header class="border-b border-border sticky top-0 z-40 bg-background/95 backdrop-blur-sm" role="banner">
+<header class="sticky top-0 z-40 border-b border-border bg-surface" role="banner">
   <div class="container">
-    <div class="flex items-center justify-between h-16">
+    <div class="flex items-center justify-between gap-4 h-16">
       <!-- Logo/Title -->
-      <a href="/" class="flex items-center gap-2 text-primary font-semibold text-lg" aria-label="Pojok Baca RPL - Beranda">
+      <a href="/" class="flex items-center gap-2 text-primary font-semibold text-lg flex-shrink-0" aria-label="Pojok Baca RPL - Beranda">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="text-accent">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
           <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
           <path d="M8 10h10" />
           <path d="M8 14h10" />
         </svg>
-        <span class="hidden sm:inline">Pojok Baca RPL</span>
+        <span class="font-serif font-semibold">Pojok Baca</span>
       </a>
 
+      <!-- Desktop search: selalu terlihat, bukan ikon yatim -->
+      {!hideSearch && (
+        <div class="hidden md:block w-full max-w-xs lg:max-w-sm">
+          <SearchBox compact />
+        </div>
+      )}
+
       <!-- Desktop Navigation -->
-      <nav class="hidden md:flex items-center gap-1" role="navigation" aria-label="Navigasi utama">
+      <nav class="hidden md:flex items-center gap-1 flex-shrink-0" role="navigation" aria-label="Navigasi utama">
         {navItems.map(item => {
-          const active = isActive(item.href);
+          const active = isActive(item);
           return (
             <a
               href={item.href}
@@ -57,53 +64,148 @@ const navItems = [
             </a>
           );
         })}
+        {!identity || identity.status==='guest' ? <a href="/login/" class="ml-2 rounded-lg border border-border px-3 py-2 text-sm font-bold hover:bg-secondary">Masuk</a> : null}
+        {identity?.status==='ready' && identity.profile.role==='user' && (
+          <form method="post" action="/api/auth/sign-out/" class="ml-2"><button type="submit" class="rounded-lg border border-border px-3 py-2 text-sm font-bold hover:bg-secondary" data-pending="Keluar…">Keluar</button></form>
+        )}
       </nav>
 
-      <!-- Mobile menu button -->
-      <button
-        class="md:hidden p-2 rounded-lg text-text-muted hover:text-text hover:bg-secondary transition-colors"
-        aria-label="Buka menu navigasi"
-        aria-expanded="false"
-        aria-controls="mobile-menu"
-        data-mobile-menu-toggle
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
-      </button>
+      <!-- Mobile controls: search icon + hamburger -->
+      <div class="md:hidden flex items-center gap-1 ml-auto flex-shrink-0">
+        {(!identity || identity.status==='guest') && <a href="/login/" class="px-2 py-1 text-sm font-bold">Masuk</a>}
+        {!hideSearch && (
+          <button
+            type="button"
+            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 text-text-muted transition-colors hover:bg-secondary hover:text-text"
+            aria-label="Buka pencarian"
+            aria-expanded="false"
+            aria-controls="mobile-search-panel"
+            data-mobile-search-toggle
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </button>
+        )}
+
+        <button
+          type="button"
+          class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 text-text-muted transition-colors hover:bg-secondary hover:text-text"
+          aria-label="Buka menu navigasi"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-mobile-menu-toggle
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <!-- Mobile Navigation (hidden by default) -->
+    <!-- Mobile Search Panel -->
+    {!hideSearch && (
+      <div id="mobile-search-panel" class="md:hidden hidden py-3 px-4 border-t border-border bg-background">
+        <SearchBox />
+      </div>
+    )}
+
+    <!-- Mobile Navigation -->
     <nav id="mobile-menu" class="md:hidden hidden border-t border-border bg-background" role="navigation" aria-label="Navigasi mobile">
-      <div class="py-3 px-4 space-y-1">
-        {navItems.map(item => {
-          const active = isActive(item.href);
-          return (
-            <a
-              href={item.href}
-              class={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                active ? 'bg-primary/10 text-primary' : 'text-text-muted hover:text-text hover:bg-secondary'
-              }`}
-              aria-current={active ? 'page' : undefined}
-            >
-              {item.label}
-            </a>
-          );
-        })}
+      <div class="py-3 px-4">
+        <div class="space-y-1">
+          {navItems.map(item => {
+            const active = isActive(item);
+            return (
+              <a
+                href={item.href}
+                class={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  active ? 'bg-primary/10 text-primary' : 'text-text-muted hover:text-text hover:bg-secondary'
+                }`}
+                aria-current={active ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            );
+          })}
+          {identity?.status==='ready' && identity.profile.role==='user' && (
+            <form method="post" action="/api/auth/sign-out/"><button type="submit" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-secondary" data-pending="Keluar…">Keluar</button></form>
+          )}
+        </div>
       </div>
     </nav>
   </div>
 
   <script is:inline>
-    const toggle = document.querySelector('[data-mobile-menu-toggle]');
+    // Menu & search mobile saling menutup
+    const menuToggle = document.querySelector('[data-mobile-menu-toggle]');
     const menu = document.getElementById('mobile-menu');
-    if (toggle && menu) {
-      toggle.addEventListener('click', () => {
-        const isOpen = menu.classList.toggle('hidden');
-        toggle.setAttribute('aria-expanded', String(!isOpen));
+    const mobileSearchToggle = document.querySelector('[data-mobile-search-toggle]');
+    const mobileSearchPanel = document.getElementById('mobile-search-panel');
+
+    function setMobileMenuOpen(open, restoreFocus = false) {
+      if (!menu) return;
+      menu.classList.toggle('hidden', !open);
+      if (menuToggle) menuToggle.setAttribute('aria-expanded', String(open));
+      if (!open && restoreFocus && menuToggle) menuToggle.focus();
+    }
+
+    function setMobileSearchOpen(open, restoreFocus = false) {
+      if (!mobileSearchPanel) return;
+      mobileSearchPanel.classList.toggle('hidden', !open);
+      if (mobileSearchToggle) mobileSearchToggle.setAttribute('aria-expanded', String(open));
+      if (open) {
+        const input = mobileSearchPanel.querySelector('input');
+        if (input) input.focus();
+      } else if (restoreFocus && mobileSearchToggle) {
+        mobileSearchToggle.focus();
+      }
+    }
+
+    if (menuToggle && menu) {
+      menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setMobileSearchOpen(false);
+        setMobileMenuOpen(menu.classList.contains('hidden'));
       });
     }
+
+    if (mobileSearchToggle && mobileSearchPanel) {
+      mobileSearchToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setMobileMenuOpen(false);
+        setMobileSearchOpen(mobileSearchPanel.classList.contains('hidden'));
+      });
+    }
+
+    // Klik di luar menutup keduanya
+    document.addEventListener('click', (e) => {
+      if (menu && menuToggle && !menu.contains(e.target) && !menuToggle.contains(e.target)) {
+        setMobileMenuOpen(false);
+      }
+      if (
+        mobileSearchPanel &&
+        mobileSearchToggle &&
+        !mobileSearchPanel.contains(e.target) &&
+        !mobileSearchToggle.contains(e.target)
+      ) {
+        setMobileSearchOpen(false);
+      }
+    });
+
+    // Escape menutup panel dan mengembalikan fokus ke tombol pembukanya.
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      if (menu && !menu.classList.contains('hidden')) {
+        event.preventDefault();
+        setMobileMenuOpen(false, true);
+      } else if (mobileSearchPanel && !mobileSearchPanel.classList.contains('hidden')) {
+        event.preventDefault();
+        setMobileSearchOpen(false, true);
+      }
+    });
   </script>
 </header>

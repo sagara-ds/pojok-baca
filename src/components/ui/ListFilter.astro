@@ -1,0 +1,72 @@
+---
+interface Props {
+  target: string;
+  label: string;
+  status?: boolean;
+}
+const { target, label, status = false } = Astro.props;
+---
+
+<list-filter data-target={target} class="flex flex-wrap items-end gap-x-4 gap-y-2" hidden>
+  <label class="grid w-full gap-1 text-sm font-semibold sm:w-auto">
+    {label}
+    <input type="search" class="w-full sm:w-72" aria-controls={target} />
+  </label>
+  {status && (
+    <label class="grid gap-1 text-sm font-semibold">
+      Status
+      <select aria-controls={target}>
+        <option value="">Semua status</option>
+        <option value="published">Terbit</option>
+        <option value="draft">Draf</option>
+        <option value="archived">Arsip</option>
+      </select>
+    </label>
+  )}
+  <button type="button" class="interaction-control rounded-lg border border-border px-3 py-2 text-sm font-semibold hover:bg-secondary" hidden>Hapus filter</button>
+  <p class="min-w-32 self-center text-sm tabular-nums text-text-muted sm:ml-auto" role="status"></p>
+</list-filter>
+
+<script>
+  class ListFilter extends HTMLElement {
+    connectedCallback() {
+      const list = document.getElementById(this.dataset.target ?? '');
+      const search = this.querySelector('input');
+      const status = this.querySelector('select');
+      const reset = this.querySelector('button');
+      const result = this.querySelector('[role="status"]');
+      if (!list || !search || !reset || !result) return;
+
+      const items = Array.from(list.querySelectorAll<HTMLElement>('[data-find]'), (element) => ({
+        element,
+        text: (element.dataset.find ?? '').toLocaleLowerCase('id-ID'),
+      }));
+      if (items.length === 0) return;
+      const number = new Intl.NumberFormat('id-ID');
+      const update = () => {
+        const query = search.value.trim().toLocaleLowerCase('id-ID').split(/\s+/).filter(Boolean);
+        const selected = status?.value;
+        let visible = 0;
+        for (const { element, text } of items) {
+          const matches = (!selected || element.dataset.bookStatus === selected) && query.every((word) => text.includes(word));
+          element.hidden = !matches;
+          if (matches) visible++;
+        }
+        list.hidden = visible === 0;
+        reset.hidden = !search.value && !selected;
+        result.textContent = visible === 0 ? 'Tidak ada hasil.' : `${number.format(visible)} dari ${number.format(items.length)} ditampilkan`;
+      };
+      search.addEventListener('input', update);
+      status?.addEventListener('change', update);
+      reset.addEventListener('click', () => {
+        search.value = '';
+        if (status) status.value = '';
+        search.focus();
+        update();
+      });
+      update();
+      this.hidden = false;
+    }
+  }
+  customElements.define('list-filter', ListFilter);
+</script>

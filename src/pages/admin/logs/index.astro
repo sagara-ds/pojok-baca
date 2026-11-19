@@ -1,0 +1,40 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import AdminPager from '../../../components/ui/AdminPager.astro';
+import {adminPage,audit} from '../../../server/teacher-admin';
+import {formatWib} from '../../../services/report-format';
+
+export const prerender=false;
+const identity=Astro.locals.identity;
+if(identity?.status!=='ready' || identity.profile.role!=='super_admin') return new Response('Akses ditolak.',{status:403});
+const page=adminPage(Astro.url.searchParams.get('page'));
+let entries;
+try { entries=await audit(identity.profile.user_id,page); } catch { return new Response('Audit log belum tersedia.',{status:503}); }
+if(!entries) return new Response('Akses ditolak.',{status:403});
+const actions:Record<string,string>={
+  CREATE_BOOK:'Menambahkan buku',START_EDITION_UPLOAD:'Memulai unggahan edisi',
+  PUBLISH_EDITION:'Menerbitkan edisi',CANCEL_EDITION:'Membatalkan draf',
+  CLEANUP_EDITION:'Membersihkan edisi',MODERATE_CONTENT:'Memoderasi konten',
+  SET_RECOMMENDATION:'Mengubah rekomendasi',UPDATE_USER_ACCESS:'Mengubah akses pengguna',
+  EXPORT_TEACHER_REPORT:'Mengunduh laporan guru',
+};
+---
+<AdminLayout title="Audit log" description="Riwayat tindakan pengelolaan dan perubahan akses. Waktu ditampilkan dalam WIB.">
+  {entries.length ? <div class="overflow-x-auto rounded-xl border border-border bg-surface">
+    <table class="w-full text-left text-sm">
+      <thead><tr class="border-b border-border bg-secondary">
+        {['Waktu','Pelaku','Tindakan','Target'].map((name)=><th scope="col" class="p-3">{name}</th>)}
+      </tr></thead>
+      <tbody class="divide-y divide-border">
+        {entries.map((entry)=><tr>
+          <td class="min-w-36 p-3 tabular-nums">{formatWib(entry.created)}</td><td class="min-w-28 p-3 font-semibold">{entry.name}</td>
+          <td class="min-w-32 p-3">{actions[entry.action]??entry.action}</td>
+          <td class="p-3"><dl class="grid gap-1 break-words text-xs text-text-muted">{Object.entries(entry.target).map(([key,value])=>(
+            <div class="flex flex-wrap gap-1"><dt class="font-semibold">{key}</dt><dd>{String(value??'—')}</dd></div>
+          ))}</dl></td>
+        </tr>)}
+      </tbody>
+    </table>
+  </div> : <p class="rounded-xl border border-border bg-surface p-5 text-text-muted">Belum ada tindakan yang tercatat pada halaman ini.</p>}
+  <AdminPager page={page} hasNext={entries.length===50} />
+</AdminLayout>

@@ -1,0 +1,71 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import {dashboard} from '../../server/teacher-admin';
+import {shiftDay} from '../../services/report-format';
+
+export const prerender = false;
+const identity=Astro.locals.identity;
+if(identity?.status!=='ready' || identity.profile.role==='user') return new Response('Akses ditolak.',{status:403});
+let data;
+try { data=await dashboard(identity.profile.user_id); } catch { return new Response('Ringkasan belum tersedia.',{status:503}); }
+if(!data) return new Response('Akses ditolak.',{status:403});
+const weekly=Astro.url.searchParams.get('trend')==='week';
+const metric=Astro.url.searchParams.get('metric')==='pages' ? 'pages' : 'sessions';
+const metricLabel=metric === 'pages' ? 'Halaman dibaca' : 'Sesi baca';
+const weeks=new Map<string,{date:string;sessions:number;pages:number}>();
+for (const day of data.days) {
+  const weekday = new Date(day.date+'T00:00:00Z').getUTCDay();
+  const monday=shiftDay(day.date,-((weekday+6)%7));
+  const row=weeks.get(monday) ?? {date:monday,sessions:0,pages:0};
+  row.sessions+=day.sessions; row.pages+=day.pages; weeks.set(monday,row);
+}
+const trend=weekly ? [...weeks.values()] : data.days.slice(-14);
+const max=Math.max(1,...trend.map((day)=>day[metric]));
+const trendHref=(period: 'week' | 'day', metricName: typeof metric)=>`/admin/?trend=${period}&metric=${metricName}#trend`;
+const kpis=[
+  ['Total buku terbit',data.books,'Edisi aktif'],['Siswa aktif',data.students,'Pembaca unik dalam 7 hari'],
+  ['Sesi baca 7 hari',data.sessions,'Aktivitas siswa'],['Kutipan menunggu moderasi',data.pending,'Pengajuan publik'],
+];
+const dayName=(value:string)=>new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short',timeZone:'Asia/Jakarta'}).format(new Date(value+'T00:00:00Z'));
+---
+<AdminLayout title="Ringkasan perpustakaan" description="Pantau bacaan siswa dan tindak lanjuti aktivitas yang perlu diperiksa.">
+  <dl class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    {kpis.map(([label,value,note])=>(
+      <div class="rounded-xl border border-border bg-surface p-4 sm:p-5">
+        <dt class="text-sm font-semibold">{label}</dt>
+        <dd class="my-1 font-serif text-3xl font-semibold tabular-nums">{value}</dd>
+        <p class="text-xs text-text-muted">{note}</p>
+      </div>
+    ))}
+  </dl>
+  <section class="rounded-xl border border-border bg-surface p-4 sm:p-6" aria-labelledby="trend">
+    <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+      <div><h2 id="trend" class="scroll-mt-32 font-serif text-xl font-semibold">Tren baca</h2><p class="text-sm text-text-muted">{metricLabel} terkonfirmasi · WIB</p></div>
+      <div class="flex flex-wrap gap-x-4 gap-y-2">
+        <nav class="trend-options flex gap-1 text-sm font-bold" aria-label="Periode grafik">
+          <a href={trendHref('day', metric)} aria-current={!weekly?'page':undefined}>Harian</a>
+          <a href={trendHref('week', metric)} aria-current={weekly?'page':undefined}>Mingguan</a>
+        </nav>
+        <nav class="trend-options flex gap-1 text-sm font-bold" aria-label="Metrik grafik">
+          <a href={trendHref(weekly ? 'week' : 'day', 'sessions')} aria-current={metric==='sessions'?'page':undefined}>Sesi baca</a>
+          <a href={trendHref(weekly ? 'week' : 'day', 'pages')} aria-current={metric==='pages'?'page':undefined}>Halaman dibaca</a>
+        </nav>
+      </div>
+    </div>
+    {trend.every((day)=>day[metric]===0) && <p class="mb-4 rounded-lg bg-background p-3 text-sm text-text-muted">Belum ada {metricLabel.toLowerCase()} yang tercatat untuk periode ini.</p>}
+    <ul class="space-y-2" aria-label={`Grafik ${metricLabel.toLowerCase()}`}>
+      {trend.map((day)=>(
+        <li class="grid grid-cols-[4rem_minmax(0,1fr)_auto] items-center gap-2 rounded-md px-2 py-1 text-xs tabular-nums hover:bg-surface-hover sm:grid-cols-[6rem_minmax(0,1fr)_auto]">
+          <span>{dayName(day.date)}</span><span aria-hidden="true" class="h-2.5 rounded bg-secondary"><span class="block h-full rounded bg-primary" style={`width:${day[metric]/max*100}%`}></span></span>
+          <span class="min-w-8 text-right">{day[metric]}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+</AdminLayout>
+
+<style>
+  .trend-options a { border-radius: .5rem; padding: .45rem .65rem; }
+  .trend-options a:hover { background: var(--color-surface-hover); }
+  .trend-options a[aria-current="page"] { background: var(--color-primary); color: var(--color-background); }
+</style>

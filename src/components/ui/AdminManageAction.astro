@@ -1,0 +1,9 @@
+---
+interface Props { action:string; fields:Record<string,string>; label:string }
+const {action,fields,label}=Astro.props;
+---
+<form action="/api/admin/manage/" method="post" class="inline-flex">
+  <input type="hidden" name="action" value={action} />
+  {Object.entries(fields).map(([name,value])=><input type="hidden" name={name} value={value} />)}
+  <button type="submit" data-pending="Memproses…" class="interaction-control rounded-lg border border-border px-3 py-2 text-sm font-bold hover:bg-secondary">{label}</button>
+</form>

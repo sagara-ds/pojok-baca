@@ -1,0 +1,103 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import AdminManageAction from '../../../components/ui/AdminManageAction.astro';
+import ListFilter from '../../../components/ui/ListFilter.astro';
+import { listAdminCatalog } from '../../../server/catalog-repository';
+import { listAdminUploads } from '../../../server/admin-editions';
+import { isPublicSlug } from '../../../services/curation';
+
+export const prerender = false;
+const headers = { 'Cache-Control': 'private, no-store' };
+Astro.response.headers.set('Cache-Control', headers['Cache-Control']);
+let books: Awaited<ReturnType<typeof listAdminCatalog>>;
+let uploads: Awaited<ReturnType<typeof listAdminUploads>>;
+try {
+  const identity = Astro.locals.identity;
+  if (identity?.status !== 'ready' || identity.profile.role === 'user') {
+    return new Response('Akses ditolak.', { status: 403, headers });
+  }
+  [books, uploads] = await Promise.all([listAdminCatalog(), listAdminUploads(identity.profile.user_id)]);
+} catch {
+  return new Response('Katalog belum dapat dimuat. Coba lagi nanti.', { status: 503, headers });
+}
+---
+
+<AdminLayout title="Katalog admin" description="Kelola edisi terbit, rekomendasi, dan unggahan yang belum selesai.">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-4">
+        <a href="/admin/catalog/upload/" class="rounded-lg bg-[#1e4d3b] px-4 py-2 font-semibold text-white">Unggah PDF</a>
+      </div>
+    </div>
+    {Astro.url.searchParams.get('result')==='ok' && <p role="status" class="text-sm text-primary">Rekomendasi diperbarui.</p>}
+    {uploads.length > 0 && (
+      <section class="mb-6 rounded-lg border border-border bg-surface p-4" aria-labelledby="pending-heading">
+        <h2 id="pending-heading" class="text-lg font-semibold">Unggahan dan pembersihan tertunda</h2>
+        <ul class="mt-2 divide-y divide-border">
+          {uploads.map((upload) => (
+            <li class="flex flex-wrap items-center justify-between gap-3 py-3" data-upload-entry>
+              <div>
+                <strong>{upload.title}</strong>
+                <p class="text-sm text-text-muted">{upload.state === 'staging' ? `${upload.ready_pages} / ${upload.total_pages} halaman` : 'Edisi lama menunggu pembersihan'}</p>
+              </div>
+              <div class="flex flex-wrap gap-3 text-sm">
+                {upload.state === 'staging' && <a class="underline" href={`/admin/catalog/upload/?book=${upload.slug}`}>Lanjutkan unggahan</a>}
+                <button type="button" class="underline" data-edition-action={upload.state === 'staging' ? 'cancel' : 'cleanup'}
+                  data-edition-id={upload.edition}>{upload.state === 'staging' ? 'Batalkan draf' : 'Coba bersihkan lagi'}</button>
+              </div>
+              <p data-edition-message class="w-full text-sm text-text-muted" role="status"></p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+    <ListFilter target="admin-books" label="Cari judul atau penulis" status />
+    <div id="admin-books" class="overflow-x-auto rounded-xl border border-border bg-surface">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-border">
+          <tr>
+            <th scope="col" class="p-3">Judul</th>
+            <th scope="col" class="p-3">Penulis</th>
+            <th scope="col" class="p-3">Status</th>
+            <th scope="col" class="p-3">Tindakan</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          {books.map((book) => (
+            <tr data-book-status={book.status} data-find={`${book.title} ${book.author}`}>
+              <td class="p-3 font-medium">{book.title}</td>
+              <td class="p-3">{book.author}</td>
+              <td class="p-3">{book.status === 'published' ? 'Terbit' : book.status === 'draft' ? 'Draft' : 'Arsip'}</td>
+              <td class="p-3"><div class="flex min-w-44 flex-wrap items-center gap-2">{book.status !== 'archived' &&
+                <a class="text-sm font-semibold underline" href={`/admin/catalog/upload/?book=${book.slug}`}>Unggah edisi</a>}
+                {book.status==='published' && isPublicSlug(book.slug) &&
+                  <AdminManageAction action="recommend" label={book.is_recommended ? 'Hapus rekomendasi' : 'Rekomendasikan'}
+                    fields={{slug:book.slug,enabled:String(!book.is_recommended)}} />}
+              </div></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+</AdminLayout>
+<script>
+  import { editionRequest } from '../../../scripts/admin-edition-api';
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-edition-action]')) {
+    button.addEventListener('click', async () => {
+      const action = button.dataset.editionAction;
+      const message = button.closest('[data-upload-entry]')?.querySelector('[data-edition-message]');
+      if (action === 'cancel' && !window.confirm('Batalkan draf dan hapus halaman yang sudah diunggah?')) return;
+      button.disabled = true;
+      try {
+        const result = await editionRequest(action!, { edition: button.dataset.editionId });
+        if (result.done || result.canceled) window.location.reload();
+        else if (message) message.textContent = result.retryAt
+          ? 'Izin unggah lama masih aktif. Coba lagi setelah ' + new Date(result.retryAt).toLocaleTimeString('id-ID') + '.'
+          : result.remaining
+            ? `${result.remaining} file tersisa. Jalankan pembersihan lagi untuk melanjutkan.`
+            : 'Pembersihan masih tertunda.';
+      } catch (error) {
+        if (message) message.textContent = (error as Error).message;
+      } finally { button.disabled = false; }
+    });
+  }
+</script>

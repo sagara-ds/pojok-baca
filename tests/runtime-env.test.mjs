@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import ts from 'typescript';
+const source=fs.readFileSync('src/server/stats.ts','utf8');
+const stub='data:text/javascript,'+encodeURIComponent('export const env={PB_ADMIN_TOKEN:"fixture-token"};');
+const js=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText.replaceAll("'cloudflare:workers'",JSON.stringify(stub));
+const {getStatsEnv}=await import('data:text/javascript,'+encodeURIComponent(js));
+const locals={runtime:{get env(){throw new Error('Astro.locals.runtime.env has been removed in Astro v6');}}};
+assert.equal(getStatsEnv(locals).PB_ADMIN_TOKEN,'fixture-token');
+console.log('PASS: platform bindings work without reading removed Astro runtime.env getter');

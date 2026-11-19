@@ -1,0 +1,32 @@
+---
+// Halaman 404 — dipakai untuk URL yang tidak ada, sekaligus fallback
+// kalau buku yang diminta sudah disembunyikan dari katalog publik.
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Halaman Tidak Ditemukan" description="Halaman yang kamu cari tidak ada di Pojok Baca RPL." noIndex>
+  <main id="main-content" class="flex-1">
+    <div class="container flex min-h-[60vh] flex-col items-center justify-center py-16 text-center">
+      <p class="text-6xl font-bold text-primary">404</p>
+      <h1 class="mt-4 text-2xl font-bold text-text">Halaman tidak ditemukan</h1>
+      <p class="mt-2 max-w-md text-text-muted">
+        Buku atau halaman yang kamu cari mungkin sudah dipindahkan, atau tautannya salah.
+      </p>
+
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="/books/"
+          class="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-background transition-colors hover:bg-primary-light"
+        >
+          Jelajahi katalog
+        </a>
+        <a
+          href="/"
+          class="rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-medium text-text transition-colors hover:bg-secondary"
+        >
+          Kembali ke beranda
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

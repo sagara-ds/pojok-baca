@@ -1,0 +1,6 @@
+---
+export const prerender = false;
+const slug = Astro.params.slug;
+if (!slug || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) return new Response(null, { status: 404 });
+return Astro.redirect(`/read/${slug}/${Astro.url.search}`, 308);
+---

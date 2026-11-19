@@ -1,0 +1,141 @@
+---
+// Daftar buku tersimpan (riwayat baca / bookmark) dari localStorage.
+interface Props {
+  mode: 'history' | 'bookmark';
+}
+
+const { mode } = Astro.props;
+const isHistory = mode === 'history';
+const listId = isHistory ? 'history-list' : 'bookmark-list';
+const emptyId = isHistory ? 'history-empty' : 'bookmark-empty';
+---
+
+<div data-saved-mode={mode}>
+  <div id={listId} class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5"></div>
+
+  <div id={emptyId} class="hidden rounded-xl border border-border bg-surface p-8 text-center">
+    {isHistory ? (
+      <>
+        <p class="text-text font-medium">Belum ada riwayat bacaan.</p>
+        <p class="mt-1 text-sm text-text-muted">
+          Buku yang kamu buka akan muncul di sini otomatis.
+        </p>
+        <a href="/books/" class="mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-background">
+          Jelajahi katalog
+        </a>
+      </>
+    ) : (
+      <>
+        <p class="text-text font-medium">Belum ada buku yang disimpan.</p>
+        <p class="mt-1 text-sm text-text-muted">
+          Tekan ikon bookmark pada kartu buku atau halaman detail untuk menyimpannya.
+        </p>
+        <a href="/books/" class="mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-background">
+          Jelajahi katalog
+        </a>
+      </>
+    )}
+  </div>
+</div>
+
+<script>
+  import { getHistory, getBookmarks, removeBookmark, trackEvent, type SavedBook } from '../../scripts/library';
+
+  const mode = document.querySelector('[data-saved-mode]')?.getAttribute('data-saved-mode') ?? '';
+  const isHistory = mode === 'history';
+
+  function card(entry: SavedBook): HTMLElement {
+    const article = document.createElement('article');
+    article.className =
+      'group relative flex flex-col overflow-hidden rounded-xl border border-border bg-surface';
+
+    const link = document.createElement('a');
+    link.href = `/books/${entry.slug}/`;
+    link.className = 'flex flex-col h-full';
+
+    const coverWrap = document.createElement('div');
+    coverWrap.className =
+      'relative aspect-[2/3] overflow-hidden bg-[linear-gradient(to_bottom,#0f3c65,#0a2947)]';
+
+    const spine = document.createElement('div');
+    spine.className = 'absolute inset-y-0 left-0 w-2 bg-[#fff2ba]/20';
+
+    const fallback = document.createElement('div');
+    fallback.className =
+      'absolute inset-0 flex flex-col items-center justify-center gap-1 px-3 pl-5 text-center';
+    const fallbackTitle = document.createElement('span');
+    fallbackTitle.className = 'font-serif text-xs font-semibold leading-tight text-[#fff2ba] line-clamp-3';
+    fallbackTitle.textContent = entry.title;
+    fallback.append(fallbackTitle);
+
+    coverWrap.append(spine, fallback);
+
+    if (entry.cover) {
+      const img = document.createElement('img');
+      img.src = entry.cover;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.className = 'absolute inset-0 h-full w-full object-cover';
+      img.addEventListener('error', () => img.remove());
+      coverWrap.append(img);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'flex flex-1 flex-col gap-1 p-4';
+    const title = document.createElement('h3');
+    title.className = 'line-clamp-2 min-h-[2.75rem] font-semibold leading-snug text-text';
+    title.textContent = entry.title;
+    const author = document.createElement('p');
+    author.className = 'line-clamp-1 text-sm text-text-muted';
+    author.textContent = entry.author;
+    body.append(title, author);
+
+    if (isHistory && entry.page && entry.page > 1) {
+      const progress = document.createElement('p');
+      progress.className = 'mt-auto text-xs font-medium text-primary';
+      progress.textContent = `Terakhir halaman ${entry.page}`;
+      body.append(progress);
+    }
+
+    link.append(coverWrap, body);
+    article.append(link);
+
+    if (!isHistory) {
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className =
+        'absolute right-2 top-2 rounded-full bg-background/85 p-2 text-text shadow-sm backdrop-blur hover:bg-background';
+      remove.setAttribute('aria-label', `Hapus ${entry.title} dari bookmark`);
+      remove.innerHTML =
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+      remove.addEventListener('click', () => {
+        removeBookmark(entry.slug);
+        trackEvent('bookmark', entry.slug, -1);
+        render();
+      });
+      article.append(remove);
+    }
+
+    return article;
+  }
+
+  function render() {
+    const list = document.getElementById(isHistory ? 'history-list' : 'bookmark-list');
+    const empty = document.getElementById(isHistory ? 'history-empty' : 'bookmark-empty');
+    if (!list || !empty) return;
+
+    const entries = isHistory ? getHistory() : getBookmarks();
+    list.innerHTML = '';
+
+    if (entries.length === 0) {
+      empty.classList.remove('hidden');
+      return;
+    }
+
+    empty.classList.add('hidden');
+    for (const entry of entries) list.append(card(entry));
+  }
+
+  render();
+  window.addEventListener('pb:library-change', render);
+</script>

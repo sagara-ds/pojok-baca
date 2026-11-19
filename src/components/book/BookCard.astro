@@ -1,0 +1,55 @@
+---
+// Kartu buku untuk grid katalog & beranda.
+// Tinggi judul dikunci 2 baris supaya baseline antar kartu sejajar.
+import CoverPlaceholder from './CoverPlaceholder.astro';
+import type { Book } from '../../services/types';
+
+interface Props {
+  book: Book;
+  /** Tampilkan jumlah pembaca (dari statistik). */
+  showReadCount?: boolean;
+  rank?: number;
+  metric?: string;
+}
+
+const { book, showReadCount = false, rank, metric } = Astro.props;
+const href = `/book/${book.slug}/`;
+---
+
+<article class="group relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-primary/50 focus-within:ring-2 focus-within:ring-accent">
+  <a href={href} class="flex flex-col h-full focus-visible:outline-none" aria-label={`Lihat detail ${book.title}`}>
+    <div class="relative mx-2 mt-2 aspect-[2/3] overflow-hidden rounded-lg sm:mx-3 sm:mt-3">
+      <CoverPlaceholder title={book.title} author={book.author} />
+      {book.coverUrl && (
+        <img
+          src={book.coverUrl}
+          alt={`Cover buku ${book.title}`}
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-[1.03]"
+          onerror="this.style.display='none'"
+        />
+      )}
+
+      {rank && <span class="absolute left-2 top-2 rounded bg-rank px-2 py-1 text-xs font-extrabold text-[#1c1917]" aria-label={`Peringkat ${rank}`}>#{rank}</span>}
+      {!rank && showReadCount && (book.readCount ?? 0) > 0 && (
+        <span class="absolute left-2 top-2 rounded-full bg-background/90 px-2 py-0.5 text-[11px] font-medium text-text">
+          Dibaca {book.readCount}×
+        </span>
+      )}
+    </div>
+
+    <div class="flex flex-1 flex-col gap-1 p-3 sm:p-4">
+      <h3 class="line-clamp-2 font-semibold leading-snug text-text">{book.title}</h3>
+      <p class="line-clamp-1 text-sm text-text-muted">{book.author}</p>
+
+      {book.category && (
+        <span class="mt-1 w-fit rounded bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent-dark dark:text-accent-light">
+          {book.category}
+        </span>
+      )}
+      {metric && <p class="mt-1 text-xs font-semibold tabular-nums text-primary">{metric}</p>}
+    </div>
+  </a>
+
+</article>

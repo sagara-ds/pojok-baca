@@ -1,0 +1,26 @@
+---
+import BookCard from './BookCard.astro';
+import type { CatalogBook } from '../../server/catalog-repository';
+interface Props {
+  id: string;
+  title: string;
+  caption?: string;
+  books: CatalogBook[];
+  metric?: 'trending' | 'views';
+  empty: string;
+}
+const { id, title, caption, books, metric, empty } = Astro.props;
+---
+
+<section aria-labelledby={id}>
+  <header class="mb-4 border-b border-border pb-3 sm:mb-5">
+    <h2 id={id} class="font-serif text-2xl font-semibold leading-tight tracking-[-0.02em] sm:text-3xl">{title}</h2>
+    {caption && <p class="mt-1 text-sm text-text-muted">{caption}</p>}
+  </header>
+  {books.length ? (
+    <div class="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+      {books.map((book,i) => <BookCard book={book} rank={metric==='trending' ? i+1 : undefined}
+        metric={metric==='trending' ? `${book.weeklyReaders} pembaca` : metric==='views' ? `${book.detailViews} dilihat` : undefined} />)}
+    </div>
+  ) : <p class="rounded-xl border border-border bg-surface px-5 py-6 text-sm text-text-muted">{empty}</p>}
+</section>

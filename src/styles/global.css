@@ -1,32 +1,35 @@
 @import "tailwindcss";
+@import "@fontsource-variable/manrope";
+@import "@fontsource/lora/latin-400.css";
+@import "@fontsource/lora/latin-600.css";
 
 /* Tailwind v4 CSS-first configuration */
 @theme {
-  /* Color palette - minimalist neutral tones */
-  --color-primary: #1a1a2e;
-  --color-primary-light: #2d2d44;
-  --color-primary-dark: #0f0f1a;
-  --color-secondary: #e8e8e8;
-  --color-secondary-dark: #d0d0d0;
-  --color-accent: #c9a84c;
-  --color-accent-light: #d4b85e;
-  --color-accent-dark: #b0903a;
-  --color-background: #fafafa;
-  --color-surface: #ffffff;
-  --color-surface-hover: #f5f5f5;
-  --color-text: #1a1a1a;
-  --color-text-muted: #6b6b6b;
-  --color-text-light: #9ca3af;
-  --color-border: #e5e5e5;
-  --color-border-focus: #c9a84c;
-  --color-error: #dc2626;
-  --color-error-light: #fef2f2;
-  --color-success: #16a34a;
-  --color-success-light: #f0fdf4;
+  --color-primary: #1e4d3b;
+  --color-primary-light: #32644d;
+  --color-primary-dark: #173b2d;
+  --color-secondary: #eee9df;
+  --color-secondary-dark: #e6e2d8;
+  --color-accent: #1e4d3b;
+  --color-accent-light: #32644d;
+  --color-accent-dark: #173b2d;
+  --color-background: #faf8f5;
+  --color-surface: #fff;
+  --color-surface-hover: #f5f1ea;
+  --color-text: #1c1917;
+  --color-text-muted: #57534e;
+  --color-text-light: #635b53;
+  --color-border: #e6e2d8;
+  --color-border-focus: #1e4d3b;
+  --color-rank: #d97706;
+  --color-error: #b3261e;
+  --color-error-light: #fbebe9;
+  --color-success: #1b6e3f;
+  --color-success-light: #ebf7ee;
 
   /* Typography scale */
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-  --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-sans: 'Manrope Variable', system-ui, sans-serif;
+  --font-serif: Lora, Georgia, serif;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
   --text-xs: 0.75rem;     /* 12px */
@@ -75,83 +78,183 @@
   --container-padding: 1rem; /* 16px */
 }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary: #fafafa;
-    --color-primary-light: #e8e8e8;
-    --color-primary-dark: #ffffff;
-    --color-secondary: #2d2d2d;
-    --color-secondary-dark: #1a1a1a;
-    --color-accent: #d4b85e;
-    --color-accent-light: #e0c87a;
-    --color-accent-dark: #c9a84c;
-    --color-background: #0f0f1a;
-    --color-surface: #1a1a2e;
-    --color-surface-hover: #2d2d44;
-    --color-text: #fafafa;
-    --color-text-muted: #9ca3af;
-    --color-text-light: #6b6b6b;
-    --color-border: #2d2d44;
-    --color-border-focus: #d4b85e;
-    --color-error: #ef4444;
-    --color-error-light: #450a0a;
-    --color-success: #22c55e;
-    --color-success-light: #052e16;
-  }
+:root {
+  color-scheme: light;
 }
 
-/* Manual dark mode class */
+.interaction-control {
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.interaction-control[aria-disabled="true"], .interaction-control:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.scroll-smooth { scroll-behavior: auto; }
+  .interaction-control { transition: none; }
+}
+
 .dark {
-  --color-primary: #fafafa;
-  --color-primary-light: #e8e8e8;
-  --color-primary-dark: #ffffff;
-  --color-secondary: #2d2d2d;
-  --color-secondary-dark: #1a1a1a;
-  --color-accent: #d4b85e;
-  --color-accent-light: #e0c87a;
-  --color-accent-dark: #c9a84c;
-  --color-background: #0f0f1a;
-  --color-surface: #1a1a2e;
-  --color-surface-hover: #2d2d44;
-  --color-text: #fafafa;
-  --color-text-muted: #9ca3af;
-  --color-text-light: #6b6b6b;
-  --color-border: #2d2d44;
-  --color-border-focus: #d4b85e;
-  --color-error: #ef4444;
-  --color-error-light: #450a0a;
-  --color-success: #22c55e;
-  --color-success-light: #052e16;
+  color-scheme: dark;
+  --color-primary: #b8dbc8;
+  --color-primary-light: #cee7d8;
+  --color-primary-dark: #e1f0e7;
+  --color-secondary: #333731;
+  --color-secondary-dark: #3e453c;
+  --color-accent: #b8dbc8;
+  --color-accent-light: #cee7d8;
+  --color-accent-dark: #e1f0e7;
+  --color-background: #1c211d;
+  --color-surface: #252c26;
+  --color-surface-hover: #303a31;
+  --color-text: #f9f3e9;
+  --color-text-muted: #d7d2c8;
+  --color-text-light: #c2bcb1;
+  --color-border: #434a42;
+  --color-border-focus: #b8dbc8;
+  --color-error: #f8a9a2;
+  --color-error-light: #3b1713;
+  --color-success: #7fd9a4;
+  --color-success-light: #10331f;
 }
 
-/* Base styles */
-* {
-  box-sizing: border-box;
-}
+/* ------------------------------------------------------------------
+   Base styles — WAJIB berada di dalam @layer base.
 
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-}
+   Catatan penting: rules yang berada DI LUAR layer (unlayered) selalu
+   menang atas utility Tailwind (yang ada di @layer utilities), apa pun
+   spesifisitasnya. Akibatnya reset seperti `button { background: none }`
+   atau `a { color: inherit }` membuat utility seperti bg-primary,
+   text-background, bg-transparent, dan h-full TIDAK BERLAKU — tombol
+   jadi transparan dan teksnya mewarisi warna body (invisible).
+   ------------------------------------------------------------------ */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: var(--text-base);
-  line-height: 1.6;
-  color: var(--color-text);
-  background-color: var(--color-background);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
-}
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
 
-/* Focus visible for accessibility */
-:focus-visible {
-  outline: 2px solid var(--color-border-focus);
-  outline-offset: 2px;
+  /* Ukuran font yang bisa diatur pengguna (halaman /setting/). */
+  html[data-font='sm'] {
+    font-size: 15px;
+  }
+
+  html[data-font='lg'] {
+    font-size: 18px;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-text);
+    background-color: var(--color-background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+  }
+
+  /* Focus visible untuk aksesibilitas */
+  :focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* Image defaults — height:auto hanya berlaku bila tidak ada utility
+     (mis. h-full) pada elemen yang sama. */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Link styles */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Button reset */
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Input reset */
+  input, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-3);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
+
+  select:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  @supports (appearance: base-select) and selector(::picker(select)) {
+    @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+      select:not([multiple], [size]), select:not([multiple], [size])::picker(select) {
+        appearance: base-select;
+      }
+
+      select:not([multiple], [size])::picker(select) {
+        color: var(--color-text);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        max-block-size: min(20rem, 55dvh);
+      }
+
+      select:not([multiple], [size]) option {
+        padding: var(--space-2) var(--space-3);
+      }
+
+      select:not([multiple], [size]) option:checked {
+        color: var(--color-text);
+        background: color-mix(in srgb, var(--color-surface) 84%, var(--color-text));
+      }
+
+      select:not([multiple], [size]) option:enabled:is(:hover, :focus-visible) {
+        color: var(--color-text);
+        background: color-mix(in srgb, var(--color-surface) 92%, var(--color-text));
+        outline: 2px solid var(--color-primary);
+        outline-offset: -2px;
+      }
+    }
+  }
+
+  /* Hilangkan tombol "X" bawaan browser pada input search supaya tidak
+     dobel dengan tombol hapus milik komponen SearchBox. */
+  input[type='search']::-webkit-search-cancel-button,
+  input[type='search']::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
 }
 
 /* Skip link */
@@ -173,10 +276,44 @@ body {
   top: var(--space-4);
 }
 
-/* Selection */
+/* Selection — pasangan kontras tetap di kedua mode (buttermilk <-> midnight) */
 ::selection {
-  background-color: var(--color-accent);
-  color: var(--color-primary);
+  background-color: #1e4d3b;
+  color: #faf8f5;
+}
+
+@media (prefers-color-scheme: dark) {
+  ::selection {
+    background-color: #faf8f5;
+    color: #173b2d;
+  }
+}
+
+.dark ::selection {
+  background-color: #faf8f5;
+  color: #173b2d;
+}
+
+/* Highlight <mark> (typeahead search) — pasangan invert yang menyala di
+   kedua mode; menggantikan styling bawaan UA yang gelap-atas-gelap */
+mark {
+  background-color: #1e4d3b;
+  color: #faf8f5;
+  border-radius: 0.2em;
+  padding: 0 0.15em;
+  font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+  mark {
+    background-color: #faf8f5;
+    color: #173b2d;
+  }
+}
+
+.dark mark {
+  background-color: #faf8f5;
+  color: #173b2d;
 }
 
 /* Scrollbar */
@@ -210,58 +347,14 @@ body {
   }
 }
 
-/* Image defaults */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Link styles */
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* Button reset */
-button {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* Input reset */
-input, textarea, select {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  color: inherit;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-input:focus, textarea:focus, select:focus {
-  outline: none;
-  border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px var(--color-accent)33;
-}
+/* Reset img/a/button/input sudah dipindah ke @layer base di atas. */
 
 /* Container utility */
 .container {
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 var(--container-padding);
+  padding-inline: var(--container-padding);
 }
 
 /* Screen reader only */
@@ -301,8 +394,10 @@ input:focus, textarea:focus, select:focus {
   object-fit: cover;
 }
 
+/* Teks bacaan panjang: ukuran dan jarak baris yang lebih nyaman. */
 .prose {
   max-width: 65ch;
+  line-height: 1.85;
 }
 
 .prose p {

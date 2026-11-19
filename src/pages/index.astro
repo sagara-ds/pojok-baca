@@ -1,8 +1,107 @@
 ---
-// Home page - redirect to books list
 import BaseLayout from '../layouts/BaseLayout.astro';
+import EditorialShelf from '../components/book/EditorialShelf.astro';
+import SearchBox from '../components/layout/SearchBox.astro';
+import { activeReadersToday, listPublicBooks, type CatalogBook } from '../server/catalog-repository';
 
-return Astro.redirect('/books');
+let books: CatalogBook[] = [];
+let active: number | undefined;
+let unavailable = false;
+try {
+  [books, active] = await Promise.all([listPublicBooks(), activeReadersToday()]);
+} catch {
+  Astro.response.status = 503;
+  unavailable = true;
+}
+const category = Astro.url.searchParams.get('category') ?? '';
+const type = Astro.url.searchParams.get('type') ?? '';
+const categories = [...new Set(books.flatMap((book) => book.categories))].sort((a,b) => a.localeCompare(b,'id'));
+const filtered = books.filter((book) => (!category || book.categories.includes(category)) && (!type || book.bookType === type));
+const trending = filtered.filter((book) => book.weeklyReaders > 0).sort((a,b) => b.weeklyReaders-a.weeklyReaders).slice(0,4);
+const recommendations = filtered.filter((book) => book.recommended).slice(0,4);
+const viewed = filtered.filter((book) => book.detailViews > 0).sort((a,b) => b.detailViews-a.detailViews).slice(0,4);
+const jackets = ['a-man-called-ove','bumi-manusia','hujan']
+  .flatMap((slug) => {
+    const book = books.find((item) => item.slug === slug);
+    return book?.coverUrl ? [{ slug, title: book.title, cover: book.coverUrl }] : [];
+  });
+const number = new Intl.NumberFormat('id-ID');
 ---
 
-<BaseLayout title="Pojok Baca RPL" description="Temukan buku favoritmu di perpustakaan digital Pojok Baca RPL" />
+<BaseLayout title="Eksplorasi" description="Temukan buku dan lanjutkan bacaanmu di perpustakaan sekolah Pojok Baca." hideSearch>
+  <main id="main-content" class="container space-y-7 py-5 sm:space-y-9 sm:py-7">
+    <section class="editorial-hero relative isolate overflow-hidden rounded-2xl px-5 py-7 text-white sm:px-10 sm:py-9 lg:px-14">
+      <div class="relative z-10 max-w-xl">
+        <h1 class="text-balance font-serif text-[2.55rem] font-semibold leading-[1.13] tracking-[-0.03em] sm:text-5xl lg:text-6xl">
+          Temukan bacaan berikutnya.
+        </h1>
+        <p class="mb-5 mt-3 max-w-[38ch] text-[#e2eee5] sm:text-lg">Jelajahi novel dan bacaan sekolah, lalu lanjutkan dari halaman terakhirmu.</p>
+        <div class="max-w-md text-text"><SearchBox /></div>
+        {!unavailable && (
+          <dl class="mt-6 flex flex-wrap gap-x-8 gap-y-3 border-t border-white/25 pt-4">
+            <div><dd class="font-serif text-2xl tabular-nums sm:text-3xl">{number.format(books.length)}</dd><dt class="text-sm text-[#e2eee5]">Koleksi terbit</dt></div>
+            <div><dd class="font-serif text-2xl tabular-nums sm:text-3xl">{number.format(active ?? 0)}</dd><dt class="text-sm text-[#e2eee5]">Pembaca aktif hari ini</dt></div>
+          </dl>
+        )}
+      </div>
+      {jackets.length === 3 && (
+        <nav class="hero-jackets absolute hidden lg:block" aria-label="Pilihan dari katalog">
+          {jackets.map((book) => (
+            <a href={`/book/${book.slug}/`} aria-label={`Lihat ${book.title}`} title={book.title}>
+              <img src={book.cover} alt="" width="126" height="190" fetchpriority="low" />
+            </a>
+          ))}
+        </nav>
+      )}
+    </section>
+
+    {unavailable ? (
+      <p class="rounded-xl border border-border bg-surface p-5" role="alert">Katalog belum dapat dimuat. Muat ulang halaman untuk mencoba lagi.</p>
+    ) : (
+      <>
+        <form action="/#rak-buku" method="get" id="rak-buku" class="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-surface px-4 py-4 sm:px-5">
+          <label class="flex min-w-0 flex-1 basis-36 flex-col gap-1 text-sm font-semibold sm:flex-none">
+            Kategori
+            <select name="category" class="min-w-0">
+              <option value="">Semua kategori</option>
+              {categories.map((name) => <option value={name} selected={name===category}>{name}</option>)}
+            </select>
+          </label>
+          <label class="flex min-w-0 flex-1 basis-36 flex-col gap-1 text-sm font-semibold sm:flex-none">
+            Format
+            <select name="type">
+              <option value="">Semua format</option>
+              <option value="webp_sheets" selected={type==='webp_sheets'}>Halaman</option>
+              <option value="novel_text" selected={type==='novel_text'}>Novel teks</option>
+            </select>
+          </label>
+          <button type="submit" data-pending="Memuat…" class="interaction-control rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary">Terapkan</button>
+          {(category || type) && <a href="/#rak-buku" class="mb-2 text-sm underline">Hapus filter</a>}
+          <a href="/books/" class="mb-2 ml-auto text-sm font-semibold text-primary underline underline-offset-4">Lihat katalog</a>
+        </form>
+        <EditorialShelf id="trending" title="Sedang Trending" caption="Pembaca unik dalam 7 hari terakhir"
+          books={trending} metric="trending" empty="Belum ada bacaan yang masuk trending untuk pilihan ini." />
+        <EditorialShelf id="recommendations" title="Rekomendasi"
+          books={recommendations} empty="Belum ada rekomendasi untuk pilihan ini." />
+        <EditorialShelf id="frequently-viewed" title="Paling Sering Dilihat" caption="Berdasarkan klik ke halaman detail"
+          books={viewed} metric="views" empty="Belum ada klik detail yang tercatat untuk pilihan ini." />
+      </>
+    )}
+  </main>
+</BaseLayout>
+
+<style>
+  .editorial-hero { background: #1e4d3b; color-scheme: light; }
+  .editorial-hero :global(form) { color: #1c1917; }
+  .hero-jackets { right: 9.5%; top: 50%; width: 300px; height: 220px; transform: translateY(-49%); }
+  .hero-jackets a { position: absolute; width: 43%; height: 93%; border-radius: 4px 9px 9px 4px; box-shadow: 0 13px 24px #0d251d6e; transition: transform 220ms cubic-bezier(.16,1,.3,1); }
+  .hero-jackets a:nth-child(1) { left: 0; top: 6%; transform: rotate(-13deg); }
+  .hero-jackets a:nth-child(2) { left: 30%; top: 0; z-index: 2; transform: rotate(-2deg); }
+  .hero-jackets a:nth-child(3) { left: 62%; top: 8%; transform: rotate(13deg); }
+  .hero-jackets a:is(:hover, :focus-visible) { z-index: 3; transform: translateY(-8px) rotate(0); outline: 2px solid #e4cc9c; outline-offset: 4px; }
+  .hero-jackets img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-jackets a { transition: none; }
+    .hero-jackets a:is(:hover, :focus-visible) { transform: none; }
+  }
+</style>

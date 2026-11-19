@@ -11,7 +11,7 @@ interface Props {
   class?: string;
   'aria-label'?: string;
   'aria-describedby'?: string;
-  onclick?: (event: Event) => void;
+  onclick?: string;
 }
 
 const {
@@ -41,10 +41,10 @@ const baseStyles = `
 
 const variantStyles = {
   primary: 'bg-primary text-background hover:bg-primary-light active:bg-primary-dark shadow-sm',
-  secondary: 'bg-secondary text-primary hover:bg-secondary-dark active:bg-secondary shadow-sm',
+  secondary: 'bg-secondary text-text hover:bg-secondary-dark active:bg-secondary-dark shadow-sm',
   outline: 'border-2 border-primary text-primary hover:bg-primary/10 active:bg-primary/20',
   ghost: 'text-primary hover:bg-primary/10 active:bg-primary/20',
-  danger: 'bg-error text-white hover:bg-error/90 active:bg-error shadow-sm',
+  danger: 'bg-error text-background hover:bg-error/90 active:bg-error shadow-sm',
 };
 
 const sizeStyles = {

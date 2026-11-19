@@ -1,0 +1,30 @@
+---
+import BaseLayout from './BaseLayout.astro';
+interface Props { title: string; description?: string }
+const {title,description} = Astro.props;
+const identity = Astro.locals.identity;
+const superAdmin = identity?.status==='ready' && identity.profile.role==='super_admin';
+const links = [
+  ['/admin/','Ringkasan'],['/admin/catalog/','Katalog'],['/admin/moderation/','Moderasi'],['/admin/reports/','Laporan guru'],
+  ...(superAdmin ? [['/admin/users/','Pengguna'],['/admin/logs/','Audit log']] : []),
+];
+const current = (href: string) => href === '/admin/'
+  ? Astro.url.pathname.replace(/\/$/, '') === '/admin'
+  : Astro.url.pathname === href.slice(0, -1) || Astro.url.pathname.startsWith(href);
+---
+<BaseLayout title={title} noIndex hideSearch>
+  <main id="main-content" class="container space-y-6 py-6 sm:py-9">
+    <nav class="no-print flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border pb-3" aria-label="Navigasi admin">
+      {links.map(([href,label]) => <a href={href} aria-current={current(href) ? 'page' : undefined}
+        class:list={['interaction-control whitespace-nowrap rounded-t-md border-b-2 px-2 py-1.5 text-sm font-bold hover:bg-surface-hover',current(href) ? 'border-primary text-primary' : 'border-transparent text-text-muted hover:text-text']}>{label}</a>)}
+      <form method="post" action="/api/auth/sign-out/" class="ml-auto">
+        <button type="submit" class="interaction-control text-sm font-semibold underline" data-pending="Sedang keluar…">Keluar</button>
+      </form>
+    </nav>
+    <div>
+      <h1 class="font-serif text-3xl font-semibold tracking-[-0.025em] sm:text-4xl">{title}</h1>
+      {description && <p class="mt-2 max-w-[65ch] text-sm text-text-muted">{description}</p>}
+    </div>
+    <slot />
+  </main>
+</BaseLayout>

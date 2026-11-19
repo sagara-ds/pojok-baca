@@ -1,6 +1,8 @@
 /**
- * Type definitions for Welib.org API response
- * Adjust based on actual API schema
+ * Tipe data katalog buku.
+ *
+ * Sumber data: `data/books.json` (hasil pipeline `npm run pipe:manifest`).
+ * `src/services/books.ts` memetakan manifest itu ke bentuk di bawah.
  */
 
 export interface Book {
@@ -11,11 +13,17 @@ export interface Book {
   coverUrl: string;
   description: string;
   category: string;
-  publishedYear: number;
+  publishedYear?: number;
   pages: number;
   language: string;
   isbn?: string;
   readingUrl?: string;
+  /** Buku punya lapisan teks asli -> bisa dibaca mode teks, bukan gambar. */
+  hasTextLayer?: boolean;
+  /** Prolog manual (dari override / pipeline), ditampilkan terpisah. */
+  prolog?: string;
+  /** Jumlah pembaca (dari statistik), diisi saat sort=popular. */
+  readCount?: number;
 }
 
 export interface BookListResponse {

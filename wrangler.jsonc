@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pojok-baca",
+  "workers_dev": true,
+  "preview_urls": false,
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "compatibility_date": "2026-10-22",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  },
+
+  "kv_namespaces": [
+    { "binding": "PB_STATS", "id": "2c246a02dd364f8889b3af28e46af06a" },
+    { "binding": "PB_CATALOG", "id": "c0b7cee905f442efb8cd44624b1a304f" }
+  ]
+}

@@ -1,0 +1,536 @@
+{
+  "_comment": "Override manual untuk data/books.json. Key boleh berupa slug lama atau nama file sumber (kunci nama file lebih stabil). Field: slug, title, author, synopsis, prolog, categories.",
+  "_contoh": {
+    "23-59": {
+      "title": "23:59",
+      "author": "Brian Khrisna",
+      "synopsis": "Deskripsi manual untuk buku ini.",
+      "prolog": "Teks prolog yang ingin ditampilkan terpisah di halaman detail.",
+      "categories": [
+        "fiksi",
+        "misteri"
+      ]
+    }
+  },
+  "_catatan": "Setelah mengubah 'slug', jalankan: pipe:scan, pipe:render --slug <slug>, lalu pipe:manifest.",
+  "Salinan Salinan Komet Minor_Tere Liye_tagt.pdf": {
+    "slug": "komet-minor",
+    "title": "Komet Minor",
+    "author": "Tere Liye",
+    "categories": [
+      "fiksi",
+      "fantasi"
+    ]
+  },
+  "Salinan Salinan Salinan Pintar Bahasa Inggris Dengan Mind Map - eBookWave.pdf": {
+    "slug": "pintar-bahasa-inggris-mind-map",
+    "title": "Pintar Bahasa Inggris Dengan Mind Map",
+    "categories": [
+      "bahasa",
+      "edukasi"
+    ]
+  },
+  "135-hours": {
+    "synopsis": "Pernikahan Zoe Samantha berubah arah ketika Eros muncul sebagai fotografer dan membawa informasi yang seharusnya tidak ia ketahui. Zoe sedang menghadapi kehilangan orang tua dan ikatan pernikahan untuk melunasi utang. Pertemuan dengan lelaki misterius itu membuka pilihan berbahaya, sementara rahasia, ketertarikan, dan keinginan untuk memiliki mulai mengaburkan batas kepercayaan di antara mereka."
+  },
+  "23-59": {
+    "synopsis": "Ami berusaha memulihkan diri setelah Raga mengakhiri hubungan mereka tanpa penjelasan. Kehadiran Aransyah memberinya kesempatan untuk kembali percaya pada cinta dan membangun masa depan. Namun, menjelang pernikahan, Raga hadir lagi dan mengguncang ketenangan yang susah payah ia bangun. Ami harus menghadapi luka lama, pertanyaan yang tertunda, dan perasaan yang ternyata belum selesai."
+  },
+  "a-lady-in-disguise": {
+    "synopsis": "Sir Richard Wyndham sedang tertekan oleh rencana perjodohan ketika seorang gadis yang menyamar sebagai pemuda jatuh ke dalam pelukannya. Gadis bernama Penelope itu berusaha melarikan diri, dan Richard memutuskan menemaninya. Perjalanan mereka membawa pertemuan dengan pencuri, perkara pembunuhan, dan ancaman skandal yang membuat tanggung jawab serta perasaan keduanya semakin sulit dipisahkan."
+  },
+  "a-man-called-ove": {
+    "synopsis": "Ove adalah lelaki pemarah yang berpegang keras pada aturan dan rutinitas. Di balik sikapnya yang kaku, ia menyimpan kesedihan yang tidak terlihat oleh para tetangga. Kehadiran keluarga baru yang ramai, sebuah kotak surat yang tertabrak, dan seekor kucing mengubah kesehariannya. Persahabatan tak terduga perlahan memperlihatkan betapa besar arti seseorang bagi kehidupan orang lain."
+  },
+  "a-man-called-ove-indonesian-version": {
+    "synopsis": "Ove adalah lelaki pemarah yang berpegang keras pada aturan dan rutinitas. Di balik sikapnya yang kaku, ia menyimpan kesedihan yang tidak terlihat oleh para tetangga. Kehadiran keluarga baru yang ramai, sebuah kotak surat yang tertabrak, dan seekor kucing mengubah kesehariannya. Persahabatan tak terduga perlahan memperlihatkan betapa besar arti seseorang bagi kehidupan orang lain."
+  },
+  "ada-nama-yang-abadi-di-hati-tapi-tak-bisa-dinikahi": {
+    "synopsis": "Melalui puisi, kutipan, dan tulisan pendek, Maman Suherman mengajak pembaca menghadapi cinta yang tidak selalu berakhir dengan kebersamaan. Ada kerinduan, patah hati, dan perpisahan yang meninggalkan bekas, tetapi juga ruang untuk menerima kenyataan. Kumpulan ini menawarkan perenungan tentang memberi tempat bagi kesedihan sambil perlahan menemukan keberanian untuk melanjutkan hidup dan membuka lembaran baru."
+  },
+  "antara-aku-dan-dia": {
+    "synopsis": "Sasha melarikan diri dari rumahnya di Lampung untuk menghindari pernikahan paksa. Ia pergi ke Jakarta bersama Sultan, lelaki yang menyimpan dendam terhadap ayahnya. Kehabisan uang membuat keduanya terpaksa mengaku sebagai kakak-adik dan saling bergantung, meskipun awalnya saling membenci. Di tengah kerasnya kehidupan kota, mereka harus memilih antara bertahan dengan jujur atau menyerah pada keadaan."
+  },
+  "arabella": {
+    "synopsis": "Arabella, putri seorang pendeta desa yang tidak kaya, datang ke London dengan harapan memulai kehidupan baru. Pertemuannya dengan Robert Beaumaris justru memancing harga diri dan amarahnya. Tidak ingin dianggap mengejar kekayaan lelaki itu, Arabella terlibat dalam permainan penyamaran keadaan yang makin sulit dikendalikan. Kebohongan kecil tersebut mengusik pergaulan mereka sekaligus membuka kemungkinan tumbuhnya cinta."
+  },
+  "arah-musim": {
+    "synopsis": "Kurniawan Gunadi menelusuri perubahan hidup melalui kisah dan perenungan tentang tindakan kecil, harapan, serta peristiwa yang tidak selalu bisa dipahami saat terjadi. Pergantian musim menjadi gambaran perjalanan manusia dalam menerima ketidakpastian. Buku ini mengajak pembaca melihat kembali hubungan antara masa lalu dan keadaan sekarang, belajar bersabar, serta mencari makna dari pengalaman yang semula terasa membingungkan."
+  },
+  "arwah-adik-kembar": {
+    "synopsis": "Lana telah berpisah hampir lima belas tahun dari adik kembarnya, Raihana El Zahra, sejak meninggalkan panti. Ia tidak mengetahui keberadaan maupun keadaan Hana sekarang. Yang tetap melekat adalah kenangan perpisahan ketika adiknya sedang demam dan memohon agar tidak ditinggalkan. Ingatan tentang saudari yang berwajah sama itu menjadi pangkal kisah misterius tentang perpisahan dan ikatan keluarga."
+  },
+  "ayahku-bukan-pembohong": {
+    "synopsis": "Sejak kecil, seorang anak dibesarkan dengan cerita-cerita luar biasa dari ayahnya tentang kesederhanaan dan kehidupan. Ketika dewasa, ia mulai meragukan kisah-kisah tersebut dan kebenciannya merenggangkan hubungan mereka. Saat sang ayah kembali bercerita kepada cucu-cucunya, luka lama ikut muncul. Novel ini mengikuti pergulatan seorang anak memahami kejujuran, kasih sayang, dan warisan nilai dalam keluarganya."
+  },
+  "baby-oh-baby": {
+    "synopsis": "Rosaline ingin menata hidup dan memiliki seorang bayi, tetapi kehamilannya justru mempertemukannya kembali dengan Dimitri, mantan suami yang ingin ia jauhi. Kehadiran lelaki itu membangkitkan ketertarikan sekaligus kecurigaan yang belum padam. Di antara rencana menjadi ibu dan masa lalu pernikahan yang menyakitkan, Rose harus menghadapi rahasia keluarga serta menilai apakah kepercayaan yang rusak masih dapat dibangun."
+  },
+  "bahasa-inggris-sistem-52m-volume-1": {
+    "synopsis": "Volume pertama ini memperkenalkan dasar bahasa Inggris melalui pelajaran bertahap, percakapan sehari-hari, dan latihan. Pembaca mempelajari penggunaan to be, kata sandang, sapaan, kalimat permintaan, serta bentuk pertanyaan dan penyangkalan. Sebagai bagian dari program tiga volume untuk 52 minggu, buku ini mendorong kebiasaan belajar singkat tetapi rutin dengan membaca, menulis, mengingat, dan mempraktikkan materi."
+  },
+  "bahasa-inggris-sistem-52m-volume-2": {
+    "synopsis": "Volume kedua melanjutkan latihan bahasa Inggris dengan percakapan tentang waktu dan pergaulan serta pembahasan tata bahasa yang lebih beragam. Materinya mencakup ungkapan ought to, need, dare, used to, beberapa bentuk waktu, dan penggunaan kata penunjuk jumlah. Latihan-latihan membantu pembaca menerapkan struktur tersebut dalam bacaan dan komunikasi sehari-hari sebagai kelanjutan program belajar 52 minggu."
+  },
+  "bahasa-inggris-sistem-52m-volume-3": {
+    "synopsis": "Volume ketiga menyelesaikan rangkaian Bahasa Inggris Sistem 52M dengan pendalaman bentuk waktu, susunan kalimat, dan delapan jenis kata. Percakapan praktis serta materi penulisan surat membantu menghubungkan tata bahasa dengan kebutuhan nyata. Pembaca diajak mengulang dan mempraktikkan pelajaran melalui latihan agar lebih terbiasa membaca, menulis, serta menggunakan bahasa Inggris dalam kegiatan, pekerjaan, dan pergaulan sehari-hari."
+  },
+  "bandit-bandit-berkelas": {
+    "synopsis": "Bujang bergerak di tengah keluarga-keluarga shadow economy yang menyembunyikan kekuatan mereka di balik kehidupan sehari-hari. Dunia para bandit ini mempunyai aturan sendiri: kehormatan, kesetiaan, dan janji dapat menentukan siapa yang layak dipercaya. Di balik bangunan biasa serta aktivitas yang tampak wajar, tersimpan rahasia dan jaringan kekuasaan yang menuntut kewaspadaan terhadap pengkhianatan."
+  },
+  "bandung-menjelang-pagi": {
+    "synopsis": "Dipha mengerjakan berbagai pekerjaan serabutan untuk bertahan hidup di Bandung. Suatu hari, ia membantu Vinda, gadis misterius yang mencari tempat tinggal, hingga keduanya menjadi tetangga. Vinda mengagumi kota itu, sementara Dipha mengenal sisi keras yang luput dari pandangan wisatawan. Kedekatan mereka tumbuh di jalan-jalan Bandung, tetapi rahasia masing-masing mengancam masa depan hubungan tersebut."
+  },
+  "beauty-sadness": {
+    "synopsis": "Oki, seorang penulis yang memasuki usia paruh baya, kembali ke Kyoto untuk menemui Otoko, perempuan dari hubungan masa lalunya yang menyakitkan. Otoko kini menjadi pelukis dan hidup bersama kekasih perempuannya yang lebih muda. Pertemuan kembali tersebut membangkitkan perasaan yang belum selesai dan mengusik hubungan mereka, mempertemukan nostalgia, penyesalan, serta kehilangan yang tak dapat dipulihkan."
+  },
+  "best-of-the-best-toefl": {
+    "synopsis": "Panduan ini membantu pembaca mengenali bagian-bagian tes TOEFL dan menyusun strategi menjawab soal. Materi mencakup pemahaman mendengarkan, struktur serta ekspresi tertulis, pemahaman bacaan, dan penulisan. Penjelasan disertai contoh soal, pembahasan, dan paket latihan untuk menguji penguasaan materi. Buku ini ditujukan sebagai bahan persiapan bertahap agar pembaca memahami pola soal dan berlatih dengan lebih terarah."
+  },
+  "biarkan-aku-mencintaimu-two-alone": {
+    "synopsis": "Rusty Carlson dan Cooper Landry menjadi dua orang yang selamat dari kecelakaan pesawat di alam liar Kanada. Perbedaan karakter membuat mereka sulit akur, tetapi cedera, cuaca, dan ancaman manusia memaksa keduanya bekerja sama. Saat mencari perlindungan di sebuah kabin, ketertarikan mulai tumbuh di antara mereka, sementara luka masa lalu Cooper menghalanginya untuk kembali percaya pada cinta.",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "bibi-gill-buku-ke-12": {
+    "synopsis": "Di balik sosok Bibi Gill yang tampak sederhana tersimpan perjalanan hidup penuh kehilangan. Sejak kecil, ia harus menghadapi kegelapan, perpisahan, dan pengorbanan yang membentuknya menjadi petarung luar biasa di dunia paralel. Buku ini menelusuri masa lalu pengajar Akademi Bayangan Tingkat Tinggi tersebut, termasuk perjuangannya menaklukkan monster dalam hidup dan mencari jawaban atas kesedihan yang terus berulang."
+  },
+  "bilang-begini-maksudnya-begitu": {
+    "synopsis": "Sapardi Djoko Damono mengajak pembaca menikmati puisi dengan memahami bagaimana penyair memainkan bahasa. Kata, bunyi, dan gaya ungkap dapat membawa makna yang berbeda dari arti harfiahnya. Melalui penjelasan dan contoh, buku ini memperkenalkan perangkat yang digunakan untuk menyampaikan suasana, gagasan, maupun cerita, sehingga pembaca memiliki bekal untuk mengapresiasi dan membicarakan puisi dengan lebih peka."
+  },
+  "bilangan-fu": {
+    "synopsis": "Pemanjat tebing Sandi Yuda menyaksikan berbagai kejadian ganjil di Sewugunung, mulai dari hilangnya mayat hingga pembunuhan. Pertemuannya dengan Parang Jati mengubah cara ia memandang misteri, alam, dan kepercayaan masyarakat. Persahabatan mereka serta hubungan dengan Marja membawa kisah ini ke persimpangan cinta, spiritualitas, dan modernitas, sambil mempertanyakan keyakinan yang diterima tanpa sikap kritis."
+  },
+  "binga-sebuah-novel": {
+    "synopsis": "Maruk merantau untuk menjauh dari kegamangan hidup di kampung dan keluarganya. Namun, perjalanan ke berbagai tempat tidak serta-merta membebaskannya dari ingatan serta kegelisahan yang dibawa sejak rumah. Berlatar kehidupan kampung dengan bahasa dan kepercayaan setempat, kisah ini menelusuri hubungan keluarga, rasa asing dalam perantauan, serta usaha menerima kenyataan tentang kedatangan dan kepergian."
+  },
+  "bingkisan-cinta-bagi-orang-tersayang": {
+    "synopsis": "Setelah Richard Carlson meninggal mendadak, Kristine kembali membaca surat-surat cinta suaminya. Salah satunya mengajukan pertanyaan sederhana: jika hanya tersisa satu jam untuk hidup, kepada siapa kita ingin berbicara dan apa yang ingin disampaikan? Dari kenangan pernikahan mereka, buku ini mengajak pembaca menghargai waktu bersama orang tersayang dan tidak menunda ungkapan kasih.",
+    "author": "Richard Carlson, Kristine Carlson"
+  },
+  "bukan-jodohnya-yang-tak-kunjung-datang-tapi-niatnya-yang-perlu-ditata-ulang": {
+    "synopsis": "Buku ini mengajak pembaca memeriksa kembali niat di balik usaha mencari pasangan. Ibadah, silaturahmi, dan perbaikan diri dibahas sebagai bentuk pengabdian kepada Allah, bukan semata-mata cara mempercepat pernikahan. Dengan sudut pandang keislaman, penulis menawarkan perenungan tentang kesabaran, ikhtiar, serta penerimaan terhadap takdir saat harapan bertemu jodoh belum juga terwujud dalam kehidupan sehari-hari."
+  },
+  "bukan-pengantin-terpilih": {
+    "synopsis": "Ketika Sinta pergi sehari sebelum pernikahannya, Anggun harus menggantikan adiknya menjadi istri Alfian. Pengusaha peternakan itu marah karena merasa mendapat pengantin yang bukan pilihannya. Anggun berusaha menjaga kehormatan keluarga, tetapi kemudian mengetahui bahwa pernikahan tersebut juga dilandasi dendam terhadap kekasih Alfian. Ia harus menentukan bagaimana menjalani rumah tangga yang dimulai dengan penolakan."
+  },
+  "bulan": {
+    "synopsis": "Raib, Seli, dan Ali menerima ajakan Miss Selena serta Av untuk mengunjungi Klan Matahari. Perjalanan mencari sekutu itu berubah menjadi tantangan ketika mereka bersama Ily diminta mengikuti Festival Bunga Matahari. Di wilayah asing yang penuh bahaya, persahabatan, kecerdikan, dan kemampuan istimewa mereka diuji oleh rintangan yang jauh melampaui dugaan awal."
+  },
+  "bulir-bulir-cinta": {
+    "synopsis": "Tia mencintai Bobby dan berharap membangun pernikahan yang bahagia. Namun, pertemuan keluarga mengungkap rahasia asal-usulnya, sementara hubungan Bobby dengan perempuan lain membuatnya terus terluka. Perebutan perusahaan dan hadirnya Tommy semakin merumitkan keadaan. Ketika Bobby ingin kembali, Tia harus menimbang ketulusan cinta, luka pengkhianatan, serta masa depan rumah tangga yang pernah mereka janjikan."
+  },
+  "bumi": {
+    "synopsis": "Raib terlihat seperti siswi berusia lima belas tahun lainnya, tetapi ia menyimpan kemampuan menghilang yang dirahasiakan bahkan dari orang tuanya. Bersama Seli dan Ali, ia terseret ke dunia paralel yang dihuni klan-klan dengan kekuatan berbeda. Pertemuan dengan Tamus dan ambisinya membuka petualangan yang menantang keberanian mereka sekaligus mempererat persahabatan tiga remaja tersebut."
+  },
+  "bumi-manusia": {
+    "synopsis": "Minke, seorang pemuda berdarah priyayi, berusaha membentuk pandangannya sendiri di tengah tatanan Jawa dan kekuasaan kolonial pada pergantian abad. Pendidikan serta kekagumannya pada pengetahuan Eropa berhadapan dengan pengalaman tentang martabat dan ketidakadilan. Bagian pertama Tetralogi Buru ini mengikuti kegelisahan, hubungan antarmanusia, dan pertumbuhan kesadaran seorang anak muda yang ingin hidup lebih bebas."
+  },
+  "burung-merak": {
+    "synopsis": "Ana sejak awal merasa Wibisono meremehkan dirinya, tetapi pesona lelaki itu sulit dihindari. Ia tidak mengetahui bahwa pendekatan tersebut berkaitan dengan dendam keluarga. Wibisono memandang Ana sebagai perempuan angkuh dan menyamakan dirinya dengan saudara-saudaranya. Hubungan mereka berkembang di bawah bayang-bayang prasangka, hingga upaya membalas luka mengancam orang yang sebenarnya tidak ia pahami."
+  },
+  "candide": {
+    "synopsis": "Candide menjalani berbagai petualangan dan perubahan nasib sambil mempertahankan keyakinan bahwa segala sesuatu berlangsung demi kebaikan. Namun, ketidakadilan, penderitaan, dan keputusasaan terus menguji pandangan polos tersebut. Dengan satire dan kejadian yang menggelikan sekaligus getir, Voltaire mempertanyakan optimisme yang menutup mata terhadap kenyataan serta mengajak pembaca memikirkan cara menghadapi dunia yang jauh dari sempurna."
+  },
+  "catatan-harian-menantu-sinting": {
+    "synopsis": "Minar menceritakan kehidupan pernikahannya dengan Sahat melalui catatan harian yang penuh humor. Kebahagiaan mereka selalu bersinggungan dengan Mamak Mertua, yang mempunyai pandangan sendiri tentang cinta dan keluarga. Di tengah tradisi serta keramaian keluarga besar Batak, perbedaan pendapat memunculkan kejadian konyol, rasa kesal, dan tantangan untuk menemukan tempat sebagai istri sekaligus menantu."
+  },
+  "ceroz-batozar": {
+    "synopsis": "Karyawisata sekolah Raib, Seli, dan Ali semula tampak seperti perjalanan biasa. Rasa ingin tahu Ali terhadap sebuah ruangan kuno membawa mereka ke bagian lain dunia paralel. Di sana, ketiga sahabat bertemu petarung tangguh dan berhadapan dengan pengalaman yang memperluas kemampuan mereka. Petualangan ini membuka lebih banyak rahasia tentang luasnya dunia yang selama ini tersembunyi."
+  },
+  "chicken-soup-for-the-soul-bahtera-rumah-tangga": {
+    "synopsis": "Kumpulan kisah dan anekdot ini memperlihatkan pengalaman pasangan dalam menjalani perkawinan, dari pengantin baru hingga mereka yang telah lama bersama. Cerita-ceritanya menyoroti cara menerima kekurangan, menghargai kelebihan, dan menjaga kehangatan hubungan. Humor menjadi bagian penting saat para pasangan berbagi kehidupan dengan pribadi yang berbeda, mengingat kembali alasan menikah, dan menghadapi keseharian bersama."
+  },
+  "china-rich-girlfriend-kekasih-kaya-raya": {
+    "synopsis": "Menjelang pernikahannya, Rachel Chu masih merasakan kekosongan karena tidak mengenal ayah kandungnya. Sebuah kejadian tak terduga mengungkap identitas lelaki itu dan membawanya memasuki lingkungan kaya raya di Shanghai. Di balik kemewahan yang berlebihan, Rachel menghadapi hubungan keluarga, gengsi, dan kepentingan yang rumit. Kelanjutan Crazy Rich Asians ini memadukan romansa dengan satire tentang kekayaan dan status sosial."
+  },
+  "cinta-4-sisi": {
+    "synopsis": "Violet dan Quinn sama-sama merasa diabaikan oleh pasangan mereka. Sebuah sandiwara yang awalnya dimaksudkan untuk menarik perhatian justru menumbuhkan perasaan yang sungguh-sungguh. Ketika kebohongan semakin sulit dipertahankan, keduanya harus menghadapi akibat permainan itu. Mereka berada di antara mempertahankan hubungan lama atau mengambil risiko membangun masa depan bersama dengan luka yang mungkin ditinggalkan."
+  },
+  "cinta-di-ujung-batas": {
+    "synopsis": "Haekal bertemu dua perempuan dalam kegiatan zikir di Bukit Sentul, tetapi tidak mengetahui identitas mereka. Bertahun-tahun kemudian, ia menikah dengan Anissa, salah satu perempuan yang terus membekas dalam ingatannya. Perempuan lainnya ternyata Amelia, adik angkat sang istri. Pertemuan kembali ini menghadirkan pergulatan tiga hati yang mempertanyakan cinta, kebahagiaan, dan penerimaan terhadap takdir."
+  },
+  "cinta-itu-dipraktekin": {
+    "synopsis": "Buku ini membahas cinta sebagai tindakan yang dapat dilakukan dalam hubungan sehari-hari. Dengan penjelasan singkat, ilustrasi, kutipan, dan petunjuk praktis, pembaca diajak memahami serta menunjukkan kepedulian secara nyata. Formatnya menyerupai buku kerja yang bisa dibaca dari berbagai bagian, dilengkapi daftar periksa untuk membantu pembaca menilai bagaimana gagasan tentang cinta diterapkan dalam kehidupannya.",
+    "author": "Tim Wesfix",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "cinta-jangan-kau-pergi": {
+    "synopsis": "Ais harus menyesuaikan diri dengan kesibukan suaminya sebagai anggota dewan. Perasaan terabaikan dan kesepian membuka ruang bagi hadirnya pria lain, sementara ikatan rumah tangga mereka mulai diuji. Kisah ini menelusuri godaan, kesetiaan, serta penyesalan ketika pilihan pribadi berbenturan dengan tanggung jawab keluarga, dan mengajak pembaca memikirkan harga sebuah kepercayaan dalam pernikahan."
+  },
+  "cinta-keparat-original-publisher": {
+    "synopsis": "April kembali ke Granada enam tahun setelah sebuah tuduhan pembunuhan memaksanya pergi. Kepulangannya mempertemukan ia dengan Tristan, lelaki yang pernah dicintainya sekaligus orang yang menyalahkannya atas kehilangan kekasih dan calon anak. April datang untuk menyelesaikan sebuah misi, tetapi kebencian, rahasia, dan perasaan yang belum padam membuat rencananya jauh lebih rumit daripada dugaan.",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "cinta-sendiri": {
+    "synopsis": "Zahra Ayunda menerima perjodohan dengan Revan Atmadewa, tetapi malam resepsi mengungkap kesalahpahaman besar: Revan mengira ia akan menikahi sepupu Zahra, Agni. Perselingkuhan kemudian mewarnai rumah tangga mereka. Saat Fattan, lelaki yang pernah dicintai Zahra, hadir kembali, Zahra harus menentukan apakah akan mempertahankan pernikahan atau memilih jalan lain setelah kepercayaannya berkali-kali terluka."
+  },
+  "cinta-tak-ada-mati": {
+    "synopsis": "Tiga belas cerita pendek dalam buku ini menghadirkan beragam pengalaman manusia, termasuk cinta yang berubah menjadi keterikatan tanpa batas. Dalam cerita yang menjadi judul kumpulan, seorang lelaki terus memuja perempuan yang tidak pernah berhasil dimilikinya, bahkan setelah perempuan itu meninggal. Kerinduan, kehilangan, dan harapan yang ganjil memperlihatkan sisi gelap dari perasaan yang sulit dilepaskan."
+  },
+  "cinta-tak-pernah-tua": {
+    "synopsis": "Samin, seorang veteran dengan riwayat lima istri, menjadi pusat rangkaian cerita yang mempertemukan cinta, ingatan, dan keajaiban. Perjalanannya melintasi Lubuklinggau serta kisah-kisah yang merentang jauh ke masa lalu menghadirkan penantian, keluarga, dan hubungan yang sulit dijelaskan. Melalui suasana lokal dan peristiwa ganjil, buku ini menelusuri bentuk cinta yang melampaui pengalaman asmara biasa."
+  },
+  "cinta-terakhir-baba-dunja-baba-dunjas-letzte-liebe": {
+    "synopsis": "Baba Dunja pulang ke kampung halamannya di dekat Chernobyl meskipun pemerintah memperingatkan bahaya radiasi. Bersama beberapa tetangga, ia membangun kembali keseharian sederhana dengan berkebun, berkirim surat, dan saling menemani. Kehidupan mereka tampak cukup damai sampai seorang pendatang mengusik ketenangan. Novel ini menyoroti keterikatan pada rumah, kebebasan memilih, serta kebersamaan di tempat yang ditinggalkan banyak orang."
+  },
+  "cinta-yang-marah": {
+    "synopsis": "Kumpulan puisi M. Aan Mansyur ini menempatkan cinta berdampingan dengan kemarahan, kehilangan, dan luka yang sukar dijelaskan. Perasaan kepada orang lain terus hidup meskipun kematian maupun perpisahan mengubah hubungan tersebut. Melalui bahasa puitis, pembaca diajak mendekati pengalaman mencintai yang tidak selalu menenangkan, melainkan menyimpan kenangan dan kegelisahan yang bertahan dalam diri."
+  },
+  "city-lite-better-than-this": {
+    "synopsis": "Saras harus membuat Leo menjadi pacarnya demi memenangkan taruhan dengan Morrie. Masalahnya, mahasiswa berprestasi itu tidak menyukai sikap Saras yang seenaknya dan lebih tertarik pada fotografi daripada kuliah hukum. Usaha mendekatinya berubah menjadi permainan perasaan yang semakin rumit ketika Leo mengajukan kesungguhan. Saras pun harus menghadapi akibat dari tantangan yang semula ia anggap sederhana."
+  },
+  "confess-pengakuan": {
+    "synopsis": "Auburn Reed berusaha menata hidupnya dengan hati-hati ketika pertemuan di studio seni Owen Gentry mengubah rencananya. Lukisan Owen lahir dari pengakuan anonim, sementara dirinya sendiri menyimpan rahasia yang dapat merusak kepercayaan Auburn. Ketertarikan mereka berkembang menjadi hubungan yang menuntut keberanian menghadapi masa lalu, kebohongan, dan pilihan sulit demi orang-orang yang mereka sayangi.",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "d-angel": {
+    "synopsis": "Fika tampak mempunyai segalanya: kecerdasan, kecantikan, kemampuan olahraga, dan hubungan baru dengan Reza. Namun percobaan penculikan di pusat perbelanjaan menghancurkan kehidupan normalnya. Andika menyelamatkannya lalu mengungkap kemungkinan bahwa Fika adalah manusia hasil rekayasa. Fika harus memahami asal-usulnya sambil menghadapi ancaman yang menjadikan keistimewaan dirinya alasan untuk diburu."
+  },
+  "daun-yang-jatuh-tak-pernah-membenci-angin": {
+    "synopsis": "Kehidupan Tania, adiknya, dan ibu mereka berubah setelah seorang lelaki menolong keluarga itu keluar dari kesulitan. Perhatian yang semula terasa seperti kasih seorang kakak perlahan menumbuhkan perasaan lain dalam diri Tania. Ia harus memahami jarak antara rasa terima kasih, cinta, dan harapan, sambil belajar menerima kenyataan bahwa tidak semua perasaan mudah diungkapkan."
+  },
+  "deception-point-titik-muslihat": {
+    "synopsis": "Penemuan NASA di bawah es Arktik menjanjikan terobosan ilmiah sekaligus keuntungan politik menjelang pemilihan presiden Amerika Serikat. Analis intelijen Rachel Sexton dikirim untuk memeriksa keasliannya bersama sejumlah ahli. Ketika mereka menemukan tanda manipulasi, penyelidikan berubah menjadi pelarian mematikan. Rachel dan Michael Tolland harus membongkar pihak yang mempertaruhkan nyawa mereka demi menyembunyikan kebenaran."
+  },
+  "defeated-by-love": {
+    "synopsis": "Alika baru pindah sekolah ketika kedekatannya dengan Dika membuat Bella dan kelompoknya merundungnya. Dika, yang dikenal nakal dan populer, justru sering datang melindunginya. Rasa aman itu tumbuh menjadi cinta, tetapi Alika menghadapi dua hambatan sekaligus: intimidasi yang belum berhenti dan kenyataan tentang masa lalu Dika yang mengguncang kepercayaannya pada hubungan mereka.",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "delapan-puluh-enam": {
+    "synopsis": "Arimbi menjadi kebanggaan keluarga petani ketika bekerja sebagai juru ketik di pengadilan negeri. Seragam dan gaji tetap membawa harapan bahwa ia dapat membantu banyak orang. Namun lingkungan kerjanya perlahan mengubah batas antara hal yang benar dan kebiasaan yang dianggap wajar. Novel ini mengikuti keterlibatan seorang pegawai lugu dalam praktik korupsi yang dinormalisasi bersama.",
+    "author": "Okky Madasari"
+  },
+  "dia-adalah-kakakku-unedited-version": {
+    "synopsis": "Laisa mengerahkan tenaga dan mengesampingkan kepentingannya sendiri agar empat adiknya memperoleh pendidikan dan masa depan yang lebih baik. Di balik sikapnya yang keras tersimpan kasih yang tidak bergantung pada kesamaan darah. Perjalanan keluarga ini mempertemukan pengorbanan, kemiskinan, prasangka terhadap penampilan, serta kekhawatiran adik-adiknya tentang kebahagiaan sang kakak yang selalu mendahulukan mereka."
+  },
+  "dikatakan-atau-tidak-dikatakan-itu-tetap-cinta": {
+    "synopsis": "Kumpulan dua puluh empat sajak berilustrasi ini mengajak pembaca mengenali berbagai wajah cinta melalui pertemuan, kebersamaan, perpisahan, dan kehilangan. Tere Liye mempertemukan perasaan bahagia dengan kesedihan, serta kesungguhan dengan gurauan. Setiap sajak menjadi ruang untuk memikirkan cara menyayangi seseorang, termasuk saat perasaan itu disimpan sendiri atau ketika seseorang harus belajar melepaskan."
+  },
+  "dry-kering": {
+    "synopsis": "Kekeringan panjang di California berubah menjadi krisis ketika pasokan air terhenti. Kehidupan sehari-hari yang semula masih bisa diatur mendadak dipenuhi kepanikan dan perebutan kebutuhan paling dasar. Di tengah keadaan itu, seorang remaja harus berjuang menyelamatkan keluarganya. Pilihan untuk bertahan hidup menguji kepercayaan kepada orang lain dan batas antara kepedulian dengan kepentingan diri.",
+    "author": "Neal Shusterman, Jarrod Shusterman"
+  },
+  "e-book-rahasia-pede-bangun-relasi": {
+    "synopsis": "Panduan ini ditujukan kepada pembaca yang gugup memulai percakapan, sulit menemukan topik, atau merasa canggung ketika berkenalan. Bang Joel membahas stigma tentang introvert, kebutuhan bersosialisasi, kesan pertama, dan cara berkomunikasi. Melalui pembahasan yang dekat dengan pergaulan, perkuliahan, organisasi, dan pekerjaan, pembaca diajak membangun keberanian untuk menjalin hubungan serta mengembangkan kemampuan berinteraksi."
+  },
+  "ebook-belajar-bahasa-inggris-dengan-muda": {
+    "synopsis": "Teguh Handoko menawarkan pendekatan belajar bahasa Inggris yang berangkat dari fungsi bahasa sebagai alat komunikasi. Buku ini ditujukan kepada orang yang merasa kesulitan atau tidak mengalami kemajuan meskipun sudah lama belajar. Pembahasannya mengajak pembaca meninjau kembali kebiasaan belajar dan memahami langkah latihan yang menekankan penggunaan bahasa, bukan sekadar menghafalkan aturan tata bahasa.",
+    "author": "Teguh Handoko"
+  },
+  "evolusi-rindu-ruang-sepi-dan-dirimu": {
+    "synopsis": "Gentakiswara mengolah rindu menjadi rangkaian prosa tentang jarak, kehilangan, dan kepergian. Perasaan yang sama dapat menghadirkan kebahagiaan ketika seseorang masih bisa dinantikan, tetapi juga kesedihan ketika yang dirindukan telah menghilang. Buku ini menelusuri perubahan perasaan tersebut, memberi ruang bagi pembaca untuk mengenali kenangan, kekecewaan, serta kesepian yang menyertai hubungan dengan seseorang."
+  },
+  "fluent-english": {
+    "synopsis": "Buku latihan ini membantu pembaca mengembangkan bahasa Inggris melalui situasi sehari-hari dan pekerjaan. Materinya memadukan percakapan, pengucapan, kosakata, tata bahasa, phrasal verbs, serta ungkapan yang digunakan dalam komunikasi nyata. Setiap pelajaran juga membahas kebiasaan sosial di Amerika, sehingga pembaca dapat mempelajari penggunaan bahasa sekaligus konteks budaya yang menyertainya dalam berbagai keadaan."
+  },
+  "gigi-koko": {
+    "synopsis": "Miftha gelisah karena putri bungsunya, Gigi, berusia dua puluh lima tahun dan belum terlihat mempunyai pacar. Berbagai usaha memperkenalkan calon pasangan belum berhasil, sampai ia bertemu kembali dengan Varco, mantan mahasiswanya yang dipanggil Koko. Kesopanan dan kecerdasan lelaki itu memberi Miftha harapan baru, sementara Gigi harus menghadapi kesibukan keluarga dalam mengurus jodohnya."
+  },
+  "hades-alexandra-adornetto": {
+    "synopsis": "Bethany Church, malaikat yang bertugas di bumi, tetap mencintai Xavier meskipun hubungan mereka penuh bahaya. Sebuah tipu daya membawa Bethany ke neraka, tempat Jake Thorn menawarkan kebebasan dengan tuntutan yang dapat menghancurkan dirinya dan orang-orang terdekatnya. Dalam kelanjutan trilogi Halo ini, cinta dan kesetiaan diuji oleh ancaman yang memisahkan dunia manusia dari kekuatan gelap."
+  },
+  "hafalan-shalat-delisa": {
+    "synopsis": "Delisa, anak perempuan di Aceh, bersemangat menghafal bacaan salat karena ibunya menjanjikan hadiah. Ketika tsunami menghantam kampungnya, usaha sederhana itu berubah menjadi perjalanan menghadapi kehilangan dan perubahan besar dalam hidup. Bersama orang-orang yang merawatnya, Delisa berusaha menemukan kembali keberanian, memahami ketulusan, dan melanjutkan hafalan yang kini memiliki arti berbeda baginya."
+  },
+  "halo": {
+    "synopsis": "Gabriel, Ivy, dan Bethany turun ke bumi untuk membawa kebaikan dan menghadapi kekuatan gelap. Bethany paling sedikit berpengalaman, tetapi justru paling dekat dengan kehidupan manusia. Ketika ia jatuh cinta kepada seorang pemuda, tugas mereka menjadi semakin rumit. Hubungan yang terlarang itu memunculkan pertanyaan apakah cinta akan menguatkannya atau membuatnya semakin rentan terhadap bahaya."
+  },
+  "heaven": {
+    "synopsis": "Bethany dan Xavier memutuskan menikah meskipun hubungan malaikat dan manusia melanggar hukum surga. Keputusan itu mendatangkan ancaman dari kelompok malaikat Sevens. Dengan bantuan Gabriel dan Ivy, mereka bersembunyi di tengah kehidupan kampus sambil merahasiakan hubungan mereka. Namun keselamatan belum terjamin, dan kemungkinan Bethany dipanggil kembali ke surga terus membayangi masa depan mereka."
+  },
+  "hening": {
+    "synopsis": "Pada masa pelarangan agama Kristen di Jepang abad ketujuh belas, pastor Portugis Sebastian Rodrigues datang untuk membantu umat setempat dan mencari kabar gurunya, Ferreira. Penganiayaan terhadap orang-orang beriman mengguncang keyakinannya tentang kasih Tuhan. Di tengah ancaman terhadap dirinya dan orang lain, Rodrigues berhadapan dengan persoalan iman, penderitaan, dan keheningan yang sulit ia pahami."
+  },
+  "hijrah-itu-cinta": {
+    "synopsis": "Senja mengira Satria akan menjadi lelaki yang menjaganya, tetapi hubungan itu membawanya pada pilihan yang kelak ia sesali. Rahasia tentang masa lalu kedua orang tuanya semakin mengguncang keyakinannya. Pertemuan kembali dengan Fajar menumbuhkan keinginan untuk berubah. Senja pun menghadapi proses hijrah yang menuntut keberanian menerima kesalahan dan membangun harapan baru bagi hidupnya."
+  },
+  "hilmy-milan": {
+    "synopsis": "Hilmy mendekati Milan dengan cara yang sulit ditebak: ia mengirimkan surat lamaran menjadi pacar, lengkap dengan berkas pendukung layaknya pencari kerja. Sikapnya membuat batas antara lelucon dan kesungguhan terasa kabur. Kisah keduanya mengikuti tumbuhnya kedekatan romantis melalui percakapan dan tingkah jenaka, sementara Milan mencoba memahami apa yang sebenarnya diinginkan lelaki itu."
+  },
+  "hujan": {
+    "synopsis": "Lail kehilangan orang tuanya dalam bencana besar dan diselamatkan oleh Esok. Kebersamaan di pengungsian berkembang menjadi ikatan yang sulit dilepaskan, tetapi kehidupan membawa mereka ke jalan yang berbeda. Dalam dunia dengan teknologi pengubahan ingatan, Lail menghadapi keinginan melupakan rasa sakit. Kenangan tentang hujan, persahabatan, dan cinta menjadi bagian penting dari keputusan yang harus ia ambil."
+  },
+  "hujan-2": {
+    "synopsis": "Lail kehilangan orang tuanya dalam bencana besar dan diselamatkan oleh Esok. Kebersamaan di pengungsian berkembang menjadi ikatan yang sulit dilepaskan, tetapi kehidupan membawa mereka ke jalan yang berbeda. Dalam dunia dengan teknologi pengubahan ingatan, Lail menghadapi keinginan melupakan rasa sakit. Kenangan tentang hujan, persahabatan, dan cinta menjadi bagian penting dari keputusan yang harus ia ambil."
+  },
+  "istana-emas": {
+    "synopsis": "Retno merasa rumah mewah sahabatnya, Yanti, tidak memiliki kehangatan sebuah keluarga. Sikap otoriter Yoyok, suami Yanti, membuatnya marah, terlebih ketika kesehatan sahabatnya memburuk. Setelah Yanti meninggal, pesan terakhirnya justru mengikat Retno dengan rumah dan lelaki yang ia benci. Perasaan yang perlahan berubah menempatkan Retno dalam konflik antara kesetiaan, penilaian lama, dan cinta."
+  },
+  "istri-kedua": {
+    "synopsis": "Asma Nadia dan Isa Alamsyah menghimpun beragam kisah tentang perempuan yang menjalani atau menghadapi posisi istri kedua. Pengalaman tersebut memperlihatkan bahwa pilihan rumah tangga dapat berdampak panjang bagi pasangan, keluarga, dan anak-anak. Melalui cerita dengan akibat yang berbeda-beda, buku ini mengajak pembaca mempertimbangkan persoalan poligami, kecemburuan, tanggung jawab, serta luka yang muncul dalam keluarga."
+  },
+  "jadikan-aku-halal-bagimu-nikmati-pacaran-setelah-menikah": {
+    "synopsis": "Ahmad Rifa'i Rif'an membahas cara menata perasaan cinta menuju pernikahan dalam sudut pandang Islam. Buku ini mengulas perbedaan cinta dan hawa nafsu, kesiapan diri, pencarian pasangan, serta hubungan dengan orang tua ketika membicarakan rencana menikah. Renungan dan pembahasannya diarahkan pada upaya membangun ikatan yang halal dan memelihara kasih sayang setelah pernikahan."
+  },
+  "jakarta-sebelum-pagi-indonesian-edition": {
+    "synopsis": "Emina menerima surat tanpa nama yang datang bersama balon perak dan bunga hyacinth biru. Kiriman itu membuatnya curiga ada seseorang yang mengawasi kesehariannya. Jejak tersebut membawanya kepada Abel, lelaki misterius yang mengubah cara Emina melihat kotanya. Kedekatan mereka membuka rahasia pribadi sekaligus mengantar perjalanan menelusuri Jakarta dalam suasana dini hari yang berbeda."
+  },
+  "janji": {
+    "synopsis": "Hasan, Baso, dan Kahar kembali membuat ulah di sekolah agama mereka. Alih-alih mendapat hukuman biasa, ketiganya diminta Buya mencari Bahar, sosok dari masa lalu sekolah tersebut. Pencarian itu mempertemukan mereka dengan berbagai orang dan cerita tentang kehidupan Bahar. Dari perjalanan tersebut, mereka belajar memahami arti menjaga janji, kemuliaan tindakan, dan nilai seseorang di luar penampilan atau kekayaan."
+  },
+  "jatuh-cinta-tak-pernah-salah": {
+    "synopsis": "Buku ini menghimpun ungkapan dan kisah cinta bernuansa Islami untuk mengajak pembaca memikirkan cara mencintai. Perasaan cinta ditempatkan sebagai dorongan yang perlu diarahkan melalui perilaku dan pilihan yang baik. Cerita tentang orang-orang saleh menjadi bahan renungan mengenai perbaikan diri, hubungan yang mendekatkan kepada Allah, serta usaha menjaga perasaan agar sejalan dengan keyakinan."
+  },
+  "jodoh-selalu-datang-tepat-waktu": {
+    "synopsis": "Nurul Taufiqoh menyajikan inspirasi Islami dan pengalaman orang-orang yang berusaha menemukan pasangan melalui taaruf. Pembahasannya mencakup peran perempuan, kegagalan perkenalan, tekanan dari lingkungan, serta kesabaran ketika pasangan belum ditemukan. Buku ini mengajak pembaca memandang penantian sebagai kesempatan untuk memperbaiki diri dan tetap berikhtiar, sambil mempelajari proses menuju pernikahan sesuai nilai yang diyakini."
+  },
+  "jodoh-tak-mau-menunggu": {
+    "synopsis": "Ditujukan kepada muslimah yang memikirkan pasangan hidup, buku ini membahas langkah dari perkenalan hingga pernikahan dalam kerangka ajaran Islam. Pertanyaan tentang menawarkan diri, menerima atau menolak pinangan, perjodohan, dan penyelenggaraan pesta dibicarakan sebagai bagian dari ikhtiar. Pembaca diajak menata perasaan serta mengambil peran dalam proses mencari pasangan, dengan tetap memperhatikan batasan yang diyakininya."
+  },
+  "kau-penggenap-imanku": {
+    "synopsis": "Melalui renungan dan ilustrasi, buku ini membicarakan cinta, harapan menemukan pasangan, serta hubungan yang dibangun di atas keyakinan kepada Allah. Pembaca diajak mempertimbangkan kembali ikatan masa lalu, menjaga perasaan, dan menyiapkan diri menuju hubungan yang halal. Pembahasan awalnya menempatkan ketulusan, doa, serta keberanian meninggalkan hubungan yang dianggap tidak baik sebagai bagian dari proses tersebut."
+  },
+  "kawin-paksa-novel-snowdrop-creative-partner": {
+    "synopsis": "Adyt memiliki kekasih bernama Andrea, seorang selebritas, ketika sebuah kejadian membuat warga memaksanya menikahi Adys. Pernikahan yang tidak direncanakan itu mengacaukan hubungan yang sudah ia jalani dan mempertemukannya dengan perasaan yang belum ia pahami. Adyt harus menghadapi akibat salah paham, tuntutan hubungan, serta pilihan tentang siapa yang sebenarnya ingin ia pertahankan.",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "kekasih-akhir-pekan": {
+    "synopsis": "Rena menyimpan perasaan terhadap Rafka, seorang lelaki yang ditemuinya di sebuah klub. Melalui Maya, pengelola tempat itu, ia membayar agar Rafka menemaninya setiap akhir pekan. Namun kedekatan yang dimulai sebagai kesepakatan ini sudah dibayangi kecemburuan dan luka pribadi. Cerita mengikuti hubungan yang mempertemukan keinginan untuk dicintai dengan kehidupan yang tidak sesederhana penampilan luarnya.",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "kerumunan-terakhir": {
+    "synopsis": "Jayanegara merasa kehidupan nyata tidak memberinya tempat yang ia inginkan. Ketika internet membuka kemungkinan baru, ia membentuk identitas bernama Matajaya dan membangun kehidupan lain di dunia maya. Novel ini mengikuti pertemuan dua dunia tersebut, memperlihatkan bagaimana keinginan diakui, kebebasan membentuk citra diri, dan arus kerumunan digital dapat mengubah hubungan seseorang dengan dirinya maupun orang lain."
+  },
+  "ketika-si-miskin-bertutur": {
+    "synopsis": "I W. Kasa menyusun kisah dan renungan pendek tentang sikap hidup, pembelajaran, kebahagiaan, dan hubungan dengan sesama. Sebutan miskin dalam judul merujuk pada keterbatasan pemahaman spiritual yang ingin ia pelajari lebih jauh. Melalui cerita keseharian, perumpamaan, dan refleksi, buku ini mengajak pembaca menyeimbangkan perjalanan mencari pengetahuan di luar diri dengan usaha memahami kehidupan batin.",
+    "author": "I W. Kasa"
+  },
+  "komet-minor": {
+    "synopsis": "Raib, Seli, dan Ali melanjutkan perjuangan menghadapi Si Tanpa Mahkota di Klan Komet Minor, tempat lahirnya aliansi pemburu dan pusaka kuat. Bersama rekan seperjalanan, mereka melewati rintangan, mempelajari kemampuan baru, dan mempersiapkan pertarungan penentu. Petualangan ini menguji persahabatan serta pengorbanan mereka, sambil mempertemukan ambisi kekuasaan dengan keberanian untuk memaafkan."
+  },
+  "komik-dari-twit-nya-raditya-dika": {
+    "synopsis": "Cuitan-cuitan Raditya Dika diolah menjadi cerita bergambar melalui kolaborasi dengan Milfa Saadah. Humor sehari-hari tentang mantan, harapan cinta, dan menghadapi ujian muncul dalam rangkaian komik pendek. Alih-alih mengikuti satu alur panjang, buku ini mengajak pembaca berpindah dari satu situasi lucu ke situasi lainnya, dengan pengalaman yang dekat dengan keseharian anak muda."
+  },
+  "lalita": {
+    "synopsis": "Lalita menerima kumpulan kertas tua berisi gambar mandala yang membuka pengetahuan baru tentang kakeknya. Penelusuran masa lalu itu berhubungan dengan teka-teki seputar Candi Borobudur. Yuda, Marja, dan Parang Jati terlibat dalam petualangan yang mempertemukan rahasia keluarga, warisan budaya, serta cara manusia memahami pengetahuan dan pengalaman yang tidak mudah dijelaskan."
+  },
+  "lavina": {
+    "synopsis": "Lavina hampir tiga tahun berpacaran dengan Arsenio di SMA Nusa Cendekia, tetapi mulai meragukan perasaannya karena sikap lelaki itu terasa dingin dan sekadar menjalankan kewajiban. Kehadiran Erlan yang lebih perhatian membuat kebimbangannya bertambah. Di tengah hubungan yang tidak seimbang, Lavina perlu mengenali keinginannya sendiri dan memutuskan apakah cintanya masih layak diperjuangkan."
+  },
+  "layla-seribu-malam-tanpamu": {
+    "synopsis": "Wallaili Wannahar, yang dipanggil Lail, belajar tasawuf kepada Abah Suradira. Dalam perjalanan mendekatkan diri kepada Allah, ia menghadapi rencana perjodohan dengan Kinasih, teman masa kecilnya. Namun hatinya justru tertuju kepada Layla yang baru ditemuinya. Pertentangan antara kesiapan menikah, kehendak keluarga, dan keyakinan tentang cinta menguji cara Lail memahami perjalanan batinnya."
+  },
+  "lelaki-harimau": {
+    "synopsis": "Sebuah pembunuhan brutal menyeret Margio ke pusat tragedi di lingkungannya. Ia menyangkal bertindak atas kehendak sendiri dan menyatakan ada harimau di dalam tubuhnya. Dari peristiwa itu, cerita menelusuri hubungan antartokoh yang dipenuhi cinta, ketakutan, dan pengkhianatan. Unsur sureal menyatu dengan persoalan manusia yang membuat motif kekerasan jauh lebih rumit daripada dugaan awal."
+  },
+  "lelaki-jahanam": {
+    "synopsis": "Tia membawa putranya, Aza, merantau ke Surabaya demi mendapatkan kehidupan yang lebih layak. Setelah ditinggalkan lelaki yang seharusnya bertanggung jawab atas keluarganya, ia bekerja sebagai buruh cuci sambil menghadapi biaya hidup dan kebutuhan sekolah anaknya. Kisah ini mengikuti perjuangan seorang ibu yang berusaha mempertahankan harapan di tengah kemiskinan, keterbatasan, dan luka hubungan masa lalu."
+  },
+  "live-love-laugh-living-fully-loving-unconditionaly-laughing-freely-hidup-cinta-d": {
+    "synopsis": "Anand Krishna menyajikan lebih dari tiga ratus kutipan tentang kehidupan, kasih sayang, dan tawa dalam bahasa Indonesia dan Inggris. Buku ini dapat dibaca berurutan atau dibuka pada bagian mana pun sebagai bahan refleksi. Gagasannya menghubungkan penghargaan terhadap hidup dengan cinta tanpa syarat, pemberdayaan diri, dan kemampuan menemukan kegembiraan dalam menjalani keseharian."
+  },
+  "love-life-kisah-mengharukan-tentang-hidup-cinta-dan-kesetiaan": {
+    "synopsis": "Dan dan Carmen terlihat memiliki kehidupan ideal bersama anak mereka, sampai Carmen didiagnosis mengidap kanker payudara. Pengobatan dan ketidakpastian mengubah keseharian keluarga itu, sementara Dan mencari pelarian yang menguji kesetiaannya. Kisah ini menelusuri hubungan yang tidak sempurna ketika cinta, ketakutan menghadapi kehilangan, serta tanggung jawab mendampingi pasangan saling berbenturan dalam keadaan berat.",
+    "author": "Ray Kluun"
+  },
+  "lumpu": {
+    "synopsis": "Raib, Seli, dan Ali kembali menjelajahi dunia paralel untuk menyelamatkan Miss Selena. Lawan mereka, Lumpu, mampu melumpuhkan kekuatan petarung lain. Demi menghadapi ancaman itu, Ali mencari bantuan dari sosok yang tak terduga. Misi penyelamatan ini juga mempertemukan mereka dengan persoalan kepercayaan, pengampunan, dan jejak sejarah Klan Aldebaran."
+  },
+  "menggapai-cinta-nya-amalan-amalan-yang-dicintai-allah-menurut-al-quran-dan-hadis": {
+    "synopsis": "Dedi Saputra menyusun pembahasan tentang amalan yang, menurut penafsirannya atas Al-Qur’an dan hadis, mendekatkan seorang hamba kepada cinta Allah. Buku ini berangkat dari keinginan memberi nasihat dan pengarahan menuju kehidupan beragama yang lebih baik. Pembaca diajak memikirkan hubungan antara perilaku sehari-hari, ketaatan, dan usaha memperbaiki diri melalui petunjuk agama.",
+    "author": "Dedi Saputra"
+  },
+  "nebula-unedited-version": {
+    "synopsis": "Selena melanjutkan pendidikan di Akademi Bayangan Tingkat Tinggi bersama dua sahabatnya, Mata dan Tazk. Keinginan menjelajahi tempat jauh membawa mereka menuju rahasia Klan Nebula. Namun, rasa suka, kepentingan pribadi, dan pengkhianatan mulai menguji persahabatan mereka. Kelanjutan kisah Selena ini membuka asal-usul orang tua Raib serta bagian penting dari sejarah dunia paralel."
+  },
+  "nebula-unedited-version-2": {
+    "synopsis": "Selena melanjutkan pendidikan di Akademi Bayangan Tingkat Tinggi bersama dua sahabatnya, Mata dan Tazk. Keinginan menjelajahi tempat jauh membawa mereka menuju rahasia Klan Nebula. Namun, rasa suka, kepentingan pribadi, dan pengkhianatan mulai menguji persahabatan mereka. Kelanjutan kisah Selena ini membuka asal-usul orang tua Raib serta bagian penting dari sejarah dunia paralel."
+  },
+  "negeri-para-bedebah": {
+    "synopsis": "Thomas dikenal sebagai konsultan keuangan yang cakap dan berpengaruh. Ketika Bank Semesta tersandung perkara yang mengancam kelangsungannya, hubungan keluarga mendorong Thomas turun tangan. Upayanya menyelamatkan bank mempertemukannya dengan permainan uang, hukum, dan kekuasaan. Di balik reputasi profesionalnya, masa lalu yang kelam turut membayangi pilihan dan kesetiaan yang harus ia pertaruhkan."
+  },
+  "otodidak-jago-kuasai-bahasa-inggris-dari-nol": {
+    "synopsis": "Panduan belajar mandiri ini memperkenalkan dasar tata bahasa Inggris melalui pembahasan jenis kata dan pembentukan kalimat. Materinya meliputi kata benda, kata kerja, kata ganti, tenses, serta penggunaan kata kerja bantu dan modal. Penjelasan disusun sebagai rujukan bagi pembaca yang ingin memahami grammar secara bertahap dan kembali membuka topik tertentu saat diperlukan.",
+    "author": "Wahidah Murriska"
+  },
+  "oxford-guide-to-english-grammar": {
+    "synopsis": "Panduan ini menguraikan bentuk dan penggunaan tata bahasa Inggris, terutama ragam baku Inggris Britania. Materinya mencakup susunan kalimat, kata kerja, frasa nomina, klausa, hingga pembentukan kata. Contoh teks dan percakapan memperlihatkan hubungan antara aturan dan konteks pemakaian. Buku ini ditujukan terutama bagi pelajar tingkat menengah dan lanjut serta pengajar yang membutuhkan rujukan tata bahasa."
+  },
+  "perempuan-patah-hati-yang-kembali-menemukan-cinta-melalui-mimpi": {
+    "synopsis": "Seorang perempuan mendapat gambaran tentang calon kekasihnya melalui mimpi. Lelaki itu tinggal di Pangandaran dan biasa berlari di pantai bersama seekor anjing. Bayangan yang terus membekas membuatnya jatuh cinta kepada seseorang yang belum ditemuinya. Kisah yang menjadi judul buku ini mempertemukan patah hati, harapan, dan pertanyaan tentang kepercayaan terhadap mimpi."
+  },
+  "pernikahan-tanpa-cinta-ruthlessly-bedded-forcibly-wedded": {
+    "synopsis": "Vincenzo Valentini menyalahkan Cara Brosnan atas kehancuran hidup adiknya. Ia mendekati Cara untuk membalas dendam, lalu meninggalkannya setelah mengungkap identitasnya. Cara, yang merasa tidak bersalah, harus menghadapi luka pengkhianatan dan kehamilan yang tak disangka. Ketika Vincenzo kembali menuntut pernikahan, hubungan mereka dibayangi tuduhan, ketidakpercayaan, dan akibat dari pembalasan yang kejam.",
+    "author": "Abby Green",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "pernikahan-yang-agung": {
+    "synopsis": "Dua minggu sebelum menikah, Mirna mengetahui skandal dalam keluarganya dan menunda pernikahan dengan Arif. Ia pergi ke San Francisco untuk menemui sahabat penanya, David, sementara hubungan Arif juga berubah. Setelah pulang, sebuah surat tanpa nama kembali mengguncang hidup Mirna. Novel ini mengikuti kebimbangan, rahasia, dan persoalan kepercayaan yang membayangi rencana pernikahannya."
+  },
+  "pinang-aku-di-saat-yang-tepat": {
+    "synopsis": "Buku ini membahas kesiapan menikah dan persoalan yang muncul ketika perkawinan dilakukan terlalu dini. Isinya mengajak pembaca mempertimbangkan waktu yang tepat, kehidupan setelah pernikahan, hubungan dua keluarga, serta tanggung jawab terhadap anak. Pembahasan juga mencakup keadaan ketika seseorang dipaksa menikah muda atau sudah telanjur menikah pada usia dini."
+  },
+  "pintar-bahasa-inggris-mind-map": {
+    "synopsis": "Buku ini menggunakan peta pikiran dan ilustrasi untuk membantu pembaca mempelajari kosakata serta tata bahasa Inggris. Materi disusun dengan pendekatan visual agar hubungan antarkonsep lebih mudah dipahami dan diingat. Pembaca diajak membangun penguasaan bahasa secara bertahap, terutama ketika menemui kesulitan dalam mengingat kata baru atau memahami pola grammar melalui penjelasan biasa."
+  },
+  "rembulan-tenggelam-di-wajah-mu": {
+    "synopsis": "Ray telah membangun kerajaan bisnis besar, tetapi menjelang akhir hidupnya ia masih menyimpan pertanyaan yang tak terjawab. Perjalanan menelusuri kembali masa lalu membawanya pada pengalaman di panti asuhan, cinta, kehilangan, dan ambisi. Lima pertanyaan menjadi jalan untuk memahami hubungan antara pilihan pribadinya, penderitaan yang dialami, serta kehidupan orang-orang di sekitarnya."
+  },
+  "sebelas": {
+    "synopsis": "Sebelas anak berbakat dari berbagai wilayah Indonesia dikumpulkan untuk membentuk sebuah tim sepak bola. Bersama Paul, mereka membawa kemampuan dan harapan masing-masing menuju tantangan menghadapi klub-klub besar dunia. Perjalanan membangun kesebelasan ini juga mempertanyakan arti sepak bola: permainan yang menyatukan manusia, atau industri yang semakin dikuasai uang, ketenaran, dan kepentingan komersial."
+  },
+  "selamat-tinggal-unedited-version": {
+    "synopsis": "Sintong Tinggal adalah mahasiswa sastra yang belum juga menyelesaikan kuliahnya. Sambil tinggal di perantauan, ia menjaga toko buku milik kerabat dekat stasiun. Buku-buku yang dijual ternyata bajakan, sehingga pekerjaan itu menyimpan persoalan yang sulit ia abaikan. Kehidupan Sintong mempertemukan impian seorang mahasiswa dengan pertanyaan tentang kejujuran dan tanggung jawab terhadap karya orang lain."
+  },
+  "semua-ingin-jatuh-cinta-love-quotes-kahlil-gibran": {
+    "synopsis": "Kumpulan kutipan ini menghadirkan renungan Kahlil Gibran tentang cinta, hubungan antarmanusia, kebahagiaan, dan luka perasaan. Disusun oleh Gieb Harri, buku ini menawarkan bacaan singkat yang dapat direnungkan satu per satu. Berbagai pandangan mengenai mencintai dan dicintai mengajak pembaca melihat bagaimana perasaan membentuk cara seseorang memahami dirinya, orang lain, dan kehidupan.",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "semua-tentang-cinta": {
+    "synopsis": "Ronald Frank mengajak pembaca memikirkan cinta melalui hubungan antara perkenalan, perhatian, dan kesetiaan. Buku ini menempatkan cinta sebagai pengalaman yang memiliki banyak arti, sehingga tidak selalu mudah dipahami atau ditemukan. Pembahasannya berpusat pada bagaimana perasaan hadir, dipelihara, dan dipertahankan dalam hubungan, serta bagaimana seseorang memahami maknanya melalui pengalaman bersama orang lain.",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "seni-mencintai": {
+    "synopsis": "Erich Fromm memandang kemampuan mencintai sebagai sesuatu yang perlu dipelajari dan dikembangkan bersama kedewasaan pribadi. Buku ini membahas mengapa perasaan saja tidak cukup, serta pentingnya kerendahan hati, keberanian, keyakinan, dan disiplin dalam hubungan. Pembaca diajak meninjau cara mencintai sesama dan mengembangkan diri agar kasih sayang menjadi tindakan yang bertanggung jawab."
+  },
+  "seporsi-mie-ayam-sebelum-mati-brian-khrisna": {
+    "synopsis": "Ale merasa sendirian setelah bertahun-tahun menghadapi perundungan, penolakan, dan depresi. Saat kehilangan harapan untuk melanjutkan hidup, keinginan makan seporsi mie ayam menunda keputusan terakhirnya. Penundaan kecil itu membuka jalan menuju perjumpaan yang mengubah cara ia melihat dunia. Cerita ini menelusuri kesepian, perhatian antarmanusia, dan kemungkinan menemukan kembali alasan untuk bertahan."
+  },
+  "sepotong-hati-yang-baru": {
+    "synopsis": "Kumpulan cerita pendek ini menghadirkan berbagai pengalaman mencintai dan kehilangan, dari kisah bernuansa legenda sampai hubungan manusia biasa. Tokoh-tokohnya berhadapan dengan hati yang terluka, penyesalan, serta keinginan memulai kembali. Melalui pengalaman yang berbeda-beda, cerita-cerita tersebut mengajak pembaca memikirkan bagaimana memahami perasaan sendiri dan menerima bahwa setiap kisah cinta mempunyai makna."
+  },
+  "serpihan-cinta-bipolar-runaway-husband": {
+    "synopsis": "Novi terkejut ketika suaminya meninggalkan rumah tangga mereka dan menjalin hubungan dengan perempuan lain. Kepergian itu membuatnya mempertanyakan cinta dan kesetiaan yang selama ini ia yakini. Novel ini menempatkan gangguan bipolar dalam konflik perkawinan dan keluarga, termasuk perjuangan seorang ibu mendampingi anaknya, serta menguji bagaimana para tokoh memahami kasih sayang di tengah krisis.",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "setiap-rasa-ada-batasnya-setiap-kita-ada-jodohnya": {
+    "synopsis": "Buku ini membahas cara menghadapi jatuh cinta dan patah hati dengan mempertimbangkan perasaan sekaligus pikiran. Pembaca diajak mengenali kecewa, marah, dan kesedihan tanpa membiarkan semuanya menguasai keputusan hidup. Melalui pembahasan tentang hubungan dan harapan akan pasangan, penulis menawarkan renungan untuk bangkit dari luka serta membangun kembali kebahagiaan."
+  },
+  "sex-menemukan-cinta-sejati-dalam-dunia-yang-penuh-kepalsuan": {
+    "synopsis": "Dave Bordon membahas hubungan antara cinta dan seks melalui sudut pandang iman Kristen. Buku ini berupaya menanggapi kebingungan dan anggapan keliru tentang keduanya, serta mengajak pembaca memikirkan keintiman dalam kaitannya dengan komitmen dan perkawinan. Pembahasan disajikan sebagai refleksi rohani tentang makna hubungan, bukan sebagai kisah romantis dengan tokoh dan alur fiksi.",
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "si-anak-cahaya": {
+    "synopsis": "Nurmas tumbuh dengan nama yang menyimpan harapan tentang cahaya dan kemuliaan. Masa kecilnya dipenuhi permainan, persahabatan, pertengkaran, serta petualangan di kampung. Di antara kejadian sederhana bersama keluarga dan teman-temannya, sebuah peristiwa membuat warga mengenangnya sebagai si anak cahaya. Kisah ini menyoroti proses tumbuh seorang anak melalui hubungan dengan lingkungan terdekatnya."
+  },
+  "si-anak-spesial": {
+    "synopsis": "Burlian adalah anak keras kepala yang sejak kecil diyakinkan Bapak dan Mamak bahwa dirinya istimewa. Perjalanan masa kecilnya di kampung dipenuhi rasa ingin tahu dan pengalaman yang menguji keyakinan itu. Dukungan keluarga menjadi bekal ketika ia menghadapi persoalan dan memandang dunia yang jauh lebih luas daripada tempat kelahirannya."
+  },
+  "si-putih": {
+    "synopsis": "Wabah di Klan Polaris memisahkan No-u dari keluarganya ketika ia tak dapat ikut dalam evakuasi. Di tengah keadaan itu, ia bertualang bersama Si Putih, kucing yang menyimpan keistimewaan. Pertemuan dengan Pak Tua membantunya memahami kemampuan berkomunikasi dengan hewan dan tumbuhan. Perjalanan mereka membuka sisi lain dunia paralel dalam semesta Bumi."
+  },
+  "sisi-tergelap-surga": {
+    "synopsis": "Di balik harapan besar yang dibawa para pendatang, Jakarta menyimpan kehidupan orang-orang yang harus berjuang dari hari ke hari. Pemulung, pengamen, pekerja jalanan, dan penghuni kampung menghadapi kemiskinan, kuasa kecil yang menindas, serta pilihan yang serba sulit. Melalui kehidupan mereka, novel ini memperlihatkan ketabahan manusia dan harga yang harus dibayar untuk bertahan di ibu kota."
+  },
+  "sungguh-kau-boleh-pergi": {
+    "synopsis": "Kumpulan sajak bergambar ini mengangkat perubahan perasaan dalam hubungan, dari cinta dan kepercayaan hingga keraguan serta perpisahan. Tere Liye menempatkan pengalaman kehilangan berdampingan dengan harapan bahwa kehidupan terus bergerak. Melalui puisi-puisi pendek dan ilustrasi, buku ini mengajak pembaca merenungkan kepergian, komitmen, dan usaha memahami orang yang pernah berarti."
+  },
+  "surat-cinta-tanpa-nama-2": {
+    "synopsis": "Sebuah surat cinta misterius membuat Sabrina terjebak dalam hubungan dengan Jovan, murid yang dikenal jago matematika. Untuk mengakhiri hubungan itu, Sabrina harus memecahkan soal darinya. Sementara Arka, orang yang disukai Sabrina, terus salah paham, ancaman di media sosial dan kecelakaan membuat situasinya semakin rumit. Sabrina bertekad mencari jalan keluar sekaligus mengungkap pelaku teror."
+  },
+  "surat-cinta-tanpa-nama": {
+    "synopsis": "Syifa akhirnya berpacaran dengan Habibi, lelaki yang sudah lama disukainya. Namun, hubungan yang harus dirahasiakan membuat kebahagiaannya berubah menjadi kebimbangan. Kehadiran Dion yang mendekatinya secara terbuka menawarkan kemungkinan lain, sementara seorang pengagum rahasia terus menyembunyikan identitas. Syifa harus memahami perasaannya sebelum memutuskan kepada siapa ia akan memberikan kesempatan dan kepercayaan."
+  },
+  "surat-untuk-yang-pernah-patah-hati": {
+    "synopsis": "Melalui tulisan yang menyapa pembaca secara langsung, buku ini mengajak orang yang pernah patah hati untuk meninjau perasaannya dengan jujur. Cinta yang tersisa, kerinduan, perhatian, dan kebahagiaan menjadi pokok renungannya. Buku ini memberi ruang bagi pertanyaan yang sering disembunyikan setelah sebuah hubungan berubah, termasuk perbedaan antara merasa bahagia dan berpura-pura baik-baik saja."
+  },
+  "the-art-of-loving-memaknai-hakikat-cinta": {
+    "synopsis": "Erich Fromm memandang kemampuan mencintai sebagai sesuatu yang perlu dipelajari dan dikembangkan bersama kedewasaan pribadi. Buku ini membahas mengapa perasaan saja tidak cukup, serta pentingnya kerendahan hati, keberanian, keyakinan, dan disiplin dalam hubungan. Pembaca diajak meninjau cara mencintai sesama dan mengembangkan diri agar kasih sayang menjadi tindakan yang bertanggung jawab."
+  },
+  "the-devotion-of-suspect-x-yogisha-x-no-kenshin-kesetiaan-mr": {
+    "synopsis": "Yasuko dan putrinya terlibat dalam kematian mantan suami yang datang mengancam mereka. Tetangga mereka, Ishigami, seorang guru matematika, menawarkan bantuan untuk menyembunyikan kejadian itu. Ketika polisi meminta bantuan fisikawan Yukawa, penyelidikan berubah menjadi pertarungan kecerdasan antara dua kenalan lama. Di balik alibi yang tampak kokoh, tersimpan pengorbanan dan perasaan yang sulit diterka."
+  },
+  "ya-allah-aku-jatuh-cinta": {
+    "synopsis": "Buku ini membahas perjalanan perasaan menuju hubungan yang dipandang sesuai dengan ajaran Islam. Pembaca diajak meninjau pacaran, taaruf, menjaga hati, masa penantian, dan persiapan pernikahan. Alih-alih hanya membicarakan keinginan menemukan pasangan, penulis menempatkan persoalan cinta dalam hubungan dengan keyakinan, kesiapan diri, serta pilihan yang diambil sebelum membangun rumah tangga."
+  },
+  "young-adult-kiss-me-in-new-york": {
+    "synopsis": "Charlotte, pelajar pertukaran asal Inggris yang sedang patah hati, tertahan di bandara New York pada malam Natal karena badai salju. Di sana, Anthony juga baru saja mengalami kekecewaan dalam hubungan. Ketika keduanya berbagi perjalanan menuju Manhattan, mereka memutuskan menjelajahi kota bersama. Pertemuan tak terduga itu memberi mereka kesempatan melihat kembali cinta dan harapan."
+  },
+  "Salinan Salinan (Un)Perfect Marriage by Octaka.pdf": {
+    "exclude": true,
+    "_reason": "Mempertahankan katalog 139 buku yang sudah ada sebelum kelanjutan sprint; cache masih menyimpan buku ini."
+  },
+  "matahari": {
+    "synopsis": "Ali mengajak Raib dan Seli menjelajahi dunia paralel dengan kapsul buatannya. Kecerdasan Ali membawa ketiganya memasuki Klan Bintang, tempat teknologi dan rahasia baru menanti di balik terowongan kuno. Petualangan ini menguji kemampuan mereka menghadapi bahaya sekaligus memperlihatkan arti saling percaya ketika kekuatan istimewa saja tidak cukup untuk menyelamatkan sahabat."
+  },
+  "pergi": {
+    "synopsis": "Setelah menjadi pemimpin Keluarga Tong, Bujang harus menjaga kelompoknya di tengah perebutan kekuasaan ekonomi bayangan. Serangan keluarga lain dan ancaman Master Dragon membuat tanggung jawab barunya semakin berat. Kelanjutan kisah Pulang ini mengikuti perjuangannya menghadapi musuh, jejak masa lalu, serta pertanyaan tentang arah hidup yang ingin ia pilih."
+  },
+  "rindu": {
+    "synopsis": "Kapal Blitar Holland membawa para penumpang dari Makassar menuju Tanah Suci dalam pelayaran panjang. Di antara mereka tersimpan kisah masa lalu yang menyakitkan, kebencian terhadap orang terdekat, kehilangan, cinta, dan pergulatan dengan kemunafikan. Perjalanan haji mempertemukan lima persoalan batin itu dengan kesempatan untuk memahami diri dan menghadapi luka yang belum selesai."
+  },
+  "sang-penandai": {
+    "synopsis": "Jim kehilangan Nayla dan merasa tidak sanggup melanjutkan hidup tanpa perempuan yang dicintainya. Di tengah keputusasaan, ia bertemu Sang Penandai, sosok misterius yang menjaga kisah-kisah dongeng. Pertemuan itu membuka perjalanan penuh bahaya dan pilihan sulit, ketika Jim perlahan belajar menghadapi kehilangan serta mencari alasan untuk terus menjalani hidup."
+  },
+  "semoga-bunda-disayang-allah": {
+    "synopsis": "Melati tidak dapat melihat dan mendengar, sementara keluarganya belum menemukan cara untuk berkomunikasi dengannya. Sang bunda meminta bantuan Karang, pemuda yang dihantui kematian anak-anak dalam sebuah kecelakaan kapal. Pertemuan mereka mempertautkan perjuangan seorang ibu, kebutuhan Melati untuk mengenal dunia, dan usaha Karang menghadapi rasa bersalah yang menguasai hidupnya."
+  },
+  "si-anak-badai-unedited-version": {
+    "synopsis": "Seorang anak tumbuh di kampung tempat sungai bertemu laut, dikelilingi keluarga, sahabat, dan kehidupan perairan yang akrab. Ketika sesuatu mengancam milik bersama, keberanian anak-anak itu diuji untuk mempertahankannya. Petualangan masa kecil mereka menghadirkan cerita tentang persahabatan, pendidikan, kebersamaan warga, dan belajar bersikap tegas demi tempat yang mereka cintai."
+  },
+  "si-anak-pintar": {
+    "synopsis": "Pukat dikenal cerdas, jujur, dan teguh memegang janji di tengah kehidupan keluarganya yang ramai. Bersama saudara serta teman-temannya, ia menjalani masa kecil yang dipenuhi keusilan, pertengkaran, dan petualangan di kampung. Berbagai kejadian menantang kepintarannya sekaligus mengajaknya menemukan jawaban atas pertanyaan tentang harta paling berharga yang dimiliki tempat tinggalnya."
+  },
+  "tentang-kamu": {
+    "synopsis": "Zaman Zulkarnaen mendapat tugas menelusuri kehidupan seorang perempuan berpaspor Inggris yang meninggalkan kekayaan luar biasa setelah meninggal. Pencarian itu membawanya melintasi tiga negara dan lima kota, mengikuti jejak luka serta pilihan hidup kliennya. Perkara warisan perlahan membuka kisah keteguhan seseorang dalam menghadapi masa lalu, kehilangan, dan cobaan yang terus datang."
+  },
+  "teruslah-bodoh-jangan-pintar": {
+    "synopsis": "Dalam cerita yang berpusat pada sebuah ruangan kecil, kepentingan politik, ekonomi, dan hukum saling berhadapan. Orang-orang yang menguasai aturan dapat memakai kepintaran untuk menutupi keserakahan dan mempertahankan kuasa. Novel ini mengajak pembaca mengikuti pertarungan tersebut sambil mempertanyakan pilihan antara tetap diam atau berani melawan ketidakadilan yang dibuat tampak wajar."
+  },
+  "yang-telah-lama-pergi": {
+    "synopsis": "Pada abad ketiga belas, perjalanan Mas'ud terganggu ketika kapal yang ditumpanginya diserang perompak di sekitar Selat Malaka. Peta, catatan, dan perlengkapan kerjanya ikut dirampas. Keputusan nekat untuk mengambilnya kembali justru membuat ia tertangkap di kapal perompak, membuka petualangan berbahaya di perairan yang dikuasai kelompok dengan kekuatan jauh melampaui dugaannya."
+  },
+  "young-adult-dua-aksara-go": {
+    "synopsis": "Sugihara, remaja Korea yang bersekolah di Jepang, menghadapi perundungan dan prasangka tentang asal-usulnya. Kedekatan dengan Sakurai tumbuh lewat musik klasik dan film, tetapi ia menyembunyikan identitas Koreanya karena takut kehilangan hubungan itu. Kisah mereka mempertemukan cinta pertama dengan persoalan kejujuran, diskriminasi, dan keberanian menentukan siapa dirinya di tengah batas-batas kebangsaan."
+  },
+  "Salinan Salinan Biarkan Aku Mencintaimu (Two Alone) by Sandra Brown.pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Cinta Itu Dipraktekin (Adinto F. Susanto).pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Cinta Keparat by Enniyy.pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Confess (Pengakuan) by Colleen Hoover.pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Defeated by Love by Ghina Nauvalia.pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Kawin Paksa by Rustina Zahra.pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Kekasih Akhir Pekan by Aya Emily.pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Pernikahan Tanpa Cinta (Ruthlessly Bedded, Forcibly Wedded) by Abby Green.pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Semua Ingin Jatuh Cinta Love Quotes Kahlil Gibran by Gieb Harri.pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Semua Tentang Cinta by Ronald Frank.pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Serpihan Cinta Bipolar (Runaway Husband) by Mira.pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  },
+  "Salinan Salinan Sex Menemukan Cinta Sejati dalam Dunia yang Penuh Kepalsuan (Dave Bordon)(1).pdf": {
+    "exclude": true,
+    "_reason": "Dihapus dari web atas instruksi pengguna 7 November 2026"
+  }
+}

@@ -1,0 +1,455 @@
+{
+  "lumpu": {
+    "synopsis": "Raib, Seli, dan Ali kembali menjelajahi dunia paralel untuk menyelamatkan Miss Selena. Lawan mereka, Lumpu, mampu melumpuhkan kekuatan petarung lain. Demi menghadapi ancaman itu, Ali mencari bantuan dari sosok yang tak terduga. Misi penyelamatan ini juga mempertemukan mereka dengan persoalan kepercayaan, pengampunan, dan jejak sejarah Klan Aldebaran.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/lumpu-1",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "matahari": {
+    "synopsis": "Ali mengajak Raib dan Seli menjelajahi dunia paralel dengan kapsul buatannya. Kecerdasan Ali membawa ketiganya memasuki Klan Bintang, tempat teknologi dan rahasia baru menanti di balik terowongan kuno. Petualangan ini menguji kemampuan mereka menghadapi bahaya sekaligus memperlihatkan arti saling percaya ketika kekuatan istimewa saja tidak cukup untuk menyelamatkan sahabat.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/public/data/text/matahari.json",
+        "title": "Teks buku lokal Matahari, halaman PDF 210 dan 403"
+      }
+    ],
+    "evidence": "Halaman 210 mengenalkan asal ketiganya, kapsul Ali, terowongan kuno, dan kota Zaramaraz di Klan Bintang; halaman 403 adalah blurb sampul belakang tentang kekuatan mereka dan persahabatan."
+  },
+  "menggapai-cinta-nya-amalan-amalan-yang-dicintai-allah-menurut-al-quran-dan-hadis": {
+    "synopsis": "Dedi Saputra menyusun pembahasan tentang amalan yang, menurut penafsirannya atas Al-Qur’an dan hadis, mendekatkan seorang hamba kepada cinta Allah. Buku ini berangkat dari keinginan memberi nasihat dan pengarahan menuju kehidupan beragama yang lebih baik. Pembaca diajak memikirkan hubungan antara perilaku sehari-hari, ketaatan, dan usaha memperbaiki diri melalui petunjuk agama.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/public/data/text/menggapai-cinta-nya-amalan-amalan-yang-dicintai-allah-menurut-al-quran-dan-hadis.json",
+        "title": "Buku sumber lokal — Kata pengantar, halaman PDF 5–7. Nama lengkap penyusun tertulis Dedi Saputra."
+      }
+    ],
+    "evidence": "Kata pengantar, halaman PDF 5–7. Nama lengkap penyusun tertulis Dedi Saputra.",
+    "author": "Dedi Saputra"
+  },
+  "nebula-unedited-version": {
+    "synopsis": "Selena melanjutkan pendidikan di Akademi Bayangan Tingkat Tinggi bersama dua sahabatnya, Mata dan Tazk. Keinginan menjelajahi tempat jauh membawa mereka menuju rahasia Klan Nebula. Namun, rasa suka, kepentingan pribadi, dan pengkhianatan mulai menguji persahabatan mereka. Kelanjutan kisah Selena ini membuka asal-usul orang tua Raib serta bagian penting dari sejarah dunia paralel.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/nebula-3",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ],
+    "evidence": "Premis karya berdasarkan blurb edisi terbit; berkas berlabel unedited version. Kesamaan detail penyuntingan belum diverifikasi."
+  },
+  "nebula-unedited-version-2": {
+    "synopsis": "Selena melanjutkan pendidikan di Akademi Bayangan Tingkat Tinggi bersama dua sahabatnya, Mata dan Tazk. Keinginan menjelajahi tempat jauh membawa mereka menuju rahasia Klan Nebula. Namun, rasa suka, kepentingan pribadi, dan pengkhianatan mulai menguji persahabatan mereka. Kelanjutan kisah Selena ini membuka asal-usul orang tua Raib serta bagian penting dari sejarah dunia paralel.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/nebula-3",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ],
+    "evidence": "Varian EPUB dari karya yang sama; sinopsis mengikuti premis karya, tanpa mengklaim kesamaan penyuntingan."
+  },
+  "negeri-para-bedebah": {
+    "synopsis": "Thomas dikenal sebagai konsultan keuangan yang cakap dan berpengaruh. Ketika Bank Semesta tersandung perkara yang mengancam kelangsungannya, hubungan keluarga mendorong Thomas turun tangan. Upayanya menyelamatkan bank mempertemukannya dengan permainan uang, hukum, dan kekuasaan. Di balik reputasi profesionalnya, masa lalu yang kelam turut membayangi pilihan dan kesetiaan yang harus ia pertaruhkan.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/negeri-para-bedebah-1",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "otodidak-jago-kuasai-bahasa-inggris-dari-nol": {
+    "synopsis": "Panduan belajar mandiri ini memperkenalkan dasar tata bahasa Inggris melalui pembahasan jenis kata dan pembentukan kalimat. Materinya meliputi kata benda, kata kerja, kata ganti, tenses, serta penggunaan kata kerja bantu dan modal. Penjelasan disusun sebagai rujukan bagi pembaca yang ingin memahami grammar secara bertahap dan kembali membuka topik tertentu saat diperlukan.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/.cache/pages/otodidak-jago-kuasai-bahasa-inggris-dari-nol/003.webp",
+        "title": "Buku sumber lokal — Daftar isi halaman PDF 3"
+      }
+    ],
+    "evidence": "Daftar isi halaman PDF 3; halaman hak cipta PDF 2 menyebut penyusun Wahidah Murriska.",
+    "author": "Wahidah Murriska"
+  },
+  "oxford-guide-to-english-grammar": {
+    "synopsis": "Panduan ini menguraikan bentuk dan penggunaan tata bahasa Inggris, terutama ragam baku Inggris Britania. Materinya mencakup susunan kalimat, kata kerja, frasa nomina, klausa, hingga pembentukan kata. Contoh teks dan percakapan memperlihatkan hubungan antara aturan dan konteks pemakaian. Buku ini ditujukan terutama bagi pelajar tingkat menengah dan lanjut serta pengajar yang membutuhkan rujukan tata bahasa.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/public/data/text/oxford-guide-to-english-grammar.json",
+        "title": "Buku sumber lokal — Daftar isi dan Introduction, halaman PDF 3–5."
+      }
+    ],
+    "evidence": "Daftar isi dan Introduction, halaman PDF 3–5."
+  },
+  "perempuan-patah-hati-yang-kembali-menemukan-cinta-melalui-mimpi": {
+    "synopsis": "Seorang perempuan mendapat gambaran tentang calon kekasihnya melalui mimpi. Lelaki itu tinggal di Pangandaran dan biasa berlari di pantai bersama seekor anjing. Bayangan yang terus membekas membuatnya jatuh cinta kepada seseorang yang belum ditemuinya. Kisah yang menjadi judul buku ini mempertemukan patah hati, harapan, dan pertanyaan tentang kepercayaan terhadap mimpi.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/perempuan-patah-hati-yang-kembali-menemukan-cinta-melalui-mimpi",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "pergi": {
+    "synopsis": "Setelah menjadi pemimpin Keluarga Tong, Bujang harus menjaga kelompoknya di tengah perebutan kekuasaan ekonomi bayangan. Serangan keluarga lain dan ancaman Master Dragon membuat tanggung jawab barunya semakin berat. Kelanjutan kisah Pulang ini mengikuti perjuangannya menghadapi musuh, jejak masa lalu, serta pertanyaan tentang arah hidup yang ingin ia pilih.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/pergi-3",
+        "title": "Gramedia: Pergi"
+      }
+    ],
+    "evidence": "Deskripsi katalog menyebut Bujang menggantikan Tauke Besar, serangan keluarga ekonomi bayangan, dan ancaman Master Dragon."
+  },
+  "pernikahan-tanpa-cinta-ruthlessly-bedded-forcibly-wedded": {
+    "synopsis": "Vincenzo Valentini menyalahkan Cara Brosnan atas kehancuran hidup adiknya. Ia mendekati Cara untuk membalas dendam, lalu meninggalkannya setelah mengungkap identitasnya. Cara, yang merasa tidak bersalah, harus menghadapi luka pengkhianatan dan kehamilan yang tak disangka. Ketika Vincenzo kembali menuntut pernikahan, hubungan mereka dibayangi tuduhan, ketidakpercayaan, dan akibat dari pembalasan yang kejam.",
+    "sources": [
+      {
+        "url": "https://harlequin.com/products/ruthlessly-bedded-forcibly-wedded",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ],
+    "author": "Abby Green"
+  },
+  "pernikahan-yang-agung": {
+    "synopsis": "Dua minggu sebelum menikah, Mirna mengetahui skandal dalam keluarganya dan menunda pernikahan dengan Arif. Ia pergi ke San Francisco untuk menemui sahabat penanya, David, sementara hubungan Arif juga berubah. Setelah pulang, sebuah surat tanpa nama kembali mengguncang hidup Mirna. Novel ini mengikuti kebimbangan, rahasia, dan persoalan kepercayaan yang membayangi rencana pernikahannya.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/public/data/text/pernikahan-yang-agung.json",
+        "title": "Buku sumber lokal — Sinopsis sampul belakang pada halaman PDF 428. Sampul mencantumkan NOVEL DEWASA"
+      }
+    ],
+    "evidence": "Sinopsis sampul belakang pada halaman PDF 428. Sampul mencantumkan NOVEL DEWASA; catatan untuk tinjauan, bukan perubahan kurasi otomatis."
+  },
+  "pinang-aku-di-saat-yang-tepat": {
+    "synopsis": "Buku ini membahas kesiapan menikah dan persoalan yang muncul ketika perkawinan dilakukan terlalu dini. Isinya mengajak pembaca mempertimbangkan waktu yang tepat, kehidupan setelah pernikahan, hubungan dua keluarga, serta tanggung jawab terhadap anak. Pembahasan juga mencakup keadaan ketika seseorang dipaksa menikah muda atau sudah telanjur menikah pada usia dini.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/.cache/pages/pinang-aku-di-saat-yang-tepat/007.webp",
+        "title": "Buku sumber lokal — Daftar isi halaman PDF 7"
+      }
+    ],
+    "evidence": "Daftar isi halaman PDF 7; cocok dengan karya Wirdyaningsih dkk. yang tercatat di scholar.ui.ac.id."
+  },
+  "pintar-bahasa-inggris-mind-map": {
+    "synopsis": "Buku ini menggunakan peta pikiran dan ilustrasi untuk membantu pembaca mempelajari kosakata serta tata bahasa Inggris. Materi disusun dengan pendekatan visual agar hubungan antarkonsep lebih mudah dipahami dan diingat. Pembaca diajak membangun penguasaan bahasa secara bertahap, terutama ketika menemui kesulitan dalam mengingat kata baru atau memahami pola grammar melalui penjelasan biasa.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/.cache/pages/pintar-bahasa-inggris-mind-map/384.webp",
+        "title": "Buku sumber lokal — Sinopsis penerbit Indonesia Tera pada sampul belakang, halaman PDF 384."
+      }
+    ],
+    "evidence": "Sinopsis penerbit Indonesia Tera pada sampul belakang, halaman PDF 384."
+  },
+  "rembulan-tenggelam-di-wajah-mu": {
+    "synopsis": "Ray telah membangun kerajaan bisnis besar, tetapi menjelang akhir hidupnya ia masih menyimpan pertanyaan yang tak terjawab. Perjalanan menelusuri kembali masa lalu membawanya pada pengalaman di panti asuhan, cinta, kehilangan, dan ambisi. Lima pertanyaan menjadi jalan untuk memahami hubungan antara pilihan pribadinya, penderitaan yang dialami, serta kehidupan orang-orang di sekitarnya.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/rembulan-tenggelam-di-wajahmu-1",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "rindu": {
+    "synopsis": "Kapal Blitar Holland membawa para penumpang dari Makassar menuju Tanah Suci dalam pelayaran panjang. Di antara mereka tersimpan kisah masa lalu yang menyakitkan, kebencian terhadap orang terdekat, kehilangan, cinta, dan pergulatan dengan kemunafikan. Perjalanan haji mempertemukan lima persoalan batin itu dengan kesempatan untuk memahami diri dan menghadapi luka yang belum selesai.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/rindu-3",
+        "title": "Gramedia: Rindu"
+      }
+    ],
+    "evidence": "Katalog menyebut lima cerita dan pelayaran kapal uap Blitar Holland dari Makassar ke Mekkah; tidak menambahkan nama atau konflik tokoh di luar deskripsi."
+  },
+  "sang-penandai": {
+    "synopsis": "Jim kehilangan Nayla dan merasa tidak sanggup melanjutkan hidup tanpa perempuan yang dicintainya. Di tengah keputusasaan, ia bertemu Sang Penandai, sosok misterius yang menjaga kisah-kisah dongeng. Pertemuan itu membuka perjalanan penuh bahaya dan pilihan sulit, ketika Jim perlahan belajar menghadapi kehilangan serta mencari alasan untuk terus menjalani hidup.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/public/data/text/sang-penandai.json",
+        "title": "Teks buku lokal Sang Penandai, halaman PDF 1, 24, 37, dan 214"
+      }
+    ],
+    "evidence": "Pengantar penulis memperkenalkan kehilangan Jim; halaman 24 memperkenalkan Sang Penandai sebagai pembuat dongeng; halaman 37 memperlihatkan pengejar; halaman 214 mendukung tema berdamai dengan kenangan Nayla."
+  },
+  "sebelas": {
+    "synopsis": "Sebelas anak berbakat dari berbagai wilayah Indonesia dikumpulkan untuk membentuk sebuah tim sepak bola. Bersama Paul, mereka membawa kemampuan dan harapan masing-masing menuju tantangan menghadapi klub-klub besar dunia. Perjalanan membangun kesebelasan ini juga mempertanyakan arti sepak bola: permainan yang menyatukan manusia, atau industri yang semakin dikuasai uang, ketenaran, dan kepentingan komersial.",
+    "sources": [
+      {
+        "url": "https://books.google.com/books/about/SEBELAS_Tere_Liye.html?id=QHOTEQAAQBAJ",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "selamat-tinggal-unedited-version": {
+    "synopsis": "Sintong Tinggal adalah mahasiswa sastra yang belum juga menyelesaikan kuliahnya. Sambil tinggal di perantauan, ia menjaga toko buku milik kerabat dekat stasiun. Buku-buku yang dijual ternyata bajakan, sehingga pekerjaan itu menyimpan persoalan yang sulit ia abaikan. Kehidupan Sintong mempertemukan impian seorang mahasiswa dengan pertanyaan tentang kejujuran dan tanggung jawab terhadap karya orang lain.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/selamat-tinggal-1",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ],
+    "evidence": "Premis karya berdasarkan blurb edisi terbit; berkas berlabel unedited version. Kesamaan detail penyuntingan belum diverifikasi."
+  },
+  "semoga-bunda-disayang-allah": {
+    "synopsis": "Melati tidak dapat melihat dan mendengar, sementara keluarganya belum menemukan cara untuk berkomunikasi dengannya. Sang bunda meminta bantuan Karang, pemuda yang dihantui kematian anak-anak dalam sebuah kecelakaan kapal. Pertemuan mereka mempertautkan perjuangan seorang ibu, kebutuhan Melati untuk mengenal dunia, dan usaha Karang menghadapi rasa bersalah yang menguasai hidupnya.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/public/data/text/semoga-bunda-disayang-allah.json",
+        "title": "Teks buku lokal Semoga Bunda Disayang Allah, halaman PDF 75, 91–96, dan 104–108"
+      }
+    ],
+    "evidence": "Permintaan keluarga pada halaman 75 dan 104–108; kondisi penglihatan/pendengaran Melati eksplisit pada 105–107; kecelakaan kapal pada 91–96. Tidak mengklaim penyembuhan disabilitas."
+  },
+  "semua-ingin-jatuh-cinta-love-quotes-kahlil-gibran": {
+    "synopsis": "Kumpulan kutipan ini menghadirkan renungan Kahlil Gibran tentang cinta, hubungan antarmanusia, kebahagiaan, dan luka perasaan. Disusun oleh Gieb Harri, buku ini menawarkan bacaan singkat yang dapat direnungkan satu per satu. Berbagai pandangan mengenai mencintai dan dicintai mengajak pembaca melihat bagaimana perasaan membentuk cara seseorang memahami dirinya, orang lain, dan kehidupan.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/.cache/pages/semua-ingin-jatuh-cinta-love-quotes-kahlil-gibran/106.webp",
+        "title": "Buku sumber lokal — Sampul belakang penerbit Mediakita, halaman PDF 106"
+      }
+    ],
+    "evidence": "Sampul belakang penerbit Mediakita, halaman PDF 106; tidak menyalin kutipan."
+  },
+  "semua-tentang-cinta": {
+    "synopsis": "Ronald Frank mengajak pembaca memikirkan cinta melalui hubungan antara perkenalan, perhatian, dan kesetiaan. Buku ini menempatkan cinta sebagai pengalaman yang memiliki banyak arti, sehingga tidak selalu mudah dipahami atau ditemukan. Pembahasannya berpusat pada bagaimana perasaan hadir, dipelihara, dan dipertahankan dalam hubungan, serta bagaimana seseorang memahami maknanya melalui pengalaman bersama orang lain.",
+    "sources": [
+      {
+        "url": "https://bukune.com/product/semua-tentang-cinta/",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "seni-mencintai": {
+    "synopsis": "Erich Fromm memandang kemampuan mencintai sebagai sesuatu yang perlu dipelajari dan dikembangkan bersama kedewasaan pribadi. Buku ini membahas mengapa perasaan saja tidak cukup, serta pentingnya kerendahan hati, keberanian, keyakinan, dan disiplin dalam hubungan. Pembaca diajak meninjau cara mencintai sesama dan mengembangkan diri agar kasih sayang menjadi tindakan yang bertanggung jawab.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/public/data/text/seni-mencintai.json",
+        "title": "Buku sumber lokal — Pengantar halaman PDF 3–4"
+      }
+    ],
+    "evidence": "Pengantar halaman PDF 3–4; halaman PDF 2 mengonfirmasi terjemahan The Art of Loving."
+  },
+  "seporsi-mie-ayam-sebelum-mati-brian-khrisna": {
+    "synopsis": "Ale merasa sendirian setelah bertahun-tahun menghadapi perundungan, penolakan, dan depresi. Saat kehilangan harapan untuk melanjutkan hidup, keinginan makan seporsi mie ayam menunda keputusan terakhirnya. Penundaan kecil itu membuka jalan menuju perjumpaan yang mengubah cara ia melihat dunia. Cerita ini menelusuri kesepian, perhatian antarmanusia, dan kemungkinan menemukan kembali alasan untuk bertahan.",
+    "sources": [
+      {
+        "url": "https://store.kompas.com/seporsi-mie-ayam-sebelum-mati",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "sepotong-hati-yang-baru": {
+    "synopsis": "Kumpulan cerita pendek ini menghadirkan berbagai pengalaman mencintai dan kehilangan, dari kisah bernuansa legenda sampai hubungan manusia biasa. Tokoh-tokohnya berhadapan dengan hati yang terluka, penyesalan, serta keinginan memulai kembali. Melalui pengalaman yang berbeda-beda, cerita-cerita tersebut mengajak pembaca memikirkan bagaimana memahami perasaan sendiri dan menerima bahwa setiap kisah cinta mempunyai makna.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/sepotong-hati-yang-baru-1",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "serpihan-cinta-bipolar-runaway-husband": {
+    "synopsis": "Novi terkejut ketika suaminya meninggalkan rumah tangga mereka dan menjalin hubungan dengan perempuan lain. Kepergian itu membuatnya mempertanyakan cinta dan kesetiaan yang selama ini ia yakini. Novel ini menempatkan gangguan bipolar dalam konflik perkawinan dan keluarga, termasuk perjuangan seorang ibu mendampingi anaknya, serta menguji bagaimana para tokoh memahami kasih sayang di tengah krisis.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/.cache/pages/serpihan-cinta-bipolar-runaway-husband/316.webp",
+        "title": "Buku sumber lokal — Sinopsis penerbit Gramedia Pustaka Utama pada sampul belakang, halaman PDF 316. Deskripsi cerita"
+      }
+    ],
+    "evidence": "Sinopsis penerbit Gramedia Pustaka Utama pada sampul belakang, halaman PDF 316. Deskripsi cerita; tidak menjadikan klaim penyembuhan pada blurb sebagai nasihat medis."
+  },
+  "setiap-rasa-ada-batasnya-setiap-kita-ada-jodohnya": {
+    "synopsis": "Buku ini membahas cara menghadapi jatuh cinta dan patah hati dengan mempertimbangkan perasaan sekaligus pikiran. Pembaca diajak mengenali kecewa, marah, dan kesedihan tanpa membiarkan semuanya menguasai keputusan hidup. Melalui pembahasan tentang hubungan dan harapan akan pasangan, penulis menawarkan renungan untuk bangkit dari luka serta membangun kembali kebahagiaan.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/.cache/pages/setiap-rasa-ada-batasnya-setiap-kita-ada-jodohnya/202.webp",
+        "title": "Buku sumber lokal — Sinopsis penerbit QultumMedia pada sampul belakang, halaman PDF 202."
+      }
+    ],
+    "evidence": "Sinopsis penerbit QultumMedia pada sampul belakang, halaman PDF 202."
+  },
+  "sex-menemukan-cinta-sejati-dalam-dunia-yang-penuh-kepalsuan": {
+    "synopsis": "Dave Bordon membahas hubungan antara cinta dan seks melalui sudut pandang iman Kristen. Buku ini berupaya menanggapi kebingungan dan anggapan keliru tentang keduanya, serta mengajak pembaca memikirkan keintiman dalam kaitannya dengan komitmen dan perkawinan. Pembahasan disajikan sebagai refleksi rohani tentang makna hubungan, bukan sebagai kisah romantis dengan tokoh dan alur fiksi.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/.cache/pages/sex-menemukan-cinta-sejati-dalam-dunia-yang-penuh-kepalsuan/004.webp",
+        "title": "Buku sumber lokal — Pendahuluan halaman PDF 4"
+      }
+    ],
+    "evidence": "Pendahuluan halaman PDF 4; halaman hak cipta PDF 3 mengonfirmasi terjemahan SEX: Discovering Real Love in a World of Counterfeits (Barbour), diterbitkan Immanuel."
+  },
+  "si-anak-badai-unedited-version": {
+    "synopsis": "Seorang anak tumbuh di kampung tempat sungai bertemu laut, dikelilingi keluarga, sahabat, dan kehidupan perairan yang akrab. Ketika sesuatu mengancam milik bersama, keberanian anak-anak itu diuji untuk mempertahankannya. Petualangan masa kecil mereka menghadirkan cerita tentang persahabatan, pendidikan, kebersamaan warga, dan belajar bersikap tegas demi tempat yang mereka cintai.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/si-anak-badai",
+        "title": "Gramedia: Si Anak Badai"
+      }
+    ],
+    "evidence": "Sinopsis bertumpu pada blurb edisi terbit. Berkas koleksi berlabel unedited version; kesamaan detail penyuntingan belum diverifikasi sehingga tidak menambahkan detail adegan atau nama tokoh."
+  },
+  "si-anak-cahaya": {
+    "synopsis": "Nurmas tumbuh dengan nama yang menyimpan harapan tentang cahaya dan kemuliaan. Masa kecilnya dipenuhi permainan, persahabatan, pertengkaran, serta petualangan di kampung. Di antara kejadian sederhana bersama keluarga dan teman-temannya, sebuah peristiwa membuat warga mengenangnya sebagai si anak cahaya. Kisah ini menyoroti proses tumbuh seorang anak melalui hubungan dengan lingkungan terdekatnya.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/si-anak-cahaya",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "si-anak-pintar": {
+    "synopsis": "Pukat dikenal cerdas, jujur, dan teguh memegang janji di tengah kehidupan keluarganya yang ramai. Bersama saudara serta teman-temannya, ia menjalani masa kecil yang dipenuhi keusilan, pertengkaran, dan petualangan di kampung. Berbagai kejadian menantang kepintarannya sekaligus mengajaknya menemukan jawaban atas pertanyaan tentang harta paling berharga yang dimiliki tempat tinggalnya.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/si-anak-pintar",
+        "title": "Gramedia: Si Anak Pintar"
+      }
+    ],
+    "evidence": "Blurb mengenalkan Pukat sebagai anak pintar, jujur, dan penepat janji, dengan teka-teki harta kampung. Tidak memakai urutan saudara yang bertentangan pada listing lain."
+  },
+  "si-anak-spesial": {
+    "synopsis": "Burlian adalah anak keras kepala yang sejak kecil diyakinkan Bapak dan Mamak bahwa dirinya istimewa. Perjalanan masa kecilnya di kampung dipenuhi rasa ingin tahu dan pengalaman yang menguji keyakinan itu. Dukungan keluarga menjadi bekal ketika ia menghadapi persoalan dan memandang dunia yang jauh lebih luas daripada tempat kelahirannya.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/si-anak-spesial",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "si-putih": {
+    "synopsis": "Wabah di Klan Polaris memisahkan No-u dari keluarganya ketika ia tak dapat ikut dalam evakuasi. Di tengah keadaan itu, ia bertualang bersama Si Putih, kucing yang menyimpan keistimewaan. Pertemuan dengan Pak Tua membantunya memahami kemampuan berkomunikasi dengan hewan dan tumbuhan. Perjalanan mereka membuka sisi lain dunia paralel dalam semesta Bumi.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/blog/buku-buku-penulis-indonesia-yang-cocok-dengan-kostum-met-gala-2022/",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "sisi-tergelap-surga": {
+    "synopsis": "Di balik harapan besar yang dibawa para pendatang, Jakarta menyimpan kehidupan orang-orang yang harus berjuang dari hari ke hari. Pemulung, pengamen, pekerja jalanan, dan penghuni kampung menghadapi kemiskinan, kuasa kecil yang menindas, serta pilihan yang serba sulit. Melalui kehidupan mereka, novel ini memperlihatkan ketabahan manusia dan harga yang harus dibayar untuk bertahan di ibu kota.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/sisi-tergelap-surga",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "sungguh-kau-boleh-pergi": {
+    "synopsis": "Kumpulan sajak bergambar ini mengangkat perubahan perasaan dalam hubungan, dari cinta dan kepercayaan hingga keraguan serta perpisahan. Tere Liye menempatkan pengalaman kehilangan berdampingan dengan harapan bahwa kehidupan terus bergerak. Melalui puisi-puisi pendek dan ilustrasi, buku ini mengajak pembaca merenungkan kepergian, komitmen, dan usaha memahami orang yang pernah berarti.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/.cache/pages/sungguh-kau-boleh-pergi/082.webp",
+        "title": "Buku sumber lokal — Sampul belakang penerbit Gramedia Pustaka Utama, halaman PDF 82"
+      }
+    ],
+    "evidence": "Sampul belakang penerbit Gramedia Pustaka Utama, halaman PDF 82; tidak menyalin sajak."
+  },
+  "surat-cinta-tanpa-nama-2": {
+    "synopsis": "Sebuah surat cinta misterius membuat Sabrina terjebak dalam hubungan dengan Jovan, murid yang dikenal jago matematika. Untuk mengakhiri hubungan itu, Sabrina harus memecahkan soal darinya. Sementara Arka, orang yang disukai Sabrina, terus salah paham, ancaman di media sosial dan kecelakaan membuat situasinya semakin rumit. Sabrina bertekad mencari jalan keluar sekaligus mengungkap pelaku teror.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/surat-cinta-tanpa-nama-1",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "surat-cinta-tanpa-nama": {
+    "synopsis": "Syifa akhirnya berpacaran dengan Habibi, lelaki yang sudah lama disukainya. Namun, hubungan yang harus dirahasiakan membuat kebahagiaannya berubah menjadi kebimbangan. Kehadiran Dion yang mendekatinya secara terbuka menawarkan kemungkinan lain, sementara seorang pengagum rahasia terus menyembunyikan identitas. Syifa harus memahami perasaannya sebelum memutuskan kepada siapa ia akan memberikan kesempatan dan kepercayaan.",
+    "sources": [
+      {
+        "url": "https://play.google.com/store/books/details/Nuniek_Kharisma_Rosalina_Surat_Cinta_tanpa_Nama?id=Z-KMDwAAQBAJ",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "surat-untuk-yang-pernah-patah-hati": {
+    "synopsis": "Melalui tulisan yang menyapa pembaca secara langsung, buku ini mengajak orang yang pernah patah hati untuk meninjau perasaannya dengan jujur. Cinta yang tersisa, kerinduan, perhatian, dan kebahagiaan menjadi pokok renungannya. Buku ini memberi ruang bagi pertanyaan yang sering disembunyikan setelah sebuah hubungan berubah, termasuk perbedaan antara merasa bahagia dan berpura-pura baik-baik saja.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/.cache/pages/surat-untuk-yang-pernah-patah-hati/246.webp",
+        "title": "Buku sumber lokal — Sampul belakang penerbit TransMedia, halaman PDF 246"
+      }
+    ],
+    "evidence": "Sampul belakang penerbit TransMedia, halaman PDF 246; dirangkum sebagai tema tanpa menyalin kalimat kreatif."
+  },
+  "tentang-kamu": {
+    "synopsis": "Zaman Zulkarnaen mendapat tugas menelusuri kehidupan seorang perempuan berpaspor Inggris yang meninggalkan kekayaan luar biasa setelah meninggal. Pencarian itu membawanya melintasi tiga negara dan lima kota, mengikuti jejak luka serta pilihan hidup kliennya. Perkara warisan perlahan membuka kisah keteguhan seseorang dalam menghadapi masa lalu, kehilangan, dan cobaan yang terus datang.",
+    "sources": [
+      {
+        "url": "https://www.gramedia.com/products/tentang-kamu",
+        "title": "Gramedia: Tentang Kamu"
+      }
+    ],
+    "evidence": "Deskripsi resmi menyebut Zaman, klien perempuan berpaspor Inggris, warisan besar, serta tiga negara dan lima kota. Tidak menambahkan angka warisan atau ahli waris yang tak disebut sumber."
+  },
+  "teruslah-bodoh-jangan-pintar": {
+    "synopsis": "Dalam cerita yang berpusat pada sebuah ruangan kecil, kepentingan politik, ekonomi, dan hukum saling berhadapan. Orang-orang yang menguasai aturan dapat memakai kepintaran untuk menutupi keserakahan dan mempertahankan kuasa. Novel ini mengajak pembaca mengikuti pertarungan tersebut sambil mempertanyakan pilihan antara tetap diam atau berani melawan ketidakadilan yang dibuat tampak wajar.",
+    "sources": [
+      {
+        "url": "https://play.google.com/store/books/details/Teruslah_Bodoh_Jangan_Pintar_Tere_Liye?hl=id&id=p7M7EQAAQBAJ",
+        "title": "Google Play Books: Teruslah Bodoh Jangan Pintar, penerbit Tere Liye"
+      },
+      {
+        "url": "https://www.gramedia.com/products/teruslah-bodoh-jangan-pintar",
+        "title": "Gramedia: Teruslah Bodoh Jangan Pintar, pengantar penulis"
+      }
+    ],
+    "evidence": "Deskripsi penulis pada Google Play mendukung tema hukum, kuasa, keserakahan, dan perlawanan. Pengantar orang pertama di Gramedia menyebut cerita berpusat ruangan 3x6 meter dan politik/ekonomi/hukum; ringkasan Ali di bawahnya bertentangan dan sengaja tidak digunakan. Pengantar juga menyebut pembaca 18+, dicatat untuk audit kurasi tanpa mengubahnya."
+  },
+  "the-art-of-loving-memaknai-hakikat-cinta": {
+    "synopsis": "Erich Fromm memandang kemampuan mencintai sebagai sesuatu yang perlu dipelajari dan dikembangkan bersama kedewasaan pribadi. Buku ini membahas mengapa perasaan saja tidak cukup, serta pentingnya kerendahan hati, keberanian, keyakinan, dan disiplin dalam hubungan. Pembaca diajak meninjau cara mencintai sesama dan mengembangkan diri agar kasih sayang menjadi tindakan yang bertanggung jawab.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/public/data/text/seni-mencintai.json",
+        "title": "Buku sumber lokal — Pengantar halaman PDF 3–4"
+      }
+    ],
+    "evidence": "Terjemahan lain dari The Art of Loving. Sinopsis menjelaskan gagasan karya; bukan klaim kesamaan terjemahan atau edisi."
+  },
+  "the-devotion-of-suspect-x-yogisha-x-no-kenshin-kesetiaan-mr": {
+    "synopsis": "Yasuko dan putrinya terlibat dalam kematian mantan suami yang datang mengancam mereka. Tetangga mereka, Ishigami, seorang guru matematika, menawarkan bantuan untuk menyembunyikan kejadian itu. Ketika polisi meminta bantuan fisikawan Yukawa, penyelidikan berubah menjadi pertarungan kecerdasan antara dua kenalan lama. Di balik alibi yang tampak kokoh, tersimpan pengorbanan dan perasaan yang sulit diterka.",
+    "sources": [
+      {
+        "url": "https://us.macmillan.com/books/9781429992312/thedevotionofsuspectx/",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "ya-allah-aku-jatuh-cinta": {
+    "synopsis": "Buku ini membahas perjalanan perasaan menuju hubungan yang dipandang sesuai dengan ajaran Islam. Pembaca diajak meninjau pacaran, taaruf, menjaga hati, masa penantian, dan persiapan pernikahan. Alih-alih hanya membicarakan keinginan menemukan pasangan, penulis menempatkan persoalan cinta dalam hubungan dengan keyakinan, kesiapan diri, serta pilihan yang diambil sebelum membangun rumah tangga.",
+    "sources": [
+      {
+        "url": "https://books.google.co.id/books?id=7t9MDwAAQBAJ",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  },
+  "yang-telah-lama-pergi": {
+    "synopsis": "Pada abad ketiga belas, perjalanan Mas'ud terganggu ketika kapal yang ditumpanginya diserang perompak di sekitar Selat Malaka. Peta, catatan, dan perlengkapan kerjanya ikut dirampas. Keputusan nekat untuk mengambilnya kembali justru membuat ia tertangkap di kapal perompak, membuka petualangan berbahaya di perairan yang dikuasai kelompok dengan kekuatan jauh melampaui dugaannya.",
+    "sources": [
+      {
+        "url": "C:/Users/septi/pojok-baca/.cache/pages/yang-telah-lama-pergi/010.webp",
+        "title": "Buku lokal Yang Telah Lama Pergi, halaman PDF 10–12"
+      },
+      {
+        "url": "https://www.gramedia.com/products/yang-telah-lama-pergi",
+        "title": "Gramedia: Yang Telah Lama Pergi, cuplikan pembuka"
+      }
+    ],
+    "evidence": "Halaman 10 menegaskan tahun 1200-an, keahlian peta, sergapan, dan penyusupan; 11–12 menerangkan perampasan serta kuasa perompak. Cuplikan resmi mengonfirmasi Mas'ud terbangun sebagai tawanan di kapal."
+  },
+  "young-adult-dua-aksara-go": {
+    "synopsis": "Sugihara, remaja Korea yang bersekolah di Jepang, menghadapi perundungan dan prasangka tentang asal-usulnya. Kedekatan dengan Sakurai tumbuh lewat musik klasik dan film, tetapi ia menyembunyikan identitas Koreanya karena takut kehilangan hubungan itu. Kisah mereka mempertemukan cinta pertama dengan persoalan kejujuran, diskriminasi, dan keberanian menentukan siapa dirinya di tengah batas-batas kebangsaan.",
+    "sources": [
+      {
+        "url": "https://play.google.com/store/books/details/Kazuki_Kaneshiro_Young_Adult_Dua_Aksara_Go?id=nSuUDwAAQBAJ",
+        "title": "Google Play Books: Young Adult: Dua Aksara (Go), Gramedia Pustaka Utama"
+      }
+    ],
+    "evidence": "Sinopsis publisher menyebut Sugihara, sekolah Jepang, Sakurai, musik klasik/film asing, identitas Korea tersembunyi, dan kekhawatiran diskriminasi."
+  },
+  "young-adult-kiss-me-in-new-york": {
+    "synopsis": "Charlotte, pelajar pertukaran asal Inggris yang sedang patah hati, tertahan di bandara New York pada malam Natal karena badai salju. Di sana, Anthony juga baru saja mengalami kekecewaan dalam hubungan. Ketika keduanya berbagi perjalanan menuju Manhattan, mereka memutuskan menjelajahi kota bersama. Pertemuan tak terduga itu memberi mereka kesempatan melihat kembali cinta dan harapan.",
+    "sources": [
+      {
+        "url": "https://coolabi.com/wp-content/uploads/2024/10/WPCatalogue2024-25.pdf",
+        "title": "Deskripsi buku dari penerbit atau katalog penjualan resmi"
+      }
+    ]
+  }
+}
