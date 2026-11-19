@@ -1,0 +1,16 @@
+---
+interface Props { page: number; hasNext: boolean }
+const {page,hasNext}=Astro.props;
+function href(target:number) {
+  const params=new URLSearchParams(Astro.url.search);
+  params.set('page',String(target));
+  return Astro.url.pathname+'?'+params.toString();
+}
+---
+{(page>1 || hasNext) && (
+  <nav class="flex flex-wrap items-center gap-4 text-sm" aria-label="Halaman hasil">
+    {page>1 && <a class="font-bold underline" href={href(page-1)}>Sebelumnya</a>}
+    <span>Halaman {page}</span>
+    {hasNext && <a class="font-bold underline" href={href(page+1)}>Berikutnya</a>}
+  </nav>
+)}
