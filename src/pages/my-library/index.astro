@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LibraryAction from '../../components/ui/LibraryAction.astro';
+import ListFilter from '../../components/ui/ListFilter.astro';
+import CopyText from '../../components/ui/CopyText.astro';
+import { getStudentLibrary, libraryTab, libraryTabs, readingHref } from '../../server/student-library';
+
+export const prerender = false;
+const identity = Astro.locals.identity;
+if (identity?.status !== 'ready' || identity.profile.role !== 'user') return new Response('Akses ditolak.', {status:403});
+const tab = libraryTab(Astro.url.searchParams.get('tab'));
+let library;
+try {
+  library = await getStudentLibrary(identity.profile.user_id);
+  if (!library) return new Response('Akses ditolak.', {status:403});
+} catch {
+  return new Response('Koleksi belum dapat dimuat. Coba lagi nanti.', {status:503});
+}
+const empty = {
+  history:'Belum ada riwayat baca. Buka buku untuk menyimpan posisi terakhirmu.',
+  books:'Belum ada buku favorit. Tekan Favoritkan buku dari reader.',
+  anchors:'Belum ada halaman atau paragraf favorit.',
+  quotes:'Belum ada kutipan. Simpan kutipan dari halaman atau seleksi paragraf di reader.',
+};
+---
+<BaseLayout title="Koleksiku" noIndex hideSearch>
+  <main id="main-content" class="container py-7 sm:py-11">
+    <header class="mb-6">
+      <h1 class="font-serif text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">Koleksiku</h1>
+      <p class="mt-2 text-text-muted">Lanjutkan bacaanmu dan temukan kembali bagian yang ingin kamu simpan.</p>
+    </header>
+    <nav data-library-tabs aria-label="Bagian koleksi" class="mb-6 flex flex-wrap gap-x-5 gap-y-2 border-b border-border">
+      {libraryTabs.map(([key,label]) => <a href={`/my-library/?tab=${key}`} aria-current={tab===key ? 'page' : undefined} data-tab-label={label}
+        class:list={['interaction-control px-2 py-3 text-sm font-bold hover:bg-surface-hover',tab===key && 'border-b-2 border-primary text-primary']}>
+          {label} <span class="ml-1 tabular-nums text-text-muted">{library[key].length}</span>
+        </a>)}
+    </nav>
+    <p data-library-status class="sr-only" role="status" aria-live="polite"></p>
+    <div data-library-panel>
+    {Astro.url.searchParams.has('saved') && <p role="status" class="mb-4 text-sm text-primary">Perubahan tersimpan.</p>}
+    {library[tab].length > 0 && <div class="mb-4"><ListFilter target="collection-items" label={tab === 'quotes' ? 'Cari kutipan atau judul' : 'Cari dalam koleksi'} /></div>}
+    {library[tab].length===0 ? (
+      <div class="rounded-xl border border-border bg-surface p-6">
+        <p>{empty[tab]}</p><a class="mt-2 inline-block text-sm font-semibold text-primary underline" href="/books/">Buka katalog</a>
+      </div>
+    ) : tab==='history' ? (
+      <ul id="collection-items" class="divide-y divide-border rounded-xl border border-border bg-surface px-4 sm:px-6">
+        {library.history.map((book) => (
+          <li data-find={`${book.title} ${book.author}`} class="grid gap-3 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+            <div class="min-w-0">
+              <h2 class="font-serif text-xl font-semibold">{book.title}</h2>
+              <p class="text-sm text-text-muted">{book.author} · {book.page != null ? `Halaman ${book.page}` : `Paragraf ${(book.paragraph ?? 0)+1}`}</p>
+              <label class="mt-2 flex items-center gap-2 text-sm"><progress class="w-32 accent-[#1e4d3b]" value={book.progress} max="100" aria-label={`Progres ${book.title}`} /> {Math.round(book.progress)}%</label>
+            </div>
+            {book.archived ? <span class="text-sm text-text-muted">Edisi lama sudah diarsipkan</span> :
+              <a href={readingHref(book.slug,book)} class="w-fit rounded-lg bg-[#1e4d3b] px-4 py-2 text-sm font-bold text-white">Lanjutkan Membaca</a>}
+          </li>
+        ))}
+      </ul>
+    ) : tab==='books' ? (
+      <ul id="collection-items" class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+        {library.books.map((book) => (
+          <li data-find={`${book.title} ${book.author}`} class="flex min-w-0 flex-col rounded-xl border border-border bg-surface p-3 sm:p-4">
+            {book.cover_url && <img src={book.cover_url} alt="" class="mb-3 aspect-[2/3] w-full rounded-md object-cover" loading="lazy" />}
+            <h2 class="break-words font-serif font-semibold">{book.archived ? book.title : <a class="hover:underline" href={`/book/${book.slug}/`}>{book.title}</a>}</h2>
+            <p class="mb-3 text-sm text-text-muted">{book.archived ? 'Diarsipkan' : book.author}</p>
+            <div class="mt-auto"><LibraryAction action="remove_book" tab={tab} label="Hapus favorit" fields={{slug:book.slug}} /></div>
+          </li>
+        ))}
+      </ul>
+    ) : tab==='anchors' ? (
+      <ul id="collection-items" class="divide-y divide-border rounded-xl border border-border bg-surface px-4 sm:px-6">
+        {library.anchors.map((item) => (
+          <li data-find={item.title} class="flex flex-wrap items-center justify-between gap-3 py-5">
+            <div><h2 class="font-serif text-xl font-semibold">{item.title}</h2>
+              <p class="text-sm text-text-muted">{item.page != null ? `Halaman ${item.page}` : `Paragraf ${(item.paragraph ?? 0)+1}`}</p>
+              {item.archived && <p class="text-sm text-text-muted">Edisi lama sudah diarsipkan</p>}
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              {!item.archived && <a class="text-sm font-bold text-primary underline" href={readingHref(item.slug,item)}>Buka posisi</a>}
+              <LibraryAction action="remove_anchor" tab={tab} label="Hapus" fields={{edition:item.edition,page:item.page,paragraph:item.paragraph}} />
+            </div>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <ul id="collection-items" class="space-y-3">
+        {library.quotes.map((quote) => (
+          <li data-find={`${quote.title} ${quote.text}`} class="rounded-xl border border-border bg-surface p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h2 class="text-sm font-semibold text-text-muted">{quote.title}</h2>
+              <span class="rounded bg-secondary px-2 py-1 text-xs font-bold">{
+                !quote.public ? 'Privat' : quote.moderation==='approved' ? 'Publik' : quote.moderation==='rejected' ? 'Ditolak' : 'Menunggu Moderasi'
+              }</span>
+            </div>
+            <blockquote class="my-4 whitespace-pre-line break-words font-serif text-lg">{quote.text}</blockquote>
+            <div class="flex flex-wrap gap-2">
+              <CopyText />
+              {(!quote.public || quote.moderation==='rejected') &&
+                <LibraryAction action="request_quote" tab={tab} label="Ajukan tampil publik" fields={{quote:quote.id}} />}
+              {quote.public && <LibraryAction action="private_quote" tab={tab} label="Jadikan privat" fields={{quote:quote.id}} />}
+              <LibraryAction action="remove_quote" tab={tab} label="Hapus kutipan" fields={{quote:quote.id}} />
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import { initLibraryTabs } from '../../scripts/library-tabs';
+  initLibraryTabs();
+</script>
+
+<style>
+  [data-library-panel][aria-busy="true"] { opacity: .65; }
+</style>

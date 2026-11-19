@@ -1,0 +1,193 @@
+---
+import '../../styles/global.css';
+import { openPrivateReader } from '../../server/private-reader';
+
+export const prerender = false;
+const identity = Astro.locals.identity;
+if (identity?.status !== 'ready') return new Response('Akses ditolak.', { status: 403 });
+const slug = Astro.params.slug ?? '';
+let reader;
+try {
+  reader = await openPrivateReader(identity.profile.user_id, slug, Astro.url.searchParams.get('mode') === 'text');
+} catch {
+  return new Response('Bacaan belum dapat dimuat.', { status: 503 });
+}
+if (!reader || reader.content.length === 0) return new Response('Bacaan tidak ditemukan.', { status: 404 });
+const requested = Astro.url.searchParams.get(reader.mode === 'page' ? 'p' : 'paragraph');
+const parsed = requested === null ? reader.position : Number(requested);
+const anchors = reader.mode === 'page'
+  ? reader.content.map((p) => ({ index: p.number, favorite: p.favorite }))
+  : reader.content.map((p) => ({ index: p.index, favorite: p.favorite }));
+const position = anchors.some((a) => a.index === parsed) ? parsed : anchors[0].index;
+const initialProgress = anchors.findIndex((anchor) => anchor.index === position) + 1;
+const progressLabel = reader.mode === 'page' ? 'Halaman' : 'Paragraf';
+const chapters = reader.mode === 'text' ? reader.content.filter((paragraph, index, items) =>
+  paragraph.title && (index === 0 || items[index - 1].chapter !== paragraph.chapter)) : [];
+const config = JSON.stringify({
+  mode: reader.mode, session: reader.session, edition: reader.edition, position, hasText: reader.hasText,
+  pages: reader.mode === 'page' ? reader.content : [],
+}).replace(/</g, '\\u003c');
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{reader.title} | Pojok Baca</title>
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('pb:theme');
+        document.documentElement.classList.toggle('dark', theme === 'dark' ||
+          ((!theme || theme === 'system') && matchMedia('(prefers-color-scheme: dark)').matches));
+        const font = localStorage.getItem('pb:font');
+        if (font === 'sm' || font === 'lg') document.documentElement.dataset.font = font;
+      } catch {}
+    </script>
+  </head>
+  <body class="min-h-screen bg-background text-text" data-reader-mode={reader.mode}>
+    <header class="sticky top-0 z-10 border-b border-border bg-surface">
+      <div class="mx-auto max-w-5xl space-y-2 px-4 py-2">
+        <div class="flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <a href={`/book/${reader.slug}/`} class="text-sm text-primary hover:underline">Kembali ke detail</a>
+            <h1 class="truncate font-serif text-lg font-semibold" title={reader.title}>{reader.title}</h1>
+          </div>
+          <button id="reader-focus" type="button" aria-pressed="false" aria-controls="reader-tools" aria-keyshortcuts="F" class="interaction-control shrink-0 rounded-lg border border-border px-3 py-2 text-sm font-semibold hover:bg-secondary" hidden>Mode fokus</button>
+        </div>
+        <div id="reader-tools">
+        <nav class="flex flex-wrap items-center gap-2 text-sm" aria-label="Aksi baca">
+          {reader.mode === 'text' && (
+            <div class="flex flex-wrap items-center gap-2" aria-label="Tampilan bacaan">
+              <button id="reader-type-smaller" type="button" class="rounded border border-border px-2 py-1 font-bold hover:bg-secondary disabled:opacity-50" aria-label="Perkecil teks">A−</button>
+              <button id="reader-type-larger" type="button" class="rounded border border-border px-2 py-1 font-bold hover:bg-secondary disabled:opacity-50" aria-label="Perbesar teks">A+</button>
+              <label class="sr-only" for="reader-theme">Tema layar</label>
+              <select id="reader-theme" class="px-2 py-1"><option value="white">Putih</option><option value="sepia">Sepia</option><option value="dark">Gelap</option></select>
+            </div>
+          )}
+          {chapters.length > 1 && (
+            <details id="reader-chapters" class="relative">
+              <summary class="cursor-pointer rounded border border-border px-3 py-1.5 font-semibold hover:bg-secondary">Daftar bab</summary>
+              <ol class="absolute z-10 mt-1 max-h-[50vh] w-64 max-w-[75vw] overflow-auto rounded-lg border border-border bg-surface p-2 shadow-md">
+                {chapters.map((chapter) => <li><a class="block rounded px-2 py-2 hover:bg-secondary" href={`#paragraph-${chapter.index}`}>{chapter.title}</a></li>)}
+              </ol>
+            </details>
+          )}
+          {reader.hasPages && reader.hasText && (
+            <a class="underline" href={reader.mode === 'page' ? '?mode=text' : '?mode=page'}>
+              {reader.mode === 'page' ? 'Mode teks' : 'Mode gambar'}
+            </a>
+          )}
+          <button id="reader-favorite-book" type="button" class="interaction-control rounded border border-border px-3 py-1.5 hover:bg-secondary" aria-pressed={reader.favorite ? 'true' : 'false'}>
+            {reader.favorite ? 'Hapus favorit buku' : 'Favoritkan buku'}
+          </button>
+          <button id="reader-shortcuts-open" type="button" class="rounded border border-border px-3 py-1.5 font-semibold hover:bg-secondary" aria-haspopup="dialog" aria-keyshortcuts="?" hidden>
+            Pintasan
+          </button>
+        </nav>
+        </div>
+        {reader.mode === 'page' && (
+        <nav class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm" aria-label="Navigasi halaman">
+          <button id="reader-prev" type="button" class="rounded border border-border px-2 py-1 hover:bg-secondary disabled:opacity-50" aria-keyshortcuts="ArrowLeft">Sebelumnya</button>
+          <label class="flex items-center gap-2">
+            Halaman
+            <input id="reader-page-number" class="w-16 rounded border border-border bg-background px-2 py-1"
+              type="number" min="1" max={reader.content.length} value={position} />
+            / {reader.content.length}
+          </label>
+          <button id="reader-next" type="button" class="rounded border border-border px-2 py-1 hover:bg-secondary disabled:opacity-50" aria-keyshortcuts="ArrowRight">Berikutnya</button>
+          <span data-reader-extra class="flex flex-wrap gap-2">
+            <button id="reader-favorite-anchor" type="button" class="interaction-control rounded border border-border px-2 py-1 hover:bg-secondary">Favoritkan halaman</button>
+            <button id="reader-quote-page" type="button" class="interaction-control rounded border border-border px-2 py-1 hover:bg-secondary">Simpan kutipan</button>
+          </span>
+        </nav>
+        )}
+        <div class="flex items-center gap-3">
+          <progress id="reader-progress" class="h-1.5 min-w-12 flex-1 accent-primary" aria-label="Progres baca" value={initialProgress} max={anchors.length}></progress>
+          <span id="reader-position" class="text-xs tabular-nums text-text-muted">{progressLabel} {initialProgress} / {anchors.length}</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-4 text-sm text-text-muted">
+      <p id="reader-feedback" role="status"></p>
+      <button id="reader-retry" type="button" class="rounded border border-border px-3 py-1.5 font-semibold hover:bg-secondary" hidden>Coba muat lagi</button>
+    </div>
+    {reader.mode === 'page' ? (
+      <main class="mx-auto max-w-5xl p-4">
+        <canvas id="reader-page" class="mx-auto block h-auto max-w-full bg-white" role="img" aria-label="Halaman buku" hidden></canvas>
+        <dialog id="reader-quote-dialog" class="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-border bg-surface p-5 text-text backdrop:bg-black/55" aria-labelledby="reader-quote-title">
+          <form class="grid gap-3">
+            <h2 id="reader-quote-title" class="font-serif text-xl font-semibold">Simpan kutipan</h2>
+            <label class="grid gap-1">Teks kutipan <textarea name="quote" rows="4" maxlength="2000" required></textarea></label>
+            <p data-quote-status class="text-sm text-text-muted" role="status"></p>
+            <div class="flex flex-wrap justify-end gap-2">
+              <button type="button" data-quote-cancel class="rounded-lg border border-border px-3 py-2 text-sm font-semibold hover:bg-secondary">Batal</button>
+              <button type="submit" class="interaction-control rounded-lg bg-primary px-3 py-2 text-sm font-bold text-background">Simpan</button>
+            </div>
+          </form>
+        </dialog>
+      </main>
+    ) : (
+      <main class="mx-auto max-w-prose px-5 py-8">
+        <button id="reader-favorite-anchor" data-reader-extra type="button" class="interaction-control mb-6 rounded border border-border px-3 py-2 text-sm hover:bg-secondary">Favoritkan paragraf</button>
+        <article id="reader-text" class="font-serif text-lg leading-relaxed">
+          {reader.content.map((paragraph, i) => (
+            <>
+              {paragraph.title && (i === 0 || reader.content[i - 1].chapter !== paragraph.chapter) && (
+                <h2 class="mb-4 mt-8 text-xl font-bold">{paragraph.title}</h2>
+              )}
+              <p id={`paragraph-${paragraph.index}`} data-index={paragraph.index} data-favorite={String(paragraph.favorite)}
+                class="mb-5 whitespace-pre-line">{paragraph.body}</p>
+            </>
+          ))}
+        </article>
+        <button id="reader-quote-text" type="button" class="fixed z-20 rounded-lg bg-[#1e4d3b] px-3 py-2 text-white" hidden>Simpan kutipan</button>
+      </main>
+    )}
+
+    <dialog id="reader-shortcuts" class="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-border bg-surface p-5 text-text backdrop:bg-black/55" aria-labelledby="reader-shortcuts-title">
+      <div class="flex items-start justify-between gap-4">
+        <h2 id="reader-shortcuts-title" class="font-serif text-xl font-semibold">Pintasan baca</h2>
+        <button type="button" data-shortcuts-close class="rounded-lg border border-border px-3 py-1.5 text-sm font-semibold hover:bg-secondary">Tutup</button>
+      </div>
+      <dl class="mt-4 grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-4 gap-y-3 text-sm">
+        <dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Halaman sebelumnya atau berikutnya (mode gambar)</dd>
+        <dt><kbd>Home</kbd> <kbd>End</kbd></dt><dd>Awal atau akhir bacaan</dd>
+        <dt><kbd>F</kbd></dt><dd>Nyalakan atau matikan mode fokus</dd>
+        <dt><kbd>?</kbd></dt><dd>Buka daftar pintasan ini</dd>
+        <dt><kbd>Esc</kbd></dt><dd>Tutup dialog atau keluar dari mode fokus</dd>
+      </dl>
+      <p class="mt-4 text-xs text-text-muted">Pintasan tidak aktif saat kamu mengetik di kolom isian.</p>
+    </dialog>
+
+    <script type="application/json" id="private-reader-config" set:html={config} />
+    <script>
+      import { initPrivateReader } from '../../scripts/private-reader';
+      initPrivateReader();
+    </script>
+  </body>
+</html>
+<style>
+  body[data-reader-focus] [data-reader-extra],
+  body[data-reader-focus] #reader-tools { display: none; }
+  #reader-focus[aria-pressed="true"], #reader-tools button[aria-pressed="true"],
+  #reader-favorite-anchor[aria-pressed="true"] { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-surface-hover); }
+  body[data-reader-theme="white"] { --color-background:#fff; --color-surface:#fff; --color-text:#1c1917; --color-text-muted:#57534e; --color-border:#e6e2d8; --color-primary:#1e4d3b; color-scheme:light; }
+  body[data-reader-theme="sepia"] { --color-background:#f4ecd8; --color-surface:#f9f1df; --color-text:#30271e; --color-text-muted:#5d5140; --color-border:#d4c5a4; --color-primary:#1e4d3b; color-scheme:light; }
+  body[data-reader-theme="dark"] { --color-background:#1a1a1a; --color-surface:#242424; --color-text:#f9f3e9; --color-text-muted:#dbd2c1; --color-border:#45433e; --color-primary:#b8dbc8; color-scheme:dark; }
+  #reader-text { font-size:var(--reader-text-size, 1.125rem); line-height:1.8; }
+  #reader-shortcuts kbd {
+    display: inline-block;
+    min-width: 1.7rem;
+    border: 1px solid var(--color-border);
+    border-radius: .35rem;
+    background: var(--color-background);
+    padding: .05rem .35rem;
+    font-family: var(--font-mono);
+    font-size: .75rem;
+    font-weight: 600;
+    text-align: center;
+  }
+</style>
