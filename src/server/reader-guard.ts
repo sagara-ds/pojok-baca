@@ -4,6 +4,7 @@ export function guardedRoute(path: string, method: string) {
   if (/^\/my-library\/?$/.test(path)) return 'library';
   if (/^\/(?:books\/[^/]+\/read|read\/[^/]+)\/?$/.test(path)) return 'reader';
   if (/^\/onboarding\/?$/.test(path)) return 'onboarding';
+  if (/^\/change-password\/?$/.test(path)) return 'password_change';
   if (method === 'POST' && /^\/api\/stats\/?$/.test(path)) return 'stats';
   return null;
 }
@@ -14,7 +15,7 @@ export function safeReturnTo(value: string | null, origin: string): string {
     const next = new URL(value, origin);
     const path = decodeURIComponent(next.pathname);
     if (next.origin === origin && !path.startsWith('//') && !path.includes('\\')
-      && !/^\/(?:login|onboarding|api)(?:\/|$)/.test(path)) {
+      && !/^\/(?:login|onboarding|change-password|api)(?:\/|$)/.test(path)) {
       return next.pathname + next.search + next.hash;
     }
   } catch {

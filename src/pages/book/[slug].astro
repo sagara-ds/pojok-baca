@@ -43,11 +43,14 @@ if (detail) {
   else if (result) readers = result as typeof readers;
 }
 const next = readingHref(slug, position);
+const step = identity.status === 'needs_password_change' ? '/change-password/' :
+  identity.status === 'needs_onboarding' ? '/onboarding/' : '/login/';
 const href = identity.status === 'ready' ? next :
-  `${identity.status === 'needs_onboarding' ? '/onboarding/' : '/login/'}?next=${encodeURIComponent(next)}`;
+  `${step}?next=${encodeURIComponent(next)}`;
 const label = identity.status === 'ready'
   ? position?.page != null ? `Lanjutkan Hal. ${position.page}` : position?.paragraph != null ? 'Lanjutkan Membaca' : 'Mulai Membaca'
-  : identity.status === 'needs_onboarding' ? 'Lengkapi Profil' : 'Masuk untuk Membaca';
+  : identity.status === 'needs_password_change' ? 'Ganti kata sandi' :
+    identity.status === 'needs_onboarding' ? 'Lengkapi Profil' : 'Masuk untuk Membaca';
 const number = new Intl.NumberFormat('id-ID');
 ---
 
@@ -123,6 +126,7 @@ const number = new Intl.NumberFormat('id-ID');
 </BaseLayout>
 
 <script>
+  import '../../scripts/copy-text';
   import { initBookActivity } from '../../scripts/book-activity';
   initBookActivity();
 </script>

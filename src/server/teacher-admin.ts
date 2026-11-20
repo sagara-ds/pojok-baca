@@ -8,7 +8,10 @@ export type Dashboard = {
 export type Report = { classes: string[]; rows: TeacherRow[] };
 export type ModerationItem = { kind: 'quote'|'comment'; id: string; body: string; name: string; title: string; status: string; created:string };
 export type Role = 'user'|'admin'|'super_admin';
-export type ManagedUser = { id:string; name:string; class:string|null; role:Role; active:boolean };
+export type ManagedUser = {
+  id: string; name: string; class: string | null; role: Role; active: boolean;
+  username: string | null; nis: string | null; mustChangePassword: boolean;
+};
 export type AuditEntry = { name:string; action:string; created:string; target:Record<string,unknown> };
 
 export async function dashboard(actor: string) {

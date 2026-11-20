@@ -6,6 +6,7 @@ test('guards reader and stats writes without hiding public catalog or stats read
   assert.equal(guardedRoute('/books/pergi/read/', 'GET'), 'reader');
   assert.equal(guardedRoute('/read/pergi', 'GET'), 'reader');
   assert.equal(guardedRoute('/onboarding/', 'POST'), 'onboarding');
+  assert.equal(guardedRoute('/change-password/', 'POST'), 'password_change');
   assert.equal(guardedRoute('/api/stats/', 'POST'), 'stats');
   assert.equal(guardedRoute('/api/stats/', 'GET'), null);
   assert.equal(guardedRoute('/books/pergi/', 'GET'), null);
@@ -18,7 +19,7 @@ test('allows internal reader returns and rejects auth loops and open redirects',
   const origin = 'https://pojok-baca.example';
   assert.equal(safeReturnTo('/books/pergi/read/?mode=text', origin), '/books/pergi/read/?mode=text');
   for (const value of ['//example.org', '/\\example.org', '/a/..//example.org', '/%2fexample.org',
-    '/onboarding/', '/%6cogin/', '/api/auth/', '/\\[']) {
+    '/onboarding/', '/%6cogin/', '/change-password/', '/api/auth/', '/\\[']) {
     assert.equal(safeReturnTo(value, origin), '/books/', value);
   }
 });

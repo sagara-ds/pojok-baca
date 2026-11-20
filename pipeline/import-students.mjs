@@ -102,8 +102,8 @@ async function importStudent(db, auth, student) {
       }
     }
 
-    await db.query(`INSERT INTO public.users (user_id, name, class_name, username, nis, role, is_active)
-      VALUES ($1, $2, $3, $4, $5, 'user', true)`, [id, name, className, username, nis]);
+    await db.query(`INSERT INTO public.users (user_id, name, class_name, username, nis, role, is_active, must_change_password)
+      VALUES ($1, $2, $3, $4, $5, 'user', true, true)`, [id, name, className, username, nis]);
     await db.query('DELETE FROM pojok_baca.student_import_reservations WHERE username=$1 AND nis=$2', [username, nis]);
     return 'created';
   });
@@ -126,7 +126,7 @@ try {
   const outcome = { created: 0, skipped: 0, failed: 0 };
   await db.connect();
   try {
-    await db.query('SELECT username, nis FROM public.users LIMIT 0');
+    await db.query('SELECT username, nis, must_change_password FROM public.users LIMIT 0');
     await db.query('SELECT username FROM pojok_baca.student_import_reservations LIMIT 0');
     for (const student of students) {
       try { outcome[await importStudent(db, auth, student)]++; }
@@ -140,6 +140,6 @@ try {
   console.log(`Dibuat: ${outcome.created}. Dilewati: ${outcome.skipped}. Gagal: ${outcome.failed}. Tertunda: ${students.length - outcome.created - outcome.skipped - outcome.failed}.`);
   if (outcome.failed) process.exitCode = 1;
 } catch (error) {
-  console.error(error instanceof ImportError || error instanceof StudentSheetError ? error.message : 'Impor siswa gagal. Periksa argumen, koneksi, dan migration 0009.');
+  console.error(error instanceof ImportError || error instanceof StudentSheetError ? error.message : 'Impor siswa gagal. Periksa argumen, koneksi, dan migration 0009–0010.');
   process.exitCode = 1;
 }

@@ -13,6 +13,7 @@ export type Profile = {
 export type Identity =
   | { status: 'guest' }
   | { status: 'needs_onboarding'; userId: string; name: string }
+  | { status: 'needs_password_change'; userId: string }
   | { status: 'inactive' }
   | { status: 'ready'; profile: Profile };
 
@@ -52,11 +53,17 @@ export async function resolveIdentity(context: APIContext): Promise<Identity> {
 
   const sql = getDatabase();
   const rows = await sql`
-    SELECT user_id, name, class_name, role, is_active
+    SELECT user_id, name, class_name, role, is_active, must_change_password, password_revoked_at
     FROM public.users WHERE user_id = ${user.id}::uuid
   `;
-  const profile = rows[0] as Profile | undefined;
-  if (profile && !profile.is_active) return { status: 'inactive' };
+  const row = rows[0] as (Profile & { must_change_password: boolean; password_revoked_at: string | Date | null }) | undefined;
+  if (row && !row.is_active) return { status: 'inactive' };
+  if (row?.password_revoked_at) {
+    const issuedAt = new Date(data?.session?.createdAt ?? '').getTime();
+    if (!Number.isFinite(issuedAt) || issuedAt <= new Date(row.password_revoked_at).getTime()) return { status: 'guest' };
+  }
+  if (row?.must_change_password) return { status: 'needs_password_change', userId: user.id };
+  const profile: Profile | undefined = row;
   if (!profile?.name.trim() || !profile.class_name?.trim()) {
     return { status: 'needs_onboarding', userId: user.id, name: profile?.name ?? user.name ?? '' };
   }

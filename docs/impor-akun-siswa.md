@@ -1,6 +1,14 @@
 # Login Username/NIS dan impor akun siswa
 
-Siapkan migration `0009_student_login.sql` dan grant `student_login_runtime.sql` pada branch Neon yang dipakai Worker. Login sekolah menerima satu Username atau NIS dan kata sandi. Neon Auth memverifikasi sandi dan mengelola sesi. NIS disimpan sebagai teks dan terpisah dari kolom NISN lama.
+Login sekolah menerima Username atau NIS dan kata sandi. Neon Auth memverifikasi kata sandi dan mengelola sesi. NIS disimpan sebagai teks di kolom terpisah dari NISN lama.
+
+## Siapkan branch Neon sebelum deploy
+
+1. Cocokkan endpoint database dan Neon Auth Worker dengan branch Neon tujuan.
+2. Terapkan migration yang belum terpasang secara urut, mulai dari `0009_student_login.sql`, `0010_initial_password_change.sql`, lalu `0011_admin_student_password_reset.sql`.
+3. Terapkan kembali `db/grants/student_login_runtime.sql` dan `db/grants/teacher_runtime.sql` setelah ketiga migration tersedia.
+4. Pastikan Super Admin yang akan mereset akun punya izin `user: set-password` di Neon Auth. Hak akses Super Admin Pojok Baca diperiksa terpisah.
+5. Terbitkan Worker setelah pengelola Neon mengonfirmasi skema dan grant. Jalankan dry-run file impor sebelum memakai `--apply` pada branch produksi yang disetujui.
 
 ## Format dan perintah
 
@@ -27,6 +35,10 @@ Isi URL direct dan URL Neon Auth dari branch yang sama. `PB_IMPORT_HOST` berisi 
 ## Hasil dan pemulihan
 
 - Pasangan Username/NIS yang sudah terdaftar dilewati. Kata sandi, role, dan status aktif akun lama dipertahankan. Benturan identitas berbeda menghentikan impor dan menampilkan nomor baris.
-- Setiap baris berhasil disimpan sebagai satu profil aktif dengan role `user`. Jika proses terputus, jalankan ulang file yang sama dengan kata sandi awal yang sama. Reservasi email internal memungkinkan penyambungan ke akun Neon Auth yang sudah dibuat pada percobaan sebelumnya.
-- Siswa menggunakan Username atau NIS untuk masuk. Profil impor sudah lengkap sehingga dapat langsung membuka beranda atau halaman baca yang dituju.
+- Setiap baris berhasil disimpan sebagai profil aktif dengan role `user` dan penanda wajib ganti kata sandi. Jika proses terputus, jalankan ulang file yang sama dengan kata sandi awal yang sama. Reservasi email internal memungkinkan penyambungan ke akun Neon Auth yang sudah dibuat pada percobaan sebelumnya.
+- Siswa masuk dengan Username atau NIS dan kata sandi awal. Setelah mengganti kata sandi, siswa diteruskan ke tujuan semula. Nama dan kelas sudah terisi dari impor.
 - Untuk akun staf, operator database menghubungkan UUID akun Neon Auth ke profil aktif dengan username unik dan data nama serta kelas atau tim. NIS staf boleh kosong. Migration mengisi username profil lama dari bagian awal email jika valid dan unik, dengan cadangan berbasis UUID untuk benturan.
+
+## Reset akun siswa
+
+Di **Admin → Manajemen pengguna**, cari siswa dengan nama, kelas, username, atau NIS. Klik **Reset kata sandi** pada akun siswa aktif, lalu konfirmasi dan salin kata sandi sementara sebelum menutup dialog. Berikan kata sandi melalui saluran pribadi sekolah. Sesi aplikasi siswa yang terbit sebelum reset harus masuk kembali. Saat masuk, siswa wajib mengganti kata sandi sementara. Audit log mencatat tindakan dan akun tujuan tanpa menyimpan kata sandi.

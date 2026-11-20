@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { boundedBody, sameOrigin } from '../../server/api-identity';
+import { safeReturnTo } from '../../server/reader-guard';
+import { changeStudentPassword } from '../../server/student-password';
+
+export const prerender = false;
+const identity = Astro.locals.identity;
+const next = safeReturnTo(Astro.url.searchParams.get('next') ?? '/', Astro.url.origin);
+if (identity?.status === 'ready') return Astro.redirect(next);
+if (identity?.status !== 'needs_password_change') return new Response('Akses ditolak.', { status: 403 });
+let error = '';
+if (Astro.request.method === 'POST') {
+  if (!sameOrigin(Astro)) return new Response('Asal permintaan tidak valid.', { status: 403 });
+  try {
+    const fields = new URLSearchParams(new TextDecoder().decode(await boundedBody(Astro.request, 4096)));
+    const current = fields.get('current') ?? '';
+    const password = fields.get('password') ?? '';
+    const confirmation = fields.get('confirmation') ?? '';
+    if (!current || current.length > 256 || password.length < 12 || password.length > 128 ||
+        password !== confirmation || password === current || !password.trim()) {
+      Astro.response.status = 400;
+      error = 'Pilih kata sandi baru sepanjang 12–128 karakter, berbeda dari kata sandi saat ini, dan isi konfirmasi yang sama.';
+    } else {
+      const result = await changeStudentPassword(Astro, identity.userId, current, password);
+      if (result === 'ok') return Astro.redirect(next, 303);
+      Astro.response.status = result === 'busy' ? 409 : result === 'invalid' ? 400 : 503;
+      error = result === 'busy' ? 'Perubahan kata sandi sedang diproses. Coba lagi sebentar.' :
+        result === 'invalid' ? 'Kata sandi saat ini tidak diterima. Periksa dan coba lagi.' :
+        result === 'unconfirmed' ? 'Kata sandi baru diterima, tetapi verifikasi belum tersimpan. Saat mencoba lagi, gunakan kata sandi baru tadi sebagai kata sandi saat ini.' :
+        'Kata sandi belum dapat diperbarui. Coba lagi nanti.';
+    }
+  } catch (failure) {
+    Astro.response.status = failure instanceof RangeError ? 413 : 503;
+    error = 'Kata sandi belum dapat diperbarui. Coba lagi.';
+  }
+}
+---
+<BaseLayout title="Ganti kata sandi" noIndex hideSearch>
+  <main id="main-content" class="mx-auto w-full max-w-xl flex-1 px-4 py-10 sm:py-14">
+    <section class="rounded-xl border border-border bg-surface p-5 sm:p-8" aria-labelledby="change-password-heading">
+      <h1 id="change-password-heading" class="font-serif text-3xl font-semibold sm:text-4xl">Ganti kata sandi</h1>
+      <p class="mt-2 text-text-muted">Buat kata sandi baru untuk menggantikan kata sandi sementara dari sekolah.</p>
+      {error && <p role="alert" class="mt-4 rounded-lg bg-error-light p-3 text-sm font-semibold text-error">{error}</p>}
+      <form method="post" class="mt-6 grid gap-4">
+        <label class="grid gap-1 font-semibold">Kata sandi saat ini
+          <input type="password" name="current" autocomplete="current-password" maxlength="256" required />
+        </label>
+        <label class="grid gap-1 font-semibold">Kata sandi baru
+          <input type="password" name="password" autocomplete="new-password" minlength="12" maxlength="128" aria-describedby="new-password-help" required />
+        </label>
+        <p id="new-password-help" class="-mt-2 text-sm text-text-muted">Gunakan minimal 12 karakter.</p>
+        <label class="grid gap-1 font-semibold">Ulangi kata sandi baru
+          <input type="password" name="confirmation" autocomplete="new-password" minlength="12" maxlength="128" required />
+        </label>
+        <button type="submit" data-pending="Menyimpan kata sandi…" class="interaction-control rounded-lg bg-primary px-4 py-2 font-bold text-background hover:bg-primary-dark">Simpan dan lanjutkan</button>
+      </form>
+      <form method="post" action="/api/auth/sign-out/" class="mt-4">
+        <button type="submit" class="text-sm font-semibold text-primary underline underline-offset-4">Keluar</button>
+      </form>
+    </section>
+  </main>
+</BaseLayout>

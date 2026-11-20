@@ -2,6 +2,7 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import AdminManageAction from '../../../components/ui/AdminManageAction.astro';
 import AdminPager from '../../../components/ui/AdminPager.astro';
+import ResetStudentPassword from '../../../components/ui/ResetStudentPassword.astro';
 import {adminPage,managedUsers,roles} from '../../../server/teacher-admin';
 
 export const prerender=false;
@@ -23,7 +24,7 @@ const messages:Record<string,string>={
 ---
 <AdminLayout title="Manajemen pengguna" description="Cari akun siswa atau admin, lalu ubah role dan status akses.">
   <form method="get" action="/admin/users/" class="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-surface p-4">
-    <label class="grid min-w-0 flex-1 basis-52 gap-1 text-sm font-semibold">Nama, kelas, atau NISN <input type="search" name="q" value={search} maxlength="100" /></label>
+    <label class="grid min-w-0 flex-1 basis-52 gap-1 text-sm font-semibold">Nama, kelas, username, atau NIS <input type="search" name="q" value={search} maxlength="100" /></label>
     <label class="grid gap-1 text-sm font-semibold">Role <select name="role"><option value="">Semua role</option>
       {Object.entries(roles).map(([value,label])=><option value={value} selected={value===filter}>{label}</option>)}
     </select></label>
@@ -38,7 +39,11 @@ const messages:Record<string,string>={
       <tbody class="divide-y divide-border">
         {users.map((user)=>(
           <tr>
-            <td class="min-w-36 p-3 font-semibold">{user.name}</td><td class="p-3">{user.class??'—'}</td>
+            <td class="min-w-36 p-3">
+              <span class="font-semibold">{user.name}</span>
+              {user.username && <p class="text-xs text-text-muted">{user.username}</p>}
+              {user.nis && <p class="text-xs tabular-nums text-text-muted">NIS {user.nis}</p>}
+            </td><td class="p-3">{user.class??'—'}</td>
             <td class="p-3">{roles[user.role]}</td><td class="p-3">{user.active?'Aktif':'Nonaktif'}</td>
             <td class="p-3">
               <div class="flex min-w-72 flex-wrap gap-2">
@@ -50,7 +55,12 @@ const messages:Record<string,string>={
                   <button type="submit" class="interaction-control rounded-lg border border-border px-3 py-2 font-bold hover:bg-secondary" data-pending="Menyimpan…">Simpan role</button>
                 </form>
                 <AdminManageAction action="user" fields={{id:user.id,active:String(!user.active)}} label={user.active?'Nonaktifkan':'Aktifkan'} />
+                {user.active && user.role === 'user' && user.username && (
+                  <button type="button" data-reset-student={user.id} data-student-name={user.name}
+                    class="interaction-control rounded-lg border border-border px-3 py-2 text-sm font-bold hover:bg-secondary" hidden>Reset kata sandi</button>
+                )}
               </div>
+              {user.mustChangePassword && <p class="mt-1 text-xs text-text-muted">Wajib ganti kata sandi</p>}
             </td>
           </tr>
         ))}
@@ -58,4 +68,5 @@ const messages:Record<string,string>={
     </table>
   </div> : <p class="rounded-xl border border-border bg-surface p-5 text-text-muted">Tidak ada pengguna yang cocok dengan filter.</p>}
   <AdminPager page={page} hasNext={users.length===50} />
+  <ResetStudentPassword />
 </AdminLayout>

@@ -33,6 +33,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
         response = api
           ? Response.json({ error: 'login_required' }, { status: 401 })
           : context.redirect(`/login/?next=${returnTo}`);
+      } else if (identity.status === 'needs_password_change' && route !== 'password_change') {
+        response = api
+          ? Response.json({ error: 'password_change_required', path: '/change-password/' }, { status: 403 })
+          : context.redirect(`/change-password/?next=${returnTo}`);
       } else if (identity.status === 'needs_onboarding' && route !== 'onboarding') {
         response = api
           ? Response.json({ error: 'onboarding_required', path: '/onboarding/' }, { status: 403 })

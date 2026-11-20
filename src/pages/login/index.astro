@@ -19,6 +19,7 @@ if (Astro.request.method === 'POST') {
     identifier = input.trim().slice(0, 40);
     const result = await signInWithSchoolId(Astro, input, form.get('password') ?? '');
     if (result === 'ok') return Astro.redirect(next, 303);
+    if (result === 'password_change') return Astro.redirect(`/change-password/?next=${encodeURIComponent(next)}`, 303);
     Astro.response.status = result === 'limited' ? 429 : 401;
     if (result === 'limited') Astro.response.headers.set('Retry-After', '600');
     message = 'Username/NIS atau kata sandi salah.';

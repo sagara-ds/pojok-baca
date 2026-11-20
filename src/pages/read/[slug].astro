@@ -70,7 +70,7 @@ const config = JSON.stringify({
             <details id="reader-chapters" class="relative">
               <summary class="cursor-pointer rounded border border-border px-3 py-1.5 font-semibold hover:bg-secondary">Daftar bab</summary>
               <ol class="absolute z-10 mt-1 max-h-[50vh] w-64 max-w-[75vw] overflow-auto rounded-lg border border-border bg-surface p-2 shadow-md">
-                {chapters.map((chapter) => <li><a class="block rounded px-2 py-2 hover:bg-secondary" href={`#paragraph-${chapter.index}`}>{chapter.title}</a></li>)}
+                {chapters.map((chapter) => <li><a class="block rounded px-2 py-2 hover:bg-secondary" href={`#chapter-${chapter.index}`}>{chapter.title}</a></li>)}
               </ol>
             </details>
           )}
@@ -136,7 +136,7 @@ const config = JSON.stringify({
           {reader.content.map((paragraph, i) => (
             <>
               {paragraph.title && (i === 0 || reader.content[i - 1].chapter !== paragraph.chapter) && (
-                <h2 class="mb-4 mt-8 text-xl font-bold">{paragraph.title}</h2>
+                <h2 id={`chapter-${paragraph.index}`} class="mb-4 mt-8 text-xl font-bold">{paragraph.title}</h2>
               )}
               <p id={`paragraph-${paragraph.index}`} data-index={paragraph.index} data-favorite={String(paragraph.favorite)}
                 class="mb-5 whitespace-pre-line">{paragraph.body}</p>
@@ -174,9 +174,14 @@ const config = JSON.stringify({
   body[data-reader-focus] #reader-tools { display: none; }
   #reader-focus[aria-pressed="true"], #reader-tools button[aria-pressed="true"],
   #reader-favorite-anchor[aria-pressed="true"] { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-surface-hover); }
-  body[data-reader-theme="white"] { --color-background:#fff; --color-surface:#fff; --color-text:#1c1917; --color-text-muted:#57534e; --color-border:#e6e2d8; --color-primary:#1e4d3b; color-scheme:light; }
-  body[data-reader-theme="sepia"] { --color-background:#f4ecd8; --color-surface:#f9f1df; --color-text:#30271e; --color-text-muted:#5d5140; --color-border:#d4c5a4; --color-primary:#1e4d3b; color-scheme:light; }
-  body[data-reader-theme="dark"] { --color-background:#1a1a1a; --color-surface:#242424; --color-text:#f9f3e9; --color-text-muted:#dbd2c1; --color-border:#45433e; --color-primary:#b8dbc8; color-scheme:dark; }
+  body[data-reader-theme] { --color-border-focus: var(--color-primary); --color-accent: var(--color-primary); }
+  body[data-reader-theme="white"] { --color-background:#fff; --color-surface:#fff; --color-surface-hover:#f5f1ea; --color-secondary:#eee9df; --color-text:#1c1917; --color-text-muted:#57534e; --color-border:#e6e2d8; --color-primary:#1e4d3b; color-scheme:light; }
+  body[data-reader-theme="sepia"] { --color-background:#f4ecd8; --color-surface:#f9f1df; --color-surface-hover:#eee4ca; --color-secondary:#e7dcc0; --color-text:#30271e; --color-text-muted:#5d5140; --color-border:#d4c5a4; --color-primary:#1e4d3b; color-scheme:light; }
+  body[data-reader-theme="dark"] { --color-background:#1a1a1a; --color-surface:#242424; --color-surface-hover:#353530; --color-secondary:#353530; --color-text:#f9f3e9; --color-text-muted:#dbd2c1; --color-border:#45433e; --color-primary:#b8dbc8; color-scheme:dark; }
+  #reader-progress { appearance: none; overflow: hidden; border: 0; border-radius: 999px; background: var(--color-secondary); }
+  #reader-progress::-webkit-progress-bar { background: var(--color-secondary); }
+  #reader-progress::-webkit-progress-value { background: var(--color-primary); }
+  #reader-progress::-moz-progress-bar { background: var(--color-primary); }
   #reader-text { font-size:var(--reader-text-size, 1.125rem); line-height:1.8; }
   #reader-shortcuts kbd {
     display: inline-block;

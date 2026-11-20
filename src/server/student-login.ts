@@ -28,6 +28,8 @@ export async function signInWithSchoolId(context: APIContext, input: string, pas
   const email = target.auth_email ?? `${randomUUID()}@login.pojok-baca.invalid`;
   const { data, error } = await getNeonAuth(context, pendingCookies).signIn.email({ email, password });
   if (error || !target.user_id || data?.user?.id !== target.user_id) return 'invalid';
+  const [profile] = await sql`SELECT is_active, must_change_password FROM public.users WHERE user_id = ${target.user_id}::uuid`;
+  if (!profile?.is_active) return 'invalid';
   pendingCookies.forEach(write => write());
-  return 'ok';
+  return profile.must_change_password ? 'password_change' : 'ok';
 }

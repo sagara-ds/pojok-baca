@@ -340,6 +340,7 @@ export function initPrivateReader() {
     const quoteInput = dialog.querySelector('textarea')!;
     const quoteStatus = dialog.querySelector('[data-quote-status]')!;
     const quoteSave = dialog.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const quoteCancel = dialog.querySelector<HTMLButtonElement>('[data-quote-cancel]')!;
     let quoteIndex = anchor;
     quotePage.addEventListener('click', async () => {
       const page = pages.get(anchor);
@@ -356,7 +357,10 @@ export function initPrivateReader() {
         quoteInput.focus();
       }
     });
-    dialog.querySelector('[data-quote-cancel]')?.addEventListener('click', () => dialog.close());
+    quoteCancel.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('cancel', (event) => {
+      if (quoteSave.disabled) event.preventDefault();
+    });
     quoteForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       const text = quoteInput.value.trim();
@@ -367,12 +371,14 @@ export function initPrivateReader() {
         return;
       }
       quoteSave.disabled = true;
+      quoteCancel.disabled = true;
       quoteStatus.textContent = 'Menyimpan kutipan…';
       try {
         if (await saveQuote(quoteIndex, text)) dialog.close();
         else quoteStatus.textContent = 'Kutipan belum dapat disimpan. Coba lagi.';
       } finally {
         quoteSave.disabled = false;
+        quoteCancel.disabled = false;
       }
     });
     document.addEventListener('visibilitychange', () => {
@@ -413,29 +419,41 @@ export function initPrivateReader() {
     clearTimeout(debounce);
     debounce = window.setTimeout(flush, 3000);
   }
-  const visibleParagraphs = new Set<HTMLElement>();
-  const observer = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (entry.isIntersecting) visibleParagraphs.add(entry.target as HTMLElement);
-      else visibleParagraphs.delete(entry.target as HTMLElement);
-    }
-    const first = [...visibleParagraphs].sort((a, b) => Number(a.dataset.index) - Number(b.dataset.index))[0];
-    if (first) queuePosition(Number(first.dataset.index));
-  }, { rootMargin: '-15% 0px -55% 0px' });
   const chapters = document.querySelector<HTMLDetailsElement>('#reader-chapters');
   chapters?.addEventListener('click', (event) => {
     if (event.target instanceof HTMLAnchorElement) chapters.open = false;
   });
   const header = document.querySelector('header')!;
-  const sizeObserver = new ResizeObserver(() => {
-    document.documentElement.style.scrollPaddingTop = `${header.offsetHeight + 12}px`;
-  });
-  sizeObserver.observe(header);
-  document.documentElement.style.scrollPaddingTop = `${header.offsetHeight + 12}px`;
-  const hash = location.hash.match(/^#paragraph-(\d+)$/);
+  let paragraphObserver: IntersectionObserver | undefined;
+  let margins = '';
+  function trackParagraphs() {
+    const top = header.offsetHeight + 12;
+    const bottom = Math.max(0, Math.min(Math.round(innerHeight * .45), innerHeight - top - 48));
+    const nextMargins = `-${top}px 0px -${bottom}px 0px`;
+    if (margins === nextMargins) return;
+    margins = nextMargins;
+    document.documentElement.style.scrollPaddingTop = `${top}px`;
+    paragraphObserver?.disconnect();
+    const visible = new Set<HTMLElement>();
+    paragraphObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) visible.add(entry.target as HTMLElement);
+        else visible.delete(entry.target as HTMLElement);
+      }
+      const first = [...visible].sort((a, b) => Number(a.dataset.index) - Number(b.dataset.index))[0];
+      if (first) queuePosition(Number(first.dataset.index));
+    }, { rootMargin: margins });
+    for (const paragraph of paragraphs) paragraphObserver.observe(paragraph);
+  }
+  new ResizeObserver(trackParagraphs).observe(header);
+  window.addEventListener('resize', trackParagraphs);
+  trackParagraphs();
+  const hash = location.hash.match(/^#(?:paragraph|chapter)-(\d+)$/);
   if (hash && positions.has(Number(hash[1]))) queuePosition(Number(hash[1]));
-  document.getElementById(`paragraph-${anchor}`)?.scrollIntoView();
-  paragraphs.forEach((p) => observer.observe(p));
+  if (hash) document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'instant' });
+  else if (anchor !== Number(paragraphs[0]?.dataset.index)) {
+    document.getElementById(`paragraph-${anchor}`)?.scrollIntoView({ behavior: 'instant' });
+  }
   document.addEventListener('keydown', (event) => {
     if (event.defaultPrevented || document.querySelector('dialog[open]') || event.altKey || event.shiftKey || event.metaKey || event.ctrlKey) return;
     if (event.target instanceof Element && event.target.closest('input, select, textarea, [contenteditable]')) return;
