@@ -33,10 +33,16 @@ export function initPrivateReader() {
   }
   const feedback = document.querySelector('#reader-feedback');
   const focus = document.querySelector<HTMLButtonElement>('#reader-focus')!;
+  const header = document.querySelector('header')!;
+  let anchor = config.position;
   const toggleFocus = (enabled: boolean) => {
+    const marker = config.mode === 'text' ? document.getElementById(`paragraph-${anchor}`) : document.getElementById('reader-page');
+    const readingOffset = () => (marker?.getBoundingClientRect().top ?? 0) - header.offsetHeight;
+    const offset = window.scrollY > 0 && marker && !marker.hidden ? readingOffset() : undefined;
     document.body.toggleAttribute('data-reader-focus', enabled);
     focus.setAttribute('aria-pressed', String(enabled));
     focus.textContent = enabled ? 'Keluar mode fokus' : 'Mode fokus';
+    if (offset !== undefined) window.scrollBy({ top: readingOffset() - offset, behavior: 'instant' });
   };
   focus.hidden = false;
   focus.addEventListener('click', () => toggleFocus(focus.getAttribute('aria-pressed') !== 'true'));
@@ -156,7 +162,6 @@ export function initPrivateReader() {
   const savePosition = (index: number) => {
     void send('position', { index, seq: ++sequence }).catch(() => {});
   };
-  let anchor = config.position;
   const favorite = document.querySelector<HTMLButtonElement>('#reader-favorite-anchor');
   const bookFavorite = document.querySelector<HTMLButtonElement>('#reader-favorite-book');
   const favorites = new Map<number, boolean>();
@@ -423,7 +428,6 @@ export function initPrivateReader() {
   chapters?.addEventListener('click', (event) => {
     if (event.target instanceof HTMLAnchorElement) chapters.open = false;
   });
-  const header = document.querySelector('header')!;
   let paragraphObserver: IntersectionObserver | undefined;
   let margins = '';
   function trackParagraphs() {
